@@ -20,24 +20,33 @@ export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
  * - `{ readonly a: string }` vs `{ a: string }`
  * - `{ a?: string }` vs `{ a: string | undefined }`
  */
-export type DeepBrand<T> = Or<[IsNever<T>, IsAny<T>, IsUnknown<T>]> extends true // avoid `any`/`unknown`/`never` matching
-  ? {
-      type: 'special'
-      never: IsNever<T>
-      any: IsAny<T>
-      unknown: IsUnknown<T>
-    }
-  : T extends string | number | boolean | symbol | bigint | null | undefined
+export type DeepBrand<T> = IsNever<T> extends true
+  ? {type: 'never'}
+  : IsAny<T> extends true
+  ? {type: 'any'}
+  : IsUnknown<T> extends true
+  ? {type: 'unknown'}
+  : T extends string | number | boolean | symbol | bigint | null | undefined | void
   ? {
       type: 'primitive'
       value: T
+    }
+  : T extends new (...args: any[]) => any
+  ? {
+      type: 'constructor'
+      params: ConstructorParams<T>
+      instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>>
     }
   : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
   ? {
       type: 'function'
       params: DeepBrand<P>
       return: DeepBrand<R>
-      constructorParams: DeepBrand<ConstructorParams<T>>
+    }
+  : T extends any[]
+  ? {
+      type: 'array'
+      items: {[K in keyof T]: T[K]}
     }
   : {
       type: 'object'
