@@ -1,0 +1,25 @@
+{
+  "name": "expect-type",
+  "version": "0.13.0",
+  "keywords": [
+    "typescript",
+    "type-check",
+    "assert",
+    "types",
+    "typings",
+    "test",
+    "testing"
+  ],
+  "homepage": "https://github.com/mmkal/ts/tree/main/packages/expect-type#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmkal/expect-type.git"
+  },
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "eslint": "8.23.0",
+    "typescript": "4.8.2"
+  }
+}
