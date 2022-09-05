@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "lib": ["es2017", "DOM"],
+        "target": "es2017",
+        "module": "commonjs",
+        "strict": true,
+        "noEmit": true
+    },
+    "include": ["src", "test"]
+}
