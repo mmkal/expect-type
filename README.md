@@ -2,12 +2,6 @@
 
 Compile-time tests for types. Useful to make sure types don't regress into being overly-permissive as changes go in over time.
 
-<!-- codegen:start {preset: badges} -->
-[![Node CI](https://github.com/mmkal/ts/workflows/Node%20CI/badge.svg)](https://github.com/mmkal/ts/actions?query=workflow%3A%22Node+CI%22)
-[![codecov](https://codecov.io/gh/mmkal/ts/branch/main/graph/badge.svg)](https://codecov.io/gh/mmkal/ts/tree/main/packages/expect-type)
-[![npm version](https://badge.fury.io/js/expect-type.svg)](https://npmjs.com/package/expect-type)
-<!-- codegen:end -->
-
 Similar to Jest's `expect`, but with type-awareness. Gives you access to a number of type-matchers that let you make assertions about the form of a reference or generic type parameter.
 
 ```typescript
@@ -56,7 +50,7 @@ The `expectTypeOf` method takes a single argument, or a generic parameter. Neith
 
 ### Features
 
-<!-- codegen:start {preset: markdownFromTests, source: src/__tests__/index.test.ts} -->
+<!-- codegen:start {preset: markdownFromTests, source: test/index.test.ts} -->
 Check an object's type with `.toEqualTypeOf`:
 
 ```typescript
@@ -183,7 +177,7 @@ Use `.extract` and `.exclude` to narrow down complex union types:
 
 ```typescript
 type ResponsiveProp<T> = T | T[] | {xs?: T; sm?: T; md?: T}
-const getResponsiveProp = <T>(props: T): ResponsiveProp<T> => ({})
+const getResponsiveProp = <T>(_props: T): ResponsiveProp<T> => ({})
 type CSSProperties = {margin?: string; padding?: string}
 
 const cssProperties: CSSProperties = {margin: '1px', padding: '2px'}
@@ -282,6 +276,7 @@ const assertNumber = (v: any): asserts v is number => {
     throw new TypeError('Nope !')
   }
 }
+
 expectTypeOf(assertNumber).asserts.toBeNumber()
 
 const isString = (v: any): v is string => typeof v === 'string'
@@ -324,7 +319,7 @@ Check that functions never return:
 
 ```typescript
 const thrower = () => {
-  throw Error('oh no')
+  throw new Error('oh no')
 }
 
 expectTypeOf(thrower).returns.toBeNever()
