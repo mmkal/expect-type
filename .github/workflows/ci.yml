@@ -14,4 +14,23 @@ jobs:
       - run: npm run build
       - run: npm run lint
       - run: npm test -- --coverage
-      - uses: codecov/codecov-action@v2
+      - uses: actions/github-script@v6
+        id: coveragejson
+        with:
+          script: |
+            const fs = require('fs')
+            const summary = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json').toString())
+            const {pct} = summary.total.branches
+            const colors = {'00EE00': 98, 'FFFF33': 90}
+            return {
+              pct,
+              color: Object.entries(colors).find(e => pct >= e[1])[0] || 'FF0000',
+            }
+      - name: coverage badge
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          NAME: coverage
+          LABEL: '${{ github.ref_name }} coverage'
+          STATUS: ${{ fromJson(steps.coveragejson.outputs.result).pct }}
+          COLOR: ${{ fromJson(steps.coveragejson.outputs.result).color }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
