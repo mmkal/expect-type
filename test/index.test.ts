@@ -1,7 +1,6 @@
 /* eslint-disable mmkal/@typescript-eslint/no-empty-function */
 /* eslint-disable mmkal/@typescript-eslint/ban-ts-comment */
 import {expectTypeOf} from '../src'
-import {test} from './test'
 
 /* eslint mmkal/prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
 

@@ -1,6 +1,5 @@
 /* eslint-disable mmkal/@typescript-eslint/ban-ts-comment */
 import * as a from '../src'
-import {test} from './test'
 
 const {expectTypeOf} = a
 

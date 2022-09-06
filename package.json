@@ -26,11 +26,14 @@
     "eslint": "eslint --ext '.ts,.js'",
     "lint": "tsc && eslint .",
     "build": "tsc -p tsconfig.lib.json",
-    "test": "tsc"
+    "test": "jest"
   },
   "devDependencies": {
+    "@types/jest": "29.0.0",
     "eslint": "8.23.0",
     "eslint-plugin-mmkal": "0.0.1-2",
+    "jest": "28.1.3",
+    "ts-jest": "28.0.8",
     "typescript": "4.8.2"
   }
 }
