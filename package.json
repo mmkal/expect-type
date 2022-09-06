@@ -23,7 +23,7 @@
     "*.md"
   ],
   "scripts": {
-    "eslint": "eslint",
+    "eslint": "eslint --ext '.ts,.js'",
     "lint": "tsc && eslint .",
     "build": "tsc -p tsconfig.lib.json",
     "test": "tsc"
