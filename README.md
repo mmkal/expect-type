@@ -1,5 +1,8 @@
 # expect-type
 
+[![CI](https://github.com/mmkal/expect-type/actions/workflows/ci.yml/badge.svg)](https://github.com/mmkal/expect-type/actions/workflows/ci.yml)
+[![](https://byob.yarr.is/mmkal/expect-type/coverage)](https://github.com/mmkal/expect-type/actions/workflows/ci.yml)
+
 Compile-time tests for types. Useful to make sure types don't regress into being overly-permissive as changes go in over time.
 
 Similar to Jest's `expect`, but with type-awareness. Gives you access to a number of type-matchers that let you make assertions about the form of a reference or generic type parameter.
