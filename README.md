@@ -427,6 +427,7 @@ The key differences in this project are:
 
 - a fluent, jest-inspired API, making the difference between `actual` and `expected` clear. This is helpful with complex types and assertions.
 - inverting assertions intuitively and easily via `expectTypeOf(...).not`
+- checks generics properly and strictly ([tsd doesn't](https://github.com/SamVerschueren/tsd/issues/142))
 - first-class support for:
   - `any` (as well as `unknown` and `never`) (see issues outstanding at time of writing in tsd for [never](https://github.com/SamVerschueren/tsd/issues/78) and [any](https://github.com/SamVerschueren/tsd/issues/82)).
     - This can be especially useful in combination with `not`, to protect against functions returning too-permissive types. For example, `const parseFile = (filename: string) => JSON.parse(readFileSync(filename).toString())` returns `any`, which could lead to errors. After giving it a proper return-type, you can add a test for this with `expect(parseFile).returns.not.toBeAny()`
