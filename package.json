@@ -10,7 +10,7 @@
     "test",
     "testing"
   ],
-  "homepage": "https://github.com/mmkal/ts/tree/main/packages/expect-type#readme",
+  "homepage": "https://github.com/mmkal/expect-type#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/mmkal/expect-type.git"
