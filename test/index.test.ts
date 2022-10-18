@@ -101,6 +101,11 @@ test('More `.not` examples', () => {
   expectTypeOf(1).not.toBeNullable()
 })
 
+test('Detect assignability of unioned types', () => {
+  expectTypeOf<number>().toMatchTypeOf<string | number>()
+  expectTypeOf<string | number>().not.toMatchTypeOf<number>()
+})
+
 test('Use `.extract` and `.exclude` to narrow down complex union types', () => {
   type ResponsiveProp<T> = T | T[] | {xs?: T; sm?: T; md?: T}
   const getResponsiveProp = <T>(_props: T): ResponsiveProp<T> => ({})
