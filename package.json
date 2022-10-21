@@ -1,6 +1,6 @@
 {
   "name": "expect-type",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "keywords": [
     "typescript",
     "type-check",
