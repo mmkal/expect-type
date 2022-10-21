@@ -10,10 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: npm install
-      - run: npm run build
-      - run: npm run lint
-      - run: npm test -- --coverage --coverageReporters="json-summary"
+      - run: npm install --global pnpm@7
+      - run: pnpm install
+      - run: pnpm run build
+      - run: pnpm run lint
+      - run: pnpm test -- --coverage --coverageReporters="json-summary"
       - uses: actions/github-script@v6
         id: coveragejson
         with:
