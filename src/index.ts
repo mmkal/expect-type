@@ -80,7 +80,7 @@ type ReadonlyEquivalent<X, Y> = Extends<
   (<T>() => T extends Y ? true : false)
 >
 
-export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : L extends R ? true : false
+export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : [L] extends [R] ? true : false
 export type StrictExtends<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
 
 export type Equal<Left, Right> = And<[StrictExtends<Left, Right>, StrictExtends<Right, Left>]>

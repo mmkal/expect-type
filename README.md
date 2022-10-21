@@ -177,6 +177,13 @@ expectTypeOf(1).not.toBeUndefined()
 expectTypeOf(1).not.toBeNullable()
 ```
 
+Detect assignability of unioned types:
+
+```typescript
+expectTypeOf<number>().toMatchTypeOf<string | number>()
+expectTypeOf<string | number>().not.toMatchTypeOf<number>()
+```
+
 Use `.extract` and `.exclude` to narrow down complex union types:
 
 ```typescript
