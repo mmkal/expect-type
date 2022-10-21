@@ -92,56 +92,60 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     : P
   : never
 
-type MismatchArgs<B extends boolean, C extends boolean> = Eq<B, C> extends true ? [] : [never]
+type MismatchArgs<Result extends boolean, ExpectedResult extends boolean, Actual, Expected> =
+  Eq<Result, ExpectedResult> extends true ? [] : [{
+    actual: Actual,
+    expected: ExpectedResult extends false ? {not: Expected} : Expected
+  }]
 
-export interface ExpectTypeOf<Actual, B extends boolean> {
-  toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
-  toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, B>) => true
-  toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, B>) => true
-  toBeFunction: (...MISMATCH: MismatchArgs<Extends<Actual, (...args: any[]) => any>, B>) => true
-  toBeObject: (...MISMATCH: MismatchArgs<Extends<Actual, object>, B>) => true
-  toBeArray: (...MISMATCH: MismatchArgs<Extends<Actual, any[]>, B>) => true
-  toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, B>) => true
-  toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
-  toBeBoolean: (...MISMATCH: MismatchArgs<Extends<Actual, boolean>, B>) => true
-  toBeVoid: (...MISMATCH: MismatchArgs<Extends<Actual, void>, B>) => true
-  toBeSymbol: (...MISMATCH: MismatchArgs<Extends<Actual, symbol>, B>) => true
-  toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, B>) => true
-  toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
-  toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+export interface ExpectTypeOf<Actual, ExpectedResult extends boolean> {
+  toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, ExpectedResult, Actual, {equals: any}>) => true
+  toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, ExpectedResult, Actual, {equals: unknown}>) => true
+  toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, ExpectedResult, Actual, {equals: never}>) => true
+  toBeFunction: (...MISMATCH: MismatchArgs<Extends<Actual, (...args: any[]) => any>, ExpectedResult, Actual, {extends: (...args: any[]) => any}>) => true
+  toBeObject: (...MISMATCH: MismatchArgs<Extends<Actual, object>, ExpectedResult, Actual, {extends: object}>) => true
+  toBeArray: (...MISMATCH: MismatchArgs<Extends<Actual, any[]>, ExpectedResult, Actual, {extends: any[]}>) => true
+  toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, ExpectedResult, Actual, {extends: number}>) => true
+  toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, ExpectedResult, Actual, {extends: string}>) => true
+  toBeBoolean: (...MISMATCH: MismatchArgs<Extends<Actual, boolean>, ExpectedResult, Actual, {extends: boolean}>) => true
+  toBeVoid: (...MISMATCH: MismatchArgs<Extends<Actual, void>, ExpectedResult, Actual, {equals: void}>) => true
+  toBeSymbol: (...MISMATCH: MismatchArgs<Extends<Actual, symbol>, ExpectedResult, Actual, {extends: symbol}>) => true
+  toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, ExpectedResult, Actual, {equals: null}>) => true
+  toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, ExpectedResult, Actual, {equals: undefined}>) => true
+  toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, ExpectedResult, Actual, 'to be nullable'>) => true
   toMatchTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
+    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, ExpectedResult, Actual, {extends: Expected}>): true
+    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, ExpectedResult, Actual, {extends: Expected}>): true
   }
   toEqualTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>): true
+    <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected>, ExpectedResult, Actual, {equals: Expected}>): true
+    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, ExpectedResult, Actual, {equals: Expected}>): true
   }
-  toBeCallableWith: B extends true ? (...args: Params<Actual>) => true : never
-  toBeConstructibleWith: B extends true ? (...args: ConstructorParams<Actual>) => true : never
+  toBeCallableWith: ExpectedResult extends true ? (...args: Params<Actual>) => true : never
+  toBeConstructibleWith: ExpectedResult extends true ? (...args: ConstructorParams<Actual>) => true : never
   toHaveProperty: <K extends string>(
     key: K,
-    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
-  ) => K extends keyof Actual ? ExpectTypeOf<Actual[K], B> : true
-  extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, B>
-  exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, B>
-  parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], B>
-  parameters: ExpectTypeOf<Params<Actual>, B>
-  constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, B>
-  instance: Actual extends new (...args: any[]) => infer I ? ExpectTypeOf<I, B> : never
-  returns: Actual extends (...args: any[]) => infer R ? ExpectTypeOf<R, B> : never
-  resolves: Actual extends PromiseLike<infer R> ? ExpectTypeOf<R, B> : never
-  items: Actual extends ArrayLike<infer R> ? ExpectTypeOf<R, B> : never
-  guards: Actual extends (v: any, ...args: any[]) => v is infer T ? ExpectTypeOf<T, B> : never
+    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, ExpectedResult, Actual, {hasProperty: K}>
+  ) => K extends keyof Actual ? ExpectTypeOf<Actual[K], ExpectedResult> : true
+  extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, ExpectedResult>
+  exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, ExpectedResult>
+  parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], ExpectedResult>
+  parameters: ExpectTypeOf<Params<Actual>, ExpectedResult>
+  constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, ExpectedResult>
+  instance: Actual extends new (...args: any[]) => infer I ? ExpectTypeOf<I, ExpectedResult> : never
+  returns: Actual extends (...args: any[]) => infer R ? ExpectTypeOf<R, ExpectedResult> : never
+  resolves: Actual extends PromiseLike<infer R> ? ExpectTypeOf<R, ExpectedResult> : never
+  items: Actual extends ArrayLike<infer R> ? ExpectTypeOf<R, ExpectedResult> : never
+  guards: Actual extends (v: any, ...args: any[]) => v is infer T ? ExpectTypeOf<T, ExpectedResult> : never
   asserts: Actual extends (v: any, ...args: any[]) => asserts v is infer T
     ? // Guard methods `(v: any) => asserts v is T` does not actually defines a return type. Thus, any function taking 1 argument matches the signature before.
       // In case the inferred assertion type `R` could not be determined (so, `unknown`), consider the function as a non-guard, and return a `never` type.
       // See https://github.com/microsoft/TypeScript/issues/34636
       unknown extends T
       ? never
-      : ExpectTypeOf<T, B>
+      : ExpectTypeOf<T, ExpectedResult>
     : never
-  not: ExpectTypeOf<Actual, Not<B>>
+  not: ExpectTypeOf<Actual, Not<ExpectedResult>>
 }
 const fn: any = () => true
 
