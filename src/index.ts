@@ -1,8 +1,10 @@
+/* eslint-disable mmkal/@typescript-eslint/no-redundant-type-constituents */
 export type Not<T extends boolean> = T extends true ? false : true
 export type Or<Types extends boolean[]> = Types[number] extends false ? false : true
 export type And<Types extends boolean[]> = Types[number] extends true ? true : false
 export type Eq<Left extends boolean, Right extends boolean> = Left extends true ? Right : Not<Right>
 export type Xor<Types extends [boolean, boolean]> = Not<Eq<Types[0], Types[1]>>
+export type Ternary<B extends boolean, ValueIfTrue, ValueIfFalse> = B extends true ? ValueIfTrue : ValueIfFalse
 
 const secret = Symbol('secret')
 type Secret = typeof secret
@@ -93,7 +95,7 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     : P
   : never
 
-type MismatchArgs<B extends boolean, C extends boolean> = Eq<B, C> extends true ? [] : [never]
+type MismatchArgs<B extends boolean, C extends boolean, Msg = 'err'> = Eq<B, C> extends true ? [] : [Msg]
 
 export interface ExpectTypeOf<Actual, B extends boolean> {
   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
@@ -111,12 +113,26 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
   toMatchTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
+    <Expected extends Ternary<Extends<Actual, Expected>, unknown, Ternary<B, Actual, unknown>>>(
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
+    ): true
+    <Expected extends Ternary<Extends<Actual, Expected>, unknown, Ternary<B, Actual, unknown>>>(
+      expected: Expected,
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
+    ): true
   }
   toEqualTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>): true
+    <Expected extends Ternary<And<[B, Not<Equal<Actual, Expected>>]>, Actual, unknown>>(
+      ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
+    ): true
+    <Expected extends Ternary<B, Ternary<Equal<Actual, Expected>, unknown, Actual>, unknown>>(
+      expected: Expected,
+      ...MISMATCH: MismatchArgs<
+        Equal<Actual, Expected>,
+        B,
+        `error: ${Extract<Expected, string | number>} vs ${Extract<Actual, string | number>}`
+      >
+    ): true
   }
   toBeCallableWith: B extends true ? (...args: Params<Actual>) => true : never
   toBeConstructibleWith: B extends true ? (...args: ConstructorParams<Actual>) => true : never

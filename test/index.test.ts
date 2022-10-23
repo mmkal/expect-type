@@ -184,6 +184,10 @@ test('More examples of ways to work with functions - parameters using `.paramete
   expectTypeOf(f).parameter(0).toEqualTypeOf(1)
   expectTypeOf(1).parameter(0).toBeNever()
 
+  const inferrable = <T = 'foo'>() => 1 as any as T
+
+  expectTypeOf(inferrable()).toEqualTypeOf<'foo'>()
+
   const twoArgFunc = (a: number, b: string) => ({a, b})
 
   expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
