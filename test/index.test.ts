@@ -211,6 +211,26 @@ test('Assert on constructor parameters', () => {
   expectTypeOf(Date).constructorParameters.toEqualTypeOf<[] | [string | number | Date]>()
 })
 
+test('Check function `this` parameters', () => {
+  function greet(this: {name: string}, message: string) {
+    return `Hello ${this.name}, here's your message: ${message}`
+  }
+
+  expectTypeOf(greet).thisParameter.toEqualTypeOf<{name: string}>()
+})
+
+test('Distinguish between functions with different `this` parameters', () => {
+  function greetFormal(this: {title: string; name: string}, message: string) {
+    return `Dear ${this.title} ${this.name}, here's your message: ${message}`
+  }
+
+  function greetCasual(this: {name: string}, message: string) {
+    return `Hi ${this.name}, here's your message: ${message}`
+  }
+
+  expectTypeOf(greetFormal).not.toEqualTypeOf(greetCasual)
+})
+
 test('Class instance types', () => {
   expectTypeOf(Date).instance.toHaveProperty('toISOString')
 })

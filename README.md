@@ -305,6 +305,29 @@ expectTypeOf(Date).toBeConstructibleWith()
 expectTypeOf(Date).constructorParameters.toEqualTypeOf<[] | [string | number | Date]>()
 ```
 
+Check function `this` parameters:
+
+```typescript
+function greet(this: {name: string}, message: string) {
+  return `Hello ${this.name}, here's your message: ${message}`
+}
+
+expectTypeOf(greet).thisParameter.toEqualTypeOf<{name: string}>()
+```
+
+Distinguish between functions with different `this` parameters:
+
+```typescript
+function greetFormal(this: {title: string; name: string}, message: string) {
+  return `Dear ${this.title} ${this.name}, here's your message: ${message}`
+}
+function greetCasual(this: {name: string}, message: string) {
+  return `Hi ${this.name}, here's your message: ${message}`
+}
+
+expectTypeOf(greetFormal).not.toEqualTypeOf(greetCasual)
+```
+
 Class instance types:
 
 ```typescript
