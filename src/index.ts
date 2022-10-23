@@ -96,6 +96,7 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
   : never
 
 type MismatchArgs<B extends boolean, C extends boolean, Msg = 'err'> = Eq<B, C> extends true ? [] : [Msg]
+type Satisfies<T> = T & {[secret]: 'Type should be satisified'}
 
 export interface ExpectTypeOf<Actual, B extends boolean> {
   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
@@ -113,19 +114,31 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
   toMatchTypeOf: {
-    <Expected extends Ternary<Extends<Actual, Expected>, unknown, Ternary<B, Actual, unknown>>>(
+    <
+      Expected extends B extends true
+        ? Extends<Actual, Expected> extends true
+          ? unknown
+          : Satisfies<Actual>
+        : unknown,
+    >(
       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
     ): true
-    <Expected extends Ternary<Extends<Actual, Expected>, unknown, Ternary<B, Actual, unknown>>>(
+    <
+      Expected extends B extends true
+        ? Extends<Actual, Expected> extends true
+          ? unknown
+          : Satisfies<Actual>
+        : unknown,
+    >(
       expected: Expected,
       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
     ): true
   }
   toEqualTypeOf: {
-    <Expected extends Ternary<And<[B, Not<Equal<Actual, Expected>>]>, Actual, unknown>>(
+    <Expected extends B extends true ? (Equal<Actual, Expected> extends true ? unknown : Actual) : unknown>(
       ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
     ): true
-    <Expected extends Ternary<B, Ternary<Equal<Actual, Expected>, unknown, Actual>, unknown>>(
+    <Expected extends B extends true ? (Equal<Actual, Expected> extends true ? unknown : Actual) : unknown>(
       expected: Expected,
       ...MISMATCH: MismatchArgs<
         Equal<Actual, Expected>,
