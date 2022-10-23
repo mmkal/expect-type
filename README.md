@@ -321,6 +321,7 @@ Distinguish between functions with different `this` parameters:
 function greetFormal(this: {title: string; name: string}, message: string) {
   return `Dear ${this.title} ${this.name}, here's your message: ${message}`
 }
+
 function greetCasual(this: {name: string}, message: string) {
   return `Hi ${this.name}, here's your message: ${message}`
 }
