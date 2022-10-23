@@ -86,6 +86,15 @@ To allow for extra properties, use `.toMatchTypeOf`. This checks that an object 
 expectTypeOf({a: 1, b: 1}).toMatchTypeOf({a: 1})
 ```
 
+`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties:
+
+```typescript
+// @ts-expect-error
+expectTypeOf({a: 1}).toEqualTypeOf({a: 1, b: 1})
+// @ts-expect-error
+expectTypeOf({a: 1}).toMatchTypeOf({a: 1, b: 1})
+```
+
 Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships:
 
 ```typescript
@@ -273,6 +282,10 @@ expectTypeOf(f).returns.toEqualTypeOf([1, 2, 3])
 expectTypeOf(f).parameter(0).not.toEqualTypeOf('1')
 expectTypeOf(f).parameter(0).toEqualTypeOf(1)
 expectTypeOf(1).parameter(0).toBeNever()
+
+const inferrable = <T = 'foo'>() => 1 as any as T
+
+expectTypeOf(inferrable()).toEqualTypeOf<'foo'>()
 
 const twoArgFunc = (a: number, b: string) => ({a, b})
 

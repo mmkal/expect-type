@@ -96,7 +96,7 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
   : never
 
 type MismatchArgs<B extends boolean, C extends boolean, Msg = 'err'> = Eq<B, C> extends true ? [] : [Msg]
-type Satisfies<T> = T & {[secret]: 'Type should be satisified'}
+type Mismatch<T> = T & {[secret]: 'Type should be satisified'}
 
 export interface ExpectTypeOf<Actual, B extends boolean> {
   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
@@ -115,36 +115,18 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
   toMatchTypeOf: {
     <
-      Expected extends B extends true
-        ? Extends<Actual, Expected> extends true
-          ? unknown
-          : Satisfies<Actual>
-        : unknown,
-    >(
-      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
-    ): true
-    <
-      Expected extends B extends true
-        ? Extends<Actual, Expected> extends true
-          ? unknown
-          : Satisfies<Actual>
-        : unknown,
-    >(
+      Expected extends B extends true ? (Extends<Actual, Expected> extends true ? unknown : Mismatch<Actual>) : unknown,
+    >(): true
+    <Expected extends B extends true ? (Extends<Actual, Expected> extends true ? unknown : Mismatch<Actual>) : unknown>(
       expected: Expected,
-      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
     ): true
   }
   toEqualTypeOf: {
-    <Expected extends B extends true ? (Equal<Actual, Expected> extends true ? unknown : Actual) : unknown>(
-      ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
-    ): true
-    <Expected extends B extends true ? (Equal<Actual, Expected> extends true ? unknown : Actual) : unknown>(
+    <
+      Expected extends B extends true ? (Equal<Actual, Expected> extends true ? unknown : Mismatch<Actual>) : unknown,
+    >(): true
+    <Expected extends B extends true ? (Equal<Actual, Expected> extends true ? unknown : Mismatch<Actual>) : unknown>(
       expected: Expected,
-      ...MISMATCH: MismatchArgs<
-        Equal<Actual, Expected>,
-        B,
-        `error: ${Extract<Expected, string | number>} vs ${Extract<Actual, string | number>}`
-      >
     ): true
   }
   toBeCallableWith: B extends true ? (...args: Params<Actual>) => true : never
