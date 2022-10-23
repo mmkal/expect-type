@@ -12,40 +12,40 @@ const tsErrors = (code: string) => {
 
 test('toEqualTypeOf<...>() error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
-    "test.ts:3:22 - error TS2554: Expected 1 arguments, but got 0.
+    "test.ts:3:36 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: number; }'.
+      Types of property 'a' are incompatible.
+        Type 'string' is not assignable to type 'number'.
 
     3 expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-      src/index.ts:118:16
-        118     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>): true
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
+                                         ~~~~~~~~~~~
     "
   `)
 })
 
 test('toEqualTypeOf(...) error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})`)).toMatchInlineSnapshot(`
-    "test.ts:3:36 - error TS2345: Argument of type '{ a: string; }' is not assignable to parameter of type 'never'.
+    "test.ts:3:37 - error TS2322: Type 'string' is not assignable to type 'number'.
 
     3 expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})
-                                         ~~~~~~~~~~
+                                          ~
+
+      test.ts:3:15
+        3 expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})
+                        ~~~~
+        The expected type comes from property 'a' which is declared here on type '{ a: number; }'
     "
   `)
 })
 
 test('toMatchTypeOf<...>() error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
-    "test.ts:3:22 - error TS2554: Expected 1 arguments, but got 0.
+    "test.ts:3:36 - error TS2344: Type '{ a: string; }' does not satisfy the constraint 'Satisfies<{ a: number; }>'.
+      Type '{ a: string; }' is not assignable to type '{ a: number; }'.
+        Types of property 'a' are incompatible.
+          Type 'string' is not assignable to type 'number'.
 
     3 expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-      src/index.ts:114:16
-        114     <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
+                                         ~~~~~~~~~~~
     "
   `)
 })
@@ -57,9 +57,9 @@ test('toMatchTypeOf(...) error message', async () => {
     3 expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})
                            ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      src/index.ts:115:36
-        115     <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
-                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      src/index.ts:134:7
+        134       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     "
   `)
