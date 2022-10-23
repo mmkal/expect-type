@@ -42,6 +42,7 @@ export type DeepBrand<T> = IsNever<T> extends true
       type: 'function'
       params: DeepBrand<P>
       return: DeepBrand<R>
+      this: DeepBrand<ThisParameterType<T>>
     }
   : T extends any[]
   ? {
@@ -128,6 +129,7 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
   parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], B>
   parameters: ExpectTypeOf<Params<Actual>, B>
   constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, B>
+  thisParameter: ExpectTypeOf<ThisParameterType<Actual>, B>
   instance: Actual extends new (...args: any[]) => infer I ? ExpectTypeOf<I, B> : never
   returns: Actual extends (...args: any[]) => infer R ? ExpectTypeOf<R, B> : never
   resolves: Actual extends PromiseLike<infer R> ? ExpectTypeOf<R, B> : never
@@ -180,6 +182,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
     'not',
     'items',
     'constructorParameters',
+    'thisParameter',
     'instance',
     'guards',
     'asserts',
