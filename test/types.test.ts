@@ -70,6 +70,33 @@ test(`never types don't sneak by`, () => {
   expectTypeOf<never>().toMatchTypeOf<{foo: string}>()
 })
 
+test("any/never types don't break toEqualTypeOf or toMatchTypeOf", () => {
+  // @ts-expect-error
+  expectTypeOf<never>().toEqualTypeOf<any>()
+  // @ts-expect-error
+  expectTypeOf<never>().toEqualTypeOf<unknown>()
+  // @ts-expect-error
+  expectTypeOf<any>().toEqualTypeOf<never>()
+  // @ts-expect-error
+  expectTypeOf<any>().toEqualTypeOf<unknown>()
+  // @ts-expect-error
+  expectTypeOf<unknown>().toEqualTypeOf<any>()
+  // @ts-expect-error
+  expectTypeOf<unknown>().toEqualTypeOf<never>()
+  // @ts-expect-error
+  expectTypeOf<{a: number}>().toEqualTypeOf<any>()
+  // @ts-expect-error
+  expectTypeOf<{a: number}>().toEqualTypeOf<never>()
+  // @ts-expect-error
+  expectTypeOf<{a: number}>().toEqualTypeOf<unknown>()
+  // @ts-expect-error
+  expectTypeOf<any>().toEqualTypeOf({a: 1, b: 1})
+  // @ts-expect-error
+  expectTypeOf<never>().toEqualTypeOf({a: 1, b: 1})
+  // @ts-expect-error
+  expectTypeOf<unknown>().toEqualTypeOf({a: 1, b: 1})
+})
+
 test('constructor params', () => {
   // The built-in ConstructorParameters type helper fails to pick up no-argument overloads.
   // This test checks that's still the case to avoid unnecessarily maintaining a workaround,

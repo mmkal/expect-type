@@ -101,7 +101,7 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     : P
   : never
 
-type MismatchArgs<B extends boolean, C extends boolean, Msg = 'err'> = Eq<B, C> extends true ? [] : [Msg]
+type MismatchArgs<B extends boolean, C extends boolean> = Eq<B, C> extends true ? [] : [never]
 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
 
 export interface ExpectTypeOf<Actual, B extends boolean> {

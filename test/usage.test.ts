@@ -30,18 +30,6 @@ test('`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties', ()
   expectTypeOf({a: 1}).toEqualTypeOf({a: 1, b: 1})
   // @ts-expect-error
   expectTypeOf({a: 1}).toMatchTypeOf({a: 1, b: 1})
-  // @ts-expect-error
-  expectTypeOf<any>().toEqualTypeOf({a: 1, b: 1})
-  // @ts-expect-error
-  expectTypeOf<never>().toEqualTypeOf({a: 1, b: 1})
-  // @ts-expect-error
-  expectTypeOf<never>().toEqualTypeOf<any>()
-  // @ts-expect-error
-  expectTypeOf<{a: number}>().toEqualTypeOf<any>()
-  // @ts-expect-error
-  expectTypeOf<{a: number}>().toEqualTypeOf<never>()
-  // @ts-expect-error
-  expectTypeOf<{a: number}>().toEqualTypeOf<unknown>()
 })
 
 test('Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships', () => {

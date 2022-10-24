@@ -102,376 +102,310 @@ test('usage test', () => {
 
     32   expectTypeOf({a: 1}).toMatchTypeOf({a: 1, b: 1})
                                                    ~~~~
-    test/usage.test.ts:34:23 - error TS2554: Expected 2 arguments, but got 1.
-
-    34   expectTypeOf<any>().toEqualTypeOf({a: 1, b: 1})
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-      src/index.ts:143:7
-        143       ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
-                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        144         ? MismatchArgs<Equal<Actual, Expected>, B>
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        145         : []
-            ~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:36:39 - error TS2345: Argument of type '{ a: number; b: number; }' is not assignable to parameter of type '\\"err\\"'.
-
-    36   expectTypeOf<never>().toEqualTypeOf({a: 1, b: 1})
-                                             ~~~~~~~~~~~~
-    test/usage.test.ts:38:25 - error TS2554: Expected 1 arguments, but got 0.
-
-    38   expectTypeOf<never>().toEqualTypeOf<any>()
-                               ~~~~~~~~~~~~~~~~~~~~
-
-      src/index.ts:137:7
-        137       ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
-                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        138         ? MismatchArgs<Equal<Actual, Expected>, B>
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        139         : []
-            ~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:40:31 - error TS2554: Expected 1 arguments, but got 0.
-
-    40   expectTypeOf<{a: number}>().toEqualTypeOf<any>()
-                                     ~~~~~~~~~~~~~~~~~~~~
-
-      src/index.ts:137:7
-        137       ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
-                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        138         ? MismatchArgs<Equal<Actual, Expected>, B>
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        139         : []
-            ~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:42:31 - error TS2554: Expected 1 arguments, but got 0.
-
-    42   expectTypeOf<{a: number}>().toEqualTypeOf<never>()
-                                     ~~~~~~~~~~~~~~~~~~~~~~
-
-      src/index.ts:137:7
-        137       ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
-                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        138         ? MismatchArgs<Equal<Actual, Expected>, B>
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        139         : []
-            ~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:44:45 - error TS2344: Type 'unknown' does not satisfy the constraint 'Mismatch<{ a: number; }>'.
-      Property 'a' is missing in type '{}' but required in type '{ a: number; }'.
-
-    44   expectTypeOf<{a: number}>().toEqualTypeOf<unknown>()
-                                                   ~~~~~~~
-
-      test/usage.test.ts:44:17
-        44   expectTypeOf<{a: number}>().toEqualTypeOf<unknown>()
-                           ~
-        'a' is declared here.
-    test/usage.test.ts:54:39 - error TS2344: Type 'Apple' does not satisfy the constraint 'Mismatch<Fruit>'.
+    test/usage.test.ts:42:39 - error TS2344: Type 'Apple' does not satisfy the constraint 'Mismatch<Fruit>'.
       Property '[secret]' is missing in type 'Apple' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    54   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
+    42   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
                                              ~~~~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:57:39 - error TS2344: Type 'Fruit' does not satisfy the constraint 'Mismatch<Apple>'.
+    test/usage.test.ts:45:39 - error TS2344: Type 'Fruit' does not satisfy the constraint 'Mismatch<Apple>'.
       Property 'name' is missing in type 'Fruit' but required in type 'Apple'.
 
-    57   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+    45   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
                                              ~~~~~
 
-      test/usage.test.ts:49:32
-        49   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
+      test/usage.test.ts:37:32
+        37   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
                                           ~~~~
         'name' is declared here.
-    test/usage.test.ts:61:39 - error TS2345: Argument of type '{ b: number; }' is not assignable to parameter of type 'Mismatch<{ a: number; }>'.
+    test/usage.test.ts:49:39 - error TS2345: Argument of type '{ b: number; }' is not assignable to parameter of type 'Mismatch<{ a: number; }>'.
       Object literal may only specify known properties, and 'b' does not exist in type 'Mismatch<{ a: number; }>'.
 
-    61   expectTypeOf({a: 1}).toMatchTypeOf({b: 1})
+    49   expectTypeOf({a: 1}).toMatchTypeOf({b: 1})
                                              ~~~~
-    test/usage.test.ts:70:39 - error TS2344: Type 'Apple' does not satisfy the constraint 'Mismatch<Fruit>'.
+    test/usage.test.ts:58:39 - error TS2344: Type 'Apple' does not satisfy the constraint 'Mismatch<Fruit>'.
       Property '[secret]' is missing in type 'Apple' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    70   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
+    58   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
                                              ~~~~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:71:39 - error TS2344: Type 'Fruit' does not satisfy the constraint 'Mismatch<Apple>'.
+    test/usage.test.ts:59:39 - error TS2344: Type 'Fruit' does not satisfy the constraint 'Mismatch<Apple>'.
       Property 'name' is missing in type 'Fruit' but required in type 'Apple'.
 
-    71   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+    59   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
                                              ~~~~~
 
-      test/usage.test.ts:66:32
-        66   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
+      test/usage.test.ts:54:32
+        54   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
                                           ~~~~
         'name' is declared here.
-    test/usage.test.ts:80:25 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:68:25 - error TS2554: Expected 1 arguments, but got 0.
 
-    80   expectTypeOf<never>().toBeNumber()
+    68   expectTypeOf<never>().toBeNumber()
                                ~~~~~~~~~~~~
 
       src/index.ts:114:16
         114   toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, B>) => true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:84:57 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint 'Mismatch<{ deeply: { nested: any; }; }>'.
+    test/usage.test.ts:72:57 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint 'Mismatch<{ deeply: { nested: any; }; }>'.
       Property '[secret]' is missing in type '{ deeply: { nested: unknown; }; }' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    84   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
+    72   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:102:27 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:90:27 - error TS2554: Expected 1 arguments, but got 0.
 
-    102   expectTypeOf(undefined).toBeNullable()
+    90   expectTypeOf(undefined).toBeNullable()
+                                 ~~~~~~~~~~~~~~
+
+      src/index.ts:121:18
+        121   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:94:22 - error TS2554: Expected 1 arguments, but got 0.
+
+    94   expectTypeOf(null).toBeNullable()
+                            ~~~~~~~~~~~~~~
+
+      src/index.ts:121:18
+        121   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:97:33 - error TS2554: Expected 1 arguments, but got 0.
+
+    97   expectTypeOf<1 | undefined>().toBeNullable()
+                                       ~~~~~~~~~~~~~~
+
+      src/index.ts:121:18
+        121   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:98:28 - error TS2554: Expected 1 arguments, but got 0.
+
+    98   expectTypeOf<1 | null>().toBeNullable()
                                   ~~~~~~~~~~~~~~
 
       src/index.ts:121:18
         121   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:106:22 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:99:40 - error TS2554: Expected 1 arguments, but got 0.
 
-    106   expectTypeOf(null).toBeNullable()
-                             ~~~~~~~~~~~~~~
-
-      src/index.ts:121:18
-        121   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:109:33 - error TS2554: Expected 1 arguments, but got 0.
-
-    109   expectTypeOf<1 | undefined>().toBeNullable()
-                                        ~~~~~~~~~~~~~~
+    99   expectTypeOf<1 | undefined | null>().toBeNullable()
+                                              ~~~~~~~~~~~~~~
 
       src/index.ts:121:18
         121   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:110:28 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:103:19 - error TS2554: Expected 1 arguments, but got 0.
 
-    110   expectTypeOf<1 | null>().toBeNullable()
-                                   ~~~~~~~~~~~~~~
-
-      src/index.ts:121:18
-        121   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:111:40 - error TS2554: Expected 1 arguments, but got 0.
-
-    111   expectTypeOf<1 | undefined | null>().toBeNullable()
-                                               ~~~~~~~~~~~~~~
-
-      src/index.ts:121:18
-        121   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:115:19 - error TS2554: Expected 1 arguments, but got 0.
-
-    115   expectTypeOf(1).toBeUnknown()
+    103   expectTypeOf(1).toBeUnknown()
                           ~~~~~~~~~~~~~
 
       src/index.ts:109:17
         109   toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, B>) => true
                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:116:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:104:19 - error TS2554: Expected 1 arguments, but got 0.
 
-    116   expectTypeOf(1).toBeAny()
+    104   expectTypeOf(1).toBeAny()
                           ~~~~~~~~~
 
       src/index.ts:108:13
         108   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:117:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:105:19 - error TS2554: Expected 1 arguments, but got 0.
 
-    117   expectTypeOf(1).toBeNever()
+    105   expectTypeOf(1).toBeNever()
                           ~~~~~~~~~~~
 
       src/index.ts:110:15
         110   toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, B>) => true
                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:118:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:106:19 - error TS2554: Expected 1 arguments, but got 0.
 
-    118   expectTypeOf(1).toBeNull()
+    106   expectTypeOf(1).toBeNull()
                           ~~~~~~~~~~
 
       src/index.ts:119:14
         119   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, B>) => true
                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:119:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:107:19 - error TS2554: Expected 1 arguments, but got 0.
 
-    119   expectTypeOf(1).toBeUndefined()
+    107   expectTypeOf(1).toBeUndefined()
                           ~~~~~~~~~~~~~~~
 
       src/index.ts:120:19
         120   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:120:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:108:19 - error TS2554: Expected 1 arguments, but got 0.
 
-    120   expectTypeOf(1).toBeNullable()
+    108   expectTypeOf(1).toBeNullable()
                           ~~~~~~~~~~~~~~
 
       src/index.ts:121:18
         121   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:125:49 - error TS2344: Type 'number' does not satisfy the constraint 'Mismatch<string | number>'.
+    test/usage.test.ts:113:49 - error TS2344: Type 'number' does not satisfy the constraint 'Mismatch<string | number>'.
 
-    125   expectTypeOf<string | number>().toMatchTypeOf<number>()
+    113   expectTypeOf<string | number>().toMatchTypeOf<number>()
                                                         ~~~~~~
-    test/usage.test.ts:149:71 - error TS2554: Expected 2 arguments, but got 1.
+    test/usage.test.ts:137:71 - error TS2554: Expected 2 arguments, but got 1.
 
-    149   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')
+    137   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')
                                                                               ~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:152:5
         152     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:166:21 - error TS2554: Expected 2 arguments, but got 1.
+    test/usage.test.ts:154:21 - error TS2554: Expected 2 arguments, but got 1.
 
-    166   expectTypeOf(obj).toHaveProperty('c')
+    154   expectTypeOf(obj).toHaveProperty('c')
                             ~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:152:5
         152     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:171:41 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:159:41 - error TS2554: Expected 1 arguments, but got 0.
 
-    171   expectTypeOf(obj).toHaveProperty('a').toBeString()
+    159   expectTypeOf(obj).toHaveProperty('a').toBeString()
                                                 ~~~~~~~~~~~~
 
       src/index.ts:115:16
         115   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:178:41 - error TS2344: Type 'HasParam' does not satisfy the constraint 'Mismatch<NoParam>'.
+    test/usage.test.ts:166:41 - error TS2344: Type 'HasParam' does not satisfy the constraint 'Mismatch<NoParam>'.
       Type 'HasParam' is not assignable to type 'NoParam'.
 
-    178   expectTypeOf<NoParam>().toEqualTypeOf<HasParam>()
+    166   expectTypeOf<NoParam>().toEqualTypeOf<HasParam>()
                                                 ~~~~~~~~
-    test/usage.test.ts:198:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:186:19 - error TS2554: Expected 1 arguments, but got 0.
 
-    198   expectTypeOf(f).toBeAny()
+    186   expectTypeOf(f).toBeAny()
                           ~~~~~~~~~
 
       src/index.ts:108:13
         108   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:199:27 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:187:27 - error TS2554: Expected 1 arguments, but got 0.
 
-    199   expectTypeOf(f).returns.toBeAny()
+    187   expectTypeOf(f).returns.toBeAny()
                                   ~~~~~~~~~
 
       src/index.ts:108:13
         108   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:202:46 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'Mismatch<number>'.
+    test/usage.test.ts:190:46 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'Mismatch<number>'.
       Type 'string' is not assignable to type 'number'.
 
-    202   expectTypeOf(f).parameter(0).toEqualTypeOf('1')
+    190   expectTypeOf(f).parameter(0).toEqualTypeOf('1')
                                                      ~~~
-    test/usage.test.ts:254:43 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'Mismatch<(this: { title: string; name: string; }, message: string) => string>'.
+    test/usage.test.ts:242:43 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'Mismatch<(this: { title: string; name: string; }, message: string) => string>'.
       Type '(this: { name: string; }, message: string) => string' is not assignable to type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    254   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
+    242   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
                                                   ~~~~~~~~~~~
-    test/usage.test.ts:269:33 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:257:33 - error TS2554: Expected 1 arguments, but got 0.
 
-    269   expectTypeOf([1, 2, 3]).items.toBeString()
+    257   expectTypeOf([1, 2, 3]).items.toBeString()
                                         ~~~~~~~~~~~~
 
       src/index.ts:115:16
         115   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:281:45 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a: string; }>'.
+    test/usage.test.ts:269:45 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a: string; }>'.
       Type '{ a: number; }' is not assignable to type '{ a: string; }'.
         Types of property 'a' are incompatible.
           Type 'number' is not assignable to type 'string'.
 
-    281   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
+    269   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
                                                     ~~~~~~~~~~~
-    test/usage.test.ts:286:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
+    test/usage.test.ts:274:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
       Type '{ a: number; }' is not assignable to type '{ a?: number; } & { [secret]: \\"Type should be satisified\\"; }'.
         Property '[secret]' is missing in type '{ a: number; }' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    286   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
+    274   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
                                                      ~~~~~~~~~~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:287:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
+    test/usage.test.ts:275:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
       Type '{ a: number; }' is not assignable to type '{ a?: number; } & { [secret]: \\"Type should be satisified\\"; }'.
         Property '[secret]' is missing in type '{ a: number; }' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    287   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
+    275   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
                                                      ~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:288:53 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
+    test/usage.test.ts:276:53 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
       Type '{ a: number; }' is not assignable to type '{ a?: number; } & { [secret]: \\"Type should be satisified\\"; }'.
         Property '[secret]' is missing in type '{ a: number; }' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    288   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
+    276   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
                                                             ~~~~~~~~~~~~~~~~~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:297:36 - error TS2344: Type 'E1' does not satisfy the constraint 'Mismatch<A1>'.
+    test/usage.test.ts:285:36 - error TS2344: Type 'E1' does not satisfy the constraint 'Mismatch<A1>'.
       Property '[secret]' is missing in type 'E1' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    297   expectTypeOf<A1>().toEqualTypeOf<E1>()
+    285   expectTypeOf<A1>().toEqualTypeOf<E1>()
                                            ~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:303:36 - error TS2344: Type 'E2' does not satisfy the constraint 'Mismatch<A2>'.
+    test/usage.test.ts:291:36 - error TS2344: Type 'E2' does not satisfy the constraint 'Mismatch<A2>'.
       Property '[secret]' is missing in type 'E2' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    303   expectTypeOf<A2>().toEqualTypeOf<E2>()
+    291   expectTypeOf<A2>().toEqualTypeOf<E2>()
                                            ~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:320:42 - error TS2344: Type 'typeof B' does not satisfy the constraint 'Mismatch<typeof A>'.
+    test/usage.test.ts:308:42 - error TS2344: Type 'typeof B' does not satisfy the constraint 'Mismatch<typeof A>'.
       Type 'typeof B' is not assignable to type 'typeof A'.
         Types of construct signatures are incompatible.
           Type 'new (b: 2) => B' is not assignable to type 'new (a: 1) => A'.
             Types of parameters 'b' and 'a' are incompatible.
               Type '1' is not assignable to type '2'.
 
-    320   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
+    308   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
                                                  ~~~~~~~~
     "
   `)
