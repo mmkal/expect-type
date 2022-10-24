@@ -324,88 +324,88 @@ test('usage test', () => {
 
     190   expectTypeOf(f).parameter(0).toEqualTypeOf('1')
                                                      ~~~
-    test/usage.test.ts:242:43 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'Mismatch<(this: { title: string; name: string; }, message: string) => string>'.
+    test/usage.test.ts:238:43 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'Mismatch<(this: { title: string; name: string; }, message: string) => string>'.
       Type '(this: { name: string; }, message: string) => string' is not assignable to type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    242   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
+    238   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
                                                   ~~~~~~~~~~~
-    test/usage.test.ts:257:33 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:253:33 - error TS2554: Expected 1 arguments, but got 0.
 
-    257   expectTypeOf([1, 2, 3]).items.toBeString()
+    253   expectTypeOf([1, 2, 3]).items.toBeString()
                                         ~~~~~~~~~~~~
 
       src/index.ts:115:16
         115   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:269:45 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a: string; }>'.
+    test/usage.test.ts:265:45 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a: string; }>'.
       Type '{ a: number; }' is not assignable to type '{ a: string; }'.
         Types of property 'a' are incompatible.
           Type 'number' is not assignable to type 'string'.
 
-    269   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
+    265   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
                                                     ~~~~~~~~~~~
-    test/usage.test.ts:274:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
+    test/usage.test.ts:270:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
       Type '{ a: number; }' is not assignable to type '{ a?: number; } & { [secret]: \\"Type should be satisified\\"; }'.
         Property '[secret]' is missing in type '{ a: number; }' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    274   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
+    270   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
                                                      ~~~~~~~~~~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:275:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
+    test/usage.test.ts:271:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
       Type '{ a: number; }' is not assignable to type '{ a?: number; } & { [secret]: \\"Type should be satisified\\"; }'.
         Property '[secret]' is missing in type '{ a: number; }' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    275   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
+    271   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
                                                      ~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:276:53 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
+    test/usage.test.ts:272:53 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'Mismatch<{ a?: number; }>'.
       Type '{ a: number; }' is not assignable to type '{ a?: number; } & { [secret]: \\"Type should be satisified\\"; }'.
         Property '[secret]' is missing in type '{ a: number; }' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    276   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
+    272   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
                                                             ~~~~~~~~~~~~~~~~~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:285:36 - error TS2344: Type 'E1' does not satisfy the constraint 'Mismatch<A1>'.
+    test/usage.test.ts:281:36 - error TS2344: Type 'E1' does not satisfy the constraint 'Mismatch<A1>'.
       Property '[secret]' is missing in type 'E1' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    285   expectTypeOf<A1>().toEqualTypeOf<E1>()
+    281   expectTypeOf<A1>().toEqualTypeOf<E1>()
                                            ~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:291:36 - error TS2344: Type 'E2' does not satisfy the constraint 'Mismatch<A2>'.
+    test/usage.test.ts:287:36 - error TS2344: Type 'E2' does not satisfy the constraint 'Mismatch<A2>'.
       Property '[secret]' is missing in type 'E2' but required in type '{ [secret]: \\"Type should be satisified\\"; }'.
 
-    291   expectTypeOf<A2>().toEqualTypeOf<E2>()
+    287   expectTypeOf<A2>().toEqualTypeOf<E2>()
                                            ~~
 
       src/index.ts:105:45
         105 type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
                                                         ~~~~~~~~
         '[secret]' is declared here.
-    test/usage.test.ts:308:42 - error TS2344: Type 'typeof B' does not satisfy the constraint 'Mismatch<typeof A>'.
+    test/usage.test.ts:304:42 - error TS2344: Type 'typeof B' does not satisfy the constraint 'Mismatch<typeof A>'.
       Type 'typeof B' is not assignable to type 'typeof A'.
         Types of construct signatures are incompatible.
           Type 'new (b: 2) => B' is not assignable to type 'new (a: 1) => A'.
             Types of parameters 'b' and 'a' are incompatible.
               Type '1' is not assignable to type '2'.
 
-    308   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
+    304   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
                                                  ~~~~~~~~
     "
   `)
