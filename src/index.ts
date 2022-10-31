@@ -36,6 +36,11 @@ export type DeepBrand<T> = IsNever<T> extends true
       type: 'constructor'
       params: ConstructorParams<T>
       instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>>
+      readonly: ReadonlyKeys<T>
+      required: RequiredKeys<T>
+      optional: OptionalKeys<T>
+      value: T
+      properties: {[K in keyof T]: DeepBrand<T[K]>}
     }
   : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
   ? {
@@ -43,19 +48,29 @@ export type DeepBrand<T> = IsNever<T> extends true
       params: DeepBrand<P>
       return: DeepBrand<R>
       this: DeepBrand<ThisParameterType<T>>
+      readonly: ReadonlyKeys<T>
+      required: RequiredKeys<T>
+      optional: OptionalKeys<T>
+      value: T
+      properties: {[K in keyof T]: DeepBrand<T[K]>}
     }
   : T extends any[]
   ? {
       type: 'array'
-      items: {[K in keyof T]: T[K]}
+      readonly: ReadonlyKeys<T>
+      required: RequiredKeys<T>
+      optional: OptionalKeys<T>
+      value: T
+      properties: {[K in keyof T]: DeepBrand<T[K]>}
     }
   : {
       type: 'object'
-      properties: {[K in keyof T]: DeepBrand<T[K]>}
       readonly: ReadonlyKeys<T>
       required: RequiredKeys<T>
       optional: OptionalKeys<T>
       constructorParams: DeepBrand<ConstructorParams<T>>
+      value: T
+      properties: {[K in keyof T]: DeepBrand<T[K]>}
     }
 
 export type RequiredKeys<T> = Extract<
