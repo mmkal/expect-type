@@ -25,6 +25,13 @@ test('To allow for extra properties, use `.toMatchTypeOf`. This checks that an o
   expectTypeOf({a: 1, b: 1}).toMatchTypeOf({a: 1})
 })
 
+test('`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties', () => {
+  // @ts-expect-error
+  expectTypeOf({a: 1}).toEqualTypeOf({a: 1, b: 1})
+  // @ts-expect-error
+  expectTypeOf({a: 1}).toMatchTypeOf({a: 1, b: 1})
+})
+
 test('Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships', () => {
   type Fruit = {type: 'Fruit'; edible: boolean}
   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}

@@ -11,6 +11,13 @@ export type IsNever<T> = [T] extends [never] ? true : false
 export type IsAny<T> = [T] extends [Secret] ? Not<IsNever<T>> : false
 export type IsUnknown<T> = [unknown] extends [T] ? Not<IsAny<T>> : false
 export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
+export type BrandSpecial<T> = IsAny<T> extends true
+  ? {special: true; type: 'any'}
+  : IsUnknown<T> extends true
+  ? {special: true; type: 'unknown'}
+  : IsNever<T> extends true
+  ? {special: true; type: 'never'}
+  : never
 
 /**
  * Recursively walk a type and replace it with a branded type related to the original. This is useful for
@@ -94,6 +101,7 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
   : never
 
 type MismatchArgs<B extends boolean, C extends boolean> = Eq<B, C> extends true ? [] : [never]
+type Mismatch<T> = (BrandSpecial<T> | T) & {[secret]: 'Type should be satisified'}
 
 export interface ExpectTypeOf<Actual, B extends boolean> {
   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
@@ -111,12 +119,30 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
   toMatchTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
+    <Expected extends B extends true ? (Extends<Actual, Expected> extends true ? unknown : Mismatch<Actual>) : unknown>(
+      ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
+        ? MismatchArgs<Extends<Actual, Expected>, B>
+        : []
+    ): true
+    <Expected extends B extends true ? (Extends<Actual, Expected> extends true ? unknown : Mismatch<Actual>) : unknown>(
+      expected: Expected,
+      ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
+        ? MismatchArgs<Extends<Actual, Expected>, B>
+        : []
+    ): true
   }
   toEqualTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>): true
+    <Expected extends B extends true ? (Equal<Actual, Expected> extends true ? unknown : Mismatch<Actual>) : unknown>(
+      ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
+        ? MismatchArgs<Equal<Actual, Expected>, B>
+        : []
+    ): true
+    <Expected extends B extends true ? (Equal<Actual, Expected> extends true ? unknown : Mismatch<Actual>) : unknown>(
+      expected: Expected,
+      ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
+        ? MismatchArgs<Equal<Actual, Expected>, B>
+        : []
+    ): true
   }
   toBeCallableWith: B extends true ? (...args: Params<Actual>) => true : never
   toBeConstructibleWith: B extends true ? (...args: ConstructorParams<Actual>) => true : never
