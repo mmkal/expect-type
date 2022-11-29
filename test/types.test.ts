@@ -70,6 +70,11 @@ test(`never types don't sneak by`, () => {
   expectTypeOf<never>().toMatchTypeOf<{foo: string}>()
 })
 
+test('not cannot be chained', () => {
+  // @ts-expect-error
+  expectTypeOf<number>().not.not.toBeNumber()
+})
+
 test('constructor params', () => {
   // The built-in ConstructorParameters type helper fails to pick up no-argument overloads.
   // This test checks that's still the case to avoid unnecessarily maintaining a workaround,
