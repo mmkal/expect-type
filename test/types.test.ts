@@ -70,6 +70,13 @@ test(`never types don't sneak by`, () => {
   expectTypeOf<never>().toMatchTypeOf<{foo: string}>()
 })
 
+test('intersections work properly', () => {
+  expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
+  expectTypeOf<{a: 1} & {b: 2}>().toMatchTypeOf<{a: 1; b: 2}>()
+  expectTypeOf<{a: 1; b: 2}>().toEqualTypeOf<{a: 1} & {b: 2}>()
+  expectTypeOf<{a: 1; b: 2}>().toMatchTypeOf<{a: 1} & {b: 2}>()
+})
+
 test('not cannot be chained', () => {
   // @ts-expect-error
   expectTypeOf<number>().not.not.toBeNumber()
