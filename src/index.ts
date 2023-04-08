@@ -151,9 +151,9 @@ export interface ExpectTypeOf<Actual, B extends boolean, Branded = false> {
       ? never
       : ExpectTypeOf<T, B, Branded>
     : never
-    branded: Omit<ExpectTypeOf<Actual, B, true>, 'branded'>
-    not: Omit<ExpectTypeOf<Actual, Not<B>, Branded>, 'branded'>
-  }
+  branded: Omit<ExpectTypeOf<Actual, B, true>, 'branded'>
+  not: Omit<ExpectTypeOf<Actual, Not<B>, Branded>, 'branded'>
+}
 const fn: any = () => true
 
 export type _ExpectTypeOf = {
