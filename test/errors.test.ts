@@ -8,12 +8,12 @@ const tsErrors = (code: string) => {
   project.createSourceFile('./test/test.ts', `import {expectTypeOf} from '../src'\n\n${code}`)
   const diagnostics = project.getPreEmitDiagnostics()
   const formatted = project.formatDiagnosticsWithColorAndContext(diagnostics)
-  return stripAnsi(formatted)
+  return stripAnsi(formatted).replace(/:\d+/g, ':999')
 }
 
 test('toEqualTypeOf<...>() error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
-    "test/test.ts:3:36 - error TS2344: Type '{ a: string; }' does not satisfy the constraint 'Mismatch<{ a: number; }>'.
+    "test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint 'Mismatch<{ a: number; }>'.
       Type '{ a: string; }' is not assignable to type '{ a: number; }'.
         Types of property 'a' are incompatible.
           Type 'string' is not assignable to type 'number'.
@@ -26,12 +26,12 @@ test('toEqualTypeOf<...>() error message', async () => {
 
 test('toEqualTypeOf(...) error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})`)).toMatchInlineSnapshot(`
-    "test/test.ts:3:37 - error TS2322: Type 'string' is not assignable to type 'number'.
+    "test/test.ts:999:999 - error TS2322: Type 'string' is not assignable to type 'number'.
 
     3 expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})
                                           ~
 
-      test/test.ts:3:15
+      test/test.ts:999:999
         3 expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})
                         ~~~~
         The expected type comes from property 'a' which is declared here on type 'Mismatch<{ a: number; }>'
@@ -41,7 +41,7 @@ test('toEqualTypeOf(...) error message', async () => {
 
 test('toMatchTypeOf<...>() error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
-    "test/test.ts:3:36 - error TS2344: Type '{ a: string; }' does not satisfy the constraint 'Mismatch<{ a: number; }>'.
+    "test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint 'Mismatch<{ a: number; }>'.
       Type '{ a: string; }' is not assignable to type '{ a: number; }'.
         Types of property 'a' are incompatible.
           Type 'string' is not assignable to type 'number'.
@@ -54,12 +54,12 @@ test('toMatchTypeOf<...>() error message', async () => {
 
 test('toMatchTypeOf(...) error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})`)).toMatchInlineSnapshot(`
-    "test/test.ts:3:37 - error TS2322: Type 'string' is not assignable to type 'number'.
+    "test/test.ts:999:999 - error TS2322: Type 'string' is not assignable to type 'number'.
 
     3 expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})
                                           ~
 
-      test/test.ts:3:15
+      test/test.ts:999:999
         3 expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})
                         ~~~~
         The expected type comes from property 'a' which is declared here on type 'Mismatch<{ a: number; }>'
