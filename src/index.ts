@@ -19,22 +19,6 @@ export type BrandSpecial<T> = IsAny<T> extends true
   ? {special: true; type: 'never'}
   : never
 
-const leaves = {
-  any: 'any',
-  unknown: 'unknown',
-  never: 'never',
-  string: 'string',
-  number: 'number',
-  boolean: 'boolean',
-  null: 'null',
-  function: 'function',
-  undefined: 'undefined',
-} as const
-
-type IsLiteralString<T extends string> = string extends T ? false : true
-
-type tt = [IsLiteralString<'hi'>, IsLiteralString<string>, 'hi'['length']]
-
 export type LeafTypeOf<T> = IsUnknown<T> extends true
   ? 'unknown'
   : IsNever<T> extends true
@@ -61,10 +45,15 @@ export type LeafTypeOf<T> = IsUnknown<T> extends true
   ? 'function'
   : '...'
 
-export type MismatchInfo<Actual, Expected> = LeafTypeOf<Actual> extends '...'
+// Helper for showing end-user a hint why their type assertion is failing.
+// This swaps "leaf" types with a literal message about what the actual and expected types are.
+// Needs to check for Not<IsAny<Actual>> because otherwise LeafTypeOf<Actual> returns never, which extends everything 🤔
+export type MismatchInfo<Actual, Expected> = And<[Extends<LeafTypeOf<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
   ? {
       [K in keyof Actual]: MismatchInfo<Actual[K], K extends keyof Expected ? Expected[K] : never>
     }
+  : Equal<Actual, Expected> extends true
+  ? Actual
   : `Expected: ${LeafTypeOf<Expected>}, Actual: ${LeafTypeOf<Actual>}`
 
 /**
@@ -173,9 +162,7 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
           : MismatchInfo<Actual, Expected>
         : unknown,
     >(
-      ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
-        ? MismatchArgs<Extends<Actual, Expected>, B>
-        : []
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
     ): true
     <
       Expected extends B extends true
@@ -185,9 +172,7 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
         : unknown,
     >(
       expected: Expected,
-      ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
-        ? MismatchArgs<Extends<Actual, Expected>, B>
-        : []
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
     ): true
   }
   toEqualTypeOf: {
@@ -198,9 +183,7 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
           : MismatchInfo<Actual, Expected>
         : unknown,
     >(
-      ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
-        ? MismatchArgs<Equal<Actual, Expected>, B>
-        : []
+      ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
     ): true
     <
       Expected extends B extends true
@@ -210,9 +193,7 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
         : unknown,
     >(
       expected: Expected,
-      ...MISMATCH: Or<[IsNeverOrAny<Actual>, IsNeverOrAny<Expected>]> extends true
-        ? MismatchArgs<Equal<Actual, Expected>, B>
-        : []
+      ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
     ): true
   }
   toBeCallableWith: B extends true ? (...args: Params<Actual>) => true : never

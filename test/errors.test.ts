@@ -9,16 +9,22 @@ const tsErrors = (...lines: string[]) => {
   project.createSourceFile('./test/test.ts', `import {expectTypeOf} from '../src'\n\n${code}`)
   const diagnostics = project.getPreEmitDiagnostics()
   const formatted = project.formatDiagnosticsWithColorAndContext(diagnostics)
-  return stripAnsi(formatted).replace(/:\d+:\d+/g, ':999:999')
+  return simplifyTsOutput(formatted)
 }
+
+const simplifyTsOutput = (output: string) =>
+  stripAnsi(output)
+    // replace digits in line numbers with 9s so snapshots don't change all the time
+    .replace(/:\d+:\d+/g, s => s.replace(/\d/g, '9'))
+    .replace(/\d+ +expectTypeOf/g, s => s.replace(/\d/g, '9'))
 
 test('toEqualTypeOf<...>() error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
-    "test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: number\\"; }'.
+    "test/test.ts:9:99 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: number\\"; }'.
       Types of property 'a' are incompatible.
         Type 'string' is not assignable to type '\\"Expected: string, Actual: number\\"'.
 
-    3 expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
+    9 expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
                                          ~~~~~~~~~~~
     "
   `)
@@ -30,26 +36,50 @@ test('toEqualTypeOf<...>() special types', async () => {
       `expectTypeOf<{a: any}>().toEqualTypeOf<{a: 1}>()`,
       `expectTypeOf<{a: never}>().toEqualTypeOf<{a: 1}>()`,
       `expectTypeOf<{a: unknown}>().toEqualTypeOf<{a: 1}>()`,
+      `expectTypeOf<{a: 1}>().toEqualTypeOf<{a: any}>()`,
+      `expectTypeOf<{a: 1}>().toEqualTypeOf<{a: never}>()`,
+      `expectTypeOf<{a: 1}>().toEqualTypeOf<{a: unknown}>()`,
     ),
   ).toMatchInlineSnapshot(`
-    "test/test.ts:999:999 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: ...; }; }; }; }; }; }; }; }; }; }; }'.
+    "test/test.ts:9:99 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: never; }'.
       Types of property 'a' are incompatible.
-        Type 'number' is not assignable to type '{ [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: ...; }; }; }; }; }; }; }; }; }; }; }'.
+        Type 'number' is not assignable to type 'never'.
 
-    3 expectTypeOf<{a: any}>().toEqualTypeOf<{a: 1}>()
+    9 expectTypeOf<{a: any}>().toEqualTypeOf<{a: 1}>()
                                              ~~~~~~
-    test/test.ts:999:999 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 1, Actual: never\\"; }'.
+    test/test.ts:9:99 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 1, Actual: never\\"; }'.
       Types of property 'a' are incompatible.
         Type '1' is not assignable to type '\\"Expected: literal number: 1, Actual: never\\"'.
 
-    4 expectTypeOf<{a: never}>().toEqualTypeOf<{a: 1}>()
+    9 expectTypeOf<{a: never}>().toEqualTypeOf<{a: 1}>()
                                                ~~~~~~
-    test/test.ts:999:999 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 1, Actual: unknown\\"; }'.
+    test/test.ts:9:99 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 1, Actual: unknown\\"; }'.
       Types of property 'a' are incompatible.
         Type '1' is not assignable to type '\\"Expected: literal number: 1, Actual: unknown\\"'.
 
-    5 expectTypeOf<{a: unknown}>().toEqualTypeOf<{a: 1}>()
+    9 expectTypeOf<{a: unknown}>().toEqualTypeOf<{a: 1}>()
                                                  ~~~~~~
+    test/test.ts:9:99 - error TS2344: Type '{ a: any; }' does not satisfy the constraint '{ a: never; }'.
+      Types of property 'a' are incompatible.
+        Type 'any' is not assignable to type 'never'.
+
+    9 expectTypeOf<{a: 1}>().toEqualTypeOf<{a: any}>()
+                                           ~~~~~~~~
+    test/test.ts:9:99 - error TS2554: Expected 1 arguments, but got 0.
+
+    9 expectTypeOf<{a: 1}>().toEqualTypeOf<{a: never}>()
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      src/index.ts:999:9
+        183       ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/test.ts:9:99 - error TS2344: Type '{ a: unknown; }' does not satisfy the constraint '{ a: \\"Expected: unknown, Actual: literal number: 1\\"; }'.
+      Types of property 'a' are incompatible.
+        Type 'unknown' is not assignable to type '\\"Expected: unknown, Actual: literal number: 1\\"'.
+
+    9 expectTypeOf<{a: 1}>().toEqualTypeOf<{a: unknown}>()
+                                           ~~~~~~~~~~~~
     "
   `)
 })
@@ -63,29 +93,29 @@ test('toEqualTypeOf<...>() literals', async () => {
       `expectTypeOf<{a: number}>().toEqualTypeOf<{a: 1}>()`,
     ),
   ).toMatchInlineSnapshot(`
-    "test/test.ts:999:999 - error TS2344: Type '{ a: \\"literalstring\\"; }' does not satisfy the constraint '{ a: \\"Expected: literal string: literalstring, Actual: string\\"; }'.
+    "test/test.ts:9:99 - error TS2344: Type '{ a: \\"literalstring\\"; }' does not satisfy the constraint '{ a: \\"Expected: literal string: literalstring, Actual: string\\"; }'.
       Types of property 'a' are incompatible.
         Type '\\"literalstring\\"' is not assignable to type '\\"Expected: literal string: literalstring, Actual: string\\"'.
 
-    3 expectTypeOf<{a: string}>().toEqualTypeOf<{a: 'literalstring'}>()
+    9 expectTypeOf<{a: string}>().toEqualTypeOf<{a: 'literalstring'}>()
                                                 ~~~~~~~~~~~~~~~~~~~~
-    test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: literal string: literalstring\\"; }'.
+    test/test.ts:9:99 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: literal string: literalstring\\"; }'.
       Types of property 'a' are incompatible.
         Type 'string' is not assignable to type '\\"Expected: string, Actual: literal string: literalstring\\"'.
 
-    4 expectTypeOf<{a: 'literalstring'}>().toEqualTypeOf<{a: string}>()
+    9 expectTypeOf<{a: 'literalstring'}>().toEqualTypeOf<{a: string}>()
                                                          ~~~~~~~~~~~
-    test/test.ts:999:999 - error TS2344: Type '{ a: \\"otherliteralstring\\"; }' does not satisfy the constraint '{ a: \\"Expected: literal string: otherliteralstring, Actual: literal string: literalstring\\"; }'.
+    test/test.ts:9:99 - error TS2344: Type '{ a: \\"otherliteralstring\\"; }' does not satisfy the constraint '{ a: \\"Expected: literal string: otherliteralstring, Actual: literal string: literalstring\\"; }'.
       Types of property 'a' are incompatible.
         Type '\\"otherliteralstring\\"' is not assignable to type '\\"Expected: literal string: otherliteralstring, Actual: literal string: literalstring\\"'.
 
-    5 expectTypeOf<{a: 'literalstring'}>().toEqualTypeOf<{a: 'otherliteralstring'}>()
+    9 expectTypeOf<{a: 'literalstring'}>().toEqualTypeOf<{a: 'otherliteralstring'}>()
                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~
-    test/test.ts:999:999 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 1, Actual: number\\"; }'.
+    test/test.ts:9:99 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 1, Actual: number\\"; }'.
       Types of property 'a' are incompatible.
         Type '1' is not assignable to type '\\"Expected: literal number: 1, Actual: number\\"'.
 
-    6 expectTypeOf<{a: number}>().toEqualTypeOf<{a: 1}>()
+    9 expectTypeOf<{a: number}>().toEqualTypeOf<{a: 1}>()
                                                 ~~~~~~
     "
   `)
@@ -93,26 +123,21 @@ test('toEqualTypeOf<...>() literals', async () => {
 
 test('toEqualTypeOf(...) error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})`)).toMatchInlineSnapshot(`
-    "test/test.ts:999:999 - error TS2322: Type '\\"one\\"' is not assignable to type '\\"Expected: string, Actual: number\\"'.
+    "test/test.ts:9:99 - error TS2345: Argument of type '{ a: string; }' is not assignable to parameter of type 'never'.
 
-    3 expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})
-                                          ~
-
-      test/test.ts:999:999
-        3 expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})
-                        ~~~~
-        The expected type comes from property 'a' which is declared here on type '{ a: \\"Expected: string, Actual: number\\"; }'
+    9 expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})
+                                         ~~~~~~~~~~
     "
   `)
 })
 
 test('toMatchTypeOf<...>() error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
-    "test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: number\\"; }'.
+    "test/test.ts:9:99 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: number\\"; }'.
       Types of property 'a' are incompatible.
         Type 'string' is not assignable to type '\\"Expected: string, Actual: number\\"'.
 
-    3 expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()
+    9 expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()
                                          ~~~~~~~~~~~
     "
   `)
@@ -120,15 +145,15 @@ test('toMatchTypeOf<...>() error message', async () => {
 
 test('toMatchTypeOf(...) error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})`)).toMatchInlineSnapshot(`
-    "test/test.ts:999:999 - error TS2322: Type '\\"one\\"' is not assignable to type '\\"Expected: string, Actual: number\\"'.
+    "test/test.ts:9:99 - error TS2554: Expected 2 arguments, but got 1.
 
-    3 expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})
-                                          ~
+    9 expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      test/test.ts:999:999
-        3 expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})
-                        ~~~~
-        The expected type comes from property 'a' which is declared here on type '{ a: \\"Expected: string, Actual: number\\"; }'
+      src/index.ts:999:9
+        172       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
     "
   `)
 })
@@ -147,293 +172,300 @@ test('usage test', () => {
   const diagnostics = project.getPreEmitDiagnostics()
   const formatted = stripAnsi(project.formatDiagnosticsWithColorAndContext(diagnostics))
 
-  expect(formatted).toMatchInlineSnapshot(`
-    "test/usage.test.ts:21:44 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: number\\"; b: \\"Expected: never, Actual: number\\"; }'.
-      Property 'b' is missing in type '{ a: number; }' but required in type '{ a: \\"Expected: number, Actual: number\\"; b: \\"Expected: never, Actual: number\\"; }'.
+  expect(simplifyTsOutput(formatted)).toMatchInlineSnapshot(`
+    "test/usage.test.ts:99:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: number; b: \\"Expected: never, Actual: number\\"; }'.
+      Property 'b' is missing in type '{ a: number; }' but required in type '{ a: number; b: \\"Expected: never, Actual: number\\"; }'.
 
-    21   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
+    99   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
                                                   ~~~~~~~~~~~
 
-      test/usage.test.ts:21:23
-        21   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
+      test/usage.test.ts:99:99
+        99   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
                                  ~~~~
         'b' is declared here.
-    test/usage.test.ts:30:39 - error TS2322: Type 'number' is not assignable to type '\\"Expected: number, Actual: number\\"'.
+    test/usage.test.ts:99:99 - error TS2345: Argument of type '{ a: number; b: number; }' is not assignable to parameter of type 'never'.
 
-    30   expectTypeOf({a: 1}).toEqualTypeOf({a: 1, b: 1})
-                                             ~
+    99   expectTypeOf({a: 1}).toEqualTypeOf({a: 1, b: 1})
+                                            ~~~~~~~~~~~~
+    test/usage.test.ts:99:99 - error TS2554: Expected 2 arguments, but got 1.
 
-      test/usage.test.ts:30:17
-        30   expectTypeOf({a: 1}).toEqualTypeOf({a: 1, b: 1})
-                           ~~~~
-        The expected type comes from property 'a' which is declared here on type '{ a: \\"Expected: number, Actual: number\\"; }'
-    test/usage.test.ts:32:39 - error TS2322: Type 'number' is not assignable to type '\\"Expected: number, Actual: number\\"'.
+    99   expectTypeOf({a: 1}).toMatchTypeOf({a: 1, b: 1})
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    32   expectTypeOf({a: 1}).toMatchTypeOf({a: 1, b: 1})
-                                             ~
+      src/index.ts:999:9
+        172       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Apple' does not satisfy the constraint '{ type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"; }'.
+      Types of property 'edible' are incompatible.
+        Type 'true' is not assignable to type '\\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"'.
 
-      test/usage.test.ts:32:17
-        32   expectTypeOf({a: 1}).toMatchTypeOf({a: 1, b: 1})
-                           ~~~~
-        The expected type comes from property 'a' which is declared here on type '{ a: \\"Expected: number, Actual: number\\"; }'
-    test/usage.test.ts:42:39 - error TS2344: Type 'Apple' does not satisfy the constraint '{ type: \\"Expected: literal string: Fruit, Actual: literal string: Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"; }'.
-      Types of property 'type' are incompatible.
-        Type '\\"Fruit\\"' is not assignable to type '\\"Expected: literal string: Fruit, Actual: literal string: Fruit\\"'.
-
-    42   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
+    99   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
                                              ~~~~~
-    test/usage.test.ts:45:39 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: \\"Expected: literal string: Fruit, Actual: literal string: Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
-      Property 'name' is missing in type 'Fruit' but required in type '{ type: \\"Expected: literal string: Fruit, Actual: literal string: Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: \\"Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+      Property 'name' is missing in type 'Fruit' but required in type '{ type: \\"Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
 
-    45   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+    99   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
                                              ~~~~~
 
-      test/usage.test.ts:37:32
+      test/usage.test.ts:99:99
         37   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
                                           ~~~~
         'name' is declared here.
-    test/usage.test.ts:49:39 - error TS2345: Argument of type '{ b: number; }' is not assignable to parameter of type '{ a: \\"Expected: never, Actual: number\\"; }'.
-      Object literal may only specify known properties, and 'b' does not exist in type '{ a: \\"Expected: never, Actual: number\\"; }'.
+    test/usage.test.ts:99:99 - error TS2554: Expected 2 arguments, but got 1.
 
-    49   expectTypeOf({a: 1}).toMatchTypeOf({b: 1})
-                                             ~~~~
-    test/usage.test.ts:58:39 - error TS2344: Type 'Apple' does not satisfy the constraint '{ type: \\"Expected: literal string: Fruit, Actual: literal string: Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"; }'.
-      Types of property 'type' are incompatible.
-        Type '\\"Fruit\\"' is not assignable to type '\\"Expected: literal string: Fruit, Actual: literal string: Fruit\\"'.
+    99   expectTypeOf({a: 1}).toMatchTypeOf({b: 1})
+                              ~~~~~~~~~~~~~~~~~~~~~
 
-    58   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
+      src/index.ts:999:9
+        172       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Apple' does not satisfy the constraint '{ type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"; }'.
+      Types of property 'edible' are incompatible.
+        Type 'true' is not assignable to type '\\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"'.
+
+    99   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
                                              ~~~~~
-    test/usage.test.ts:59:39 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: \\"Expected: literal string: Fruit, Actual: literal string: Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
-      Property 'name' is missing in type 'Fruit' but required in type '{ type: \\"Expected: literal string: Fruit, Actual: literal string: Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: \\"Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+      Property 'name' is missing in type 'Fruit' but required in type '{ type: \\"Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
 
-    59   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+    99   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
                                              ~~~~~
 
-      test/usage.test.ts:54:32
+      test/usage.test.ts:99:99
         54   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
                                           ~~~~
         'name' is declared here.
-    test/usage.test.ts:68:25 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    68   expectTypeOf<never>().toBeNumber()
+    99   expectTypeOf<never>().toBeNumber()
                                ~~~~~~~~~~~~
 
-      src/index.ts:164:16
-        164   toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, B>) => true
+      src/index.ts:999:99
+        146   toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, B>) => true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:72:57 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: ...; }; }; }; }; }; }; }; }; }; }; }'.
+    test/usage.test.ts:99:99 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: never; }; }'.
       The types of 'deeply.nested' are incompatible between these types.
-        Type 'unknown' is not assignable to type '{ [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: { [x: string]: ...; }; }; }; }; }; }; }; }; }; }; }'.
-          Index signature for type 'string' is missing in type '{}'.
+        Type 'unknown' is not assignable to type 'never'.
 
-    72   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
+    99   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    test/usage.test.ts:90:27 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    90   expectTypeOf(undefined).toBeNullable()
+    99   expectTypeOf(undefined).toBeNullable()
                                  ~~~~~~~~~~~~~~
 
-      src/index.ts:171:18
-        171   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+      src/index.ts:999:99
+        153   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:94:22 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    94   expectTypeOf(null).toBeNullable()
+    99   expectTypeOf(null).toBeNullable()
                             ~~~~~~~~~~~~~~
 
-      src/index.ts:171:18
-        171   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+      src/index.ts:999:99
+        153   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:97:33 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    97   expectTypeOf<1 | undefined>().toBeNullable()
+    99   expectTypeOf<1 | undefined>().toBeNullable()
                                        ~~~~~~~~~~~~~~
 
-      src/index.ts:171:18
-        171   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+      src/index.ts:999:99
+        153   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:98:28 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    98   expectTypeOf<1 | null>().toBeNullable()
+    99   expectTypeOf<1 | null>().toBeNullable()
                                   ~~~~~~~~~~~~~~
 
-      src/index.ts:171:18
-        171   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+      src/index.ts:999:99
+        153   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:40 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
     99   expectTypeOf<1 | undefined | null>().toBeNullable()
                                               ~~~~~~~~~~~~~~
 
-      src/index.ts:171:18
-        171   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+      src/index.ts:999:99
+        153   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:103:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    103   expectTypeOf(1).toBeUnknown()
+    999   expectTypeOf(1).toBeUnknown()
                           ~~~~~~~~~~~~~
 
-      src/index.ts:159:17
-        159   toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, B>) => true
+      src/index.ts:999:99
+        141   toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, B>) => true
                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:104:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    104   expectTypeOf(1).toBeAny()
+    999   expectTypeOf(1).toBeAny()
                           ~~~~~~~~~
 
-      src/index.ts:158:13
-        158   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
+      src/index.ts:999:99
+        140   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:105:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    105   expectTypeOf(1).toBeNever()
+    999   expectTypeOf(1).toBeNever()
                           ~~~~~~~~~~~
 
-      src/index.ts:160:15
-        160   toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, B>) => true
+      src/index.ts:999:99
+        142   toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, B>) => true
                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:106:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    106   expectTypeOf(1).toBeNull()
+    999   expectTypeOf(1).toBeNull()
                           ~~~~~~~~~~
 
-      src/index.ts:169:14
-        169   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, B>) => true
+      src/index.ts:999:99
+        151   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, B>) => true
                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:107:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    107   expectTypeOf(1).toBeUndefined()
+    999   expectTypeOf(1).toBeUndefined()
                           ~~~~~~~~~~~~~~~
 
-      src/index.ts:170:19
-        170   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
+      src/index.ts:999:99
+        152   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:108:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    108   expectTypeOf(1).toBeNullable()
+    999   expectTypeOf(1).toBeNullable()
                           ~~~~~~~~~~~~~~
 
-      src/index.ts:171:18
-        171   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+      src/index.ts:999:99
+        153   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:113:49 - error TS2344: Type 'number' does not satisfy the constraint '\\"Expected: number, Actual: number\\" | \\"Expected: number, Actual: string\\"'.
+    test/usage.test.ts:999:99 - error TS2344: Type 'number' does not satisfy the constraint '\\"Expected: number, Actual: string\\" | \\"Expected: number, Actual: number\\"'.
 
-    113   expectTypeOf<string | number>().toMatchTypeOf<number>()
+    999   expectTypeOf<string | number>().toMatchTypeOf<number>()
                                                         ~~~~~~
-    test/usage.test.ts:137:71 - error TS2554: Expected 2 arguments, but got 1.
+    test/usage.test.ts:999:99 - error TS2554: Expected 2 arguments, but got 1.
 
-    137   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')
+    999   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')
                                                                               ~~~~~~~~~~~~~~~~~~~~~
 
-      src/index.ts:226:5
-        226     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
+      src/index.ts:999:9
+        200     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:154:21 - error TS2554: Expected 2 arguments, but got 1.
+    test/usage.test.ts:999:99 - error TS2554: Expected 2 arguments, but got 1.
 
-    154   expectTypeOf(obj).toHaveProperty('c')
+    999   expectTypeOf(obj).toHaveProperty('c')
                             ~~~~~~~~~~~~~~~~~~~
 
-      src/index.ts:226:5
-        226     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
+      src/index.ts:999:9
+        200     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:159:41 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    159   expectTypeOf(obj).toHaveProperty('a').toBeString()
+    999   expectTypeOf(obj).toHaveProperty('a').toBeString()
                                                 ~~~~~~~~~~~~
 
-      src/index.ts:165:16
-        165   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
+      src/index.ts:999:99
+        147   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:166:41 - error TS2344: Type 'HasParam' does not satisfy the constraint '\\"Expected: function, Actual: function\\"'.
+    test/usage.test.ts:999:99 - error TS2344: Type 'HasParam' does not satisfy the constraint '\\"Expected: function, Actual: function\\"'.
 
-    166   expectTypeOf<NoParam>().toEqualTypeOf<HasParam>()
+    999   expectTypeOf<NoParam>().toEqualTypeOf<HasParam>()
                                                 ~~~~~~~~
-    test/usage.test.ts:186:19 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    186   expectTypeOf(f).toBeAny()
+    999   expectTypeOf(f).toBeAny()
                           ~~~~~~~~~
 
-      src/index.ts:158:13
-        158   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
+      src/index.ts:999:99
+        140   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:187:27 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    187   expectTypeOf(f).returns.toBeAny()
+    999   expectTypeOf(f).returns.toBeAny()
                                   ~~~~~~~~~
 
-      src/index.ts:158:13
-        158   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
+      src/index.ts:999:99
+        140   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:190:46 - error TS2345: Argument of type '\\"1\\"' is not assignable to parameter of type '\\"Expected: string, Actual: number\\"'.
+    test/usage.test.ts:999:99 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
 
-    190   expectTypeOf(f).parameter(0).toEqualTypeOf('1')
+    999   expectTypeOf(f).parameter(0).toEqualTypeOf('1')
                                                      ~~~
-    test/usage.test.ts:238:43 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type '\\"Expected: function, Actual: function\\"'.
+    test/usage.test.ts:999:99 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'never'.
 
-    238   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
+    999   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
                                                   ~~~~~~~~~~~
-    test/usage.test.ts:253:33 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    253   expectTypeOf([1, 2, 3]).items.toBeString()
+    999   expectTypeOf([1, 2, 3]).items.toBeString()
                                         ~~~~~~~~~~~~
 
-      src/index.ts:165:16
-        165   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
+      src/index.ts:999:99
+        147   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:265:45 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: string\\"; }'.
+    test/usage.test.ts:999:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: string\\"; }'.
       Types of property 'a' are incompatible.
         Type 'number' is not assignable to type '\\"Expected: number, Actual: string\\"'.
 
-    265   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
+    999   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
                                                     ~~~~~~~~~~~
-    test/usage.test.ts:270:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '\\"Expected: ..., Actual: unknown\\"'.
+    test/usage.test.ts:999:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '\\"Expected: ..., Actual: unknown\\"'.
 
-    270   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
+    999   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
                                                      ~~~~~~~~~~~
-    test/usage.test.ts:271:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '\\"Expected: ..., Actual: unknown\\"'.
+    test/usage.test.ts:999:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '\\"Expected: ..., Actual: unknown\\"'.
 
-    271   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
+    999   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
                                                      ~~~~~~~~~~~~~~~~~~~~~~~
-    test/usage.test.ts:272:53 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '\\"Expected: ..., Actual: unknown\\"'.
+    test/usage.test.ts:999:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '\\"Expected: ..., Actual: unknown\\"'.
 
-    272   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
+    999   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
                                                             ~~~~~~~~~~~~~~~~~~
-    test/usage.test.ts:281:36 - error TS2344: Type 'E1' does not satisfy the constraint '{ readonly a: \\"Expected: string, Actual: string\\"; b: \\"Expected: string, Actual: string\\"; }'.
-      Types of property 'a' are incompatible.
-        Type 'string' is not assignable to type '\\"Expected: string, Actual: string\\"'.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    281   expectTypeOf<A1>().toEqualTypeOf<E1>()
-                                           ~~
-    test/usage.test.ts:287:36 - error TS2344: Type 'E2' does not satisfy the constraint '{ a: \\"Expected: string, Actual: string\\"; b: { readonly c: \\"Expected: string, Actual: string\\"; }; }'.
-      Types of property 'a' are incompatible.
-        Type 'string' is not assignable to type '\\"Expected: string, Actual: string\\"'.
+    999   expectTypeOf<A1>().toEqualTypeOf<E1>()
+                             ~~~~~~~~~~~~~~~~~~~
 
-    287   expectTypeOf<A2>().toEqualTypeOf<E2>()
-                                           ~~
-    test/usage.test.ts:304:42 - error TS2344: Type 'typeof B' does not satisfy the constraint '{ prototype: { value: \\"Expected: number, Actual: number\\"; }; }'.
-      The types of 'prototype.value' are incompatible between these types.
-        Type 'number' is not assignable to type '\\"Expected: number, Actual: number\\"'.
+      src/index.ts:999:9
+        183       ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
-    304   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
-                                                 ~~~~~~~~
+    999   expectTypeOf<A2>().toEqualTypeOf<E2>()
+                             ~~~~~~~~~~~~~~~~~~~
+
+      src/index.ts:999:9
+        183       ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
+
+    999   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      src/index.ts:999:9
+        183       ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
     "
   `)
 })
