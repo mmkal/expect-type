@@ -19,7 +19,7 @@ export type BrandSpecial<T> = IsAny<T> extends true
   ? {special: true; type: 'never'}
   : never
 
-export type LeafTypeOf<T> = IsUnknown<T> extends true
+export type PrintType<T> = IsUnknown<T> extends true
   ? 'unknown'
   : IsNever<T> extends true
   ? 'never'
@@ -48,13 +48,13 @@ export type LeafTypeOf<T> = IsUnknown<T> extends true
 // Helper for showing end-user a hint why their type assertion is failing.
 // This swaps "leaf" types with a literal message about what the actual and expected types are.
 // Needs to check for Not<IsAny<Actual>> because otherwise LeafTypeOf<Actual> returns never, which extends everything 🤔
-export type MismatchInfo<Actual, Expected> = And<[Extends<LeafTypeOf<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
+export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
   ? {
       [K in keyof Actual]: MismatchInfo<Actual[K], K extends keyof Expected ? Expected[K] : never>
     }
   : Equal<Actual, Expected> extends true
   ? Actual
-  : `Expected: ${LeafTypeOf<Expected>}, Actual: ${LeafTypeOf<Actual>}`
+  : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Actual>}`
 
 /**
  * Recursively walk a type and replace it with a branded type related to the original. This is useful for
