@@ -50,7 +50,10 @@ export type PrintType<T> = IsUnknown<T> extends true
 // Needs to check for Not<IsAny<Actual>> because otherwise LeafTypeOf<Actual> returns never, which extends everything 🤔
 export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
   ? {
-      [K in keyof Actual]: MismatchInfo<Actual[K], K extends keyof Expected ? Expected[K] : never>
+      [K in keyof Actual | keyof Expected]: MismatchInfo<
+        K extends keyof Actual ? Actual[K] : never,
+        K extends keyof Expected ? Expected[K] : never
+      >
     }
   : Equal<Actual, Expected> extends true
   ? Actual
@@ -154,7 +157,46 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, B>) => true
   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
+  toExtend: <
+    Expected extends B extends true
+      ? Extends<Actual, Expected> extends true
+        ? unknown
+        : MismatchInfo<Actual, Expected>
+      : unknown,
+  >(
+    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>
+  ) => true
+  toBeIdenticalTo: <
+    Expected extends B extends true
+      ? Equal<Actual, Expected> extends true
+        ? unknown
+        : MismatchInfo<Actual, Expected>
+      : unknown,
+  >(
+    ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
+  ) => true
+
   toMatchTypeOf: {
+    /**
+     * @deprecated Use `toExtend` instead. Note that `toExtend` doesn't support passing a value, because supporting
+     * them triggers typescript interence which makes error messages less helpful - if you need that, please raise
+     * an issue on this library's github repo. This method may be removed or become an alias of `toExtend` in a future version.
+     *
+     * To switch, you can change:
+     * @example
+     * // before:
+     * expectTypeOf(foo).toMatchTypeof<{x: number}>()
+     * // after:
+     * expectTypeOf(foo).toExtend<{x: number}>()
+     *
+     * // before:
+     * expectTypeOf(foo).toMatchTypeof({x: 1})
+     * // after:
+     * expectTypeOf(foo).toExtend<{x: number}>()
+     * // or:
+     * const expected = {x: 1}
+     * expectTypeOf(foo).toExtend<typeof expected>()
+     */
     <
       Expected extends B extends true
         ? Extends<Actual, Expected> extends true
@@ -176,6 +218,26 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
     ): true
   }
   toEqualTypeOf: {
+    /**
+     * @deprecated Use `toBeIdenticalTo` instead. Note that `toBeIdenticalTo` doesn't support passing a value, because supporting
+     * them triggers typescript interence which makes error messages less helpful - if you need that, please raise
+     * an issue on this library's github repo. This method may be removed or become an alias to `toBeIdenticalTo` in a future version.
+     *
+     * To switch, you can change:
+     * @example
+     * // before:
+     * expectTypeOf(foo).toEqualTypeOf<{x: number}>()
+     * // after:
+     * expectTypeOf(foo).toBeIdenticalTo<{x: number}>()
+     *
+     * // before:
+     * expectTypeOf(foo).toEqualTypeOf({x: 1})
+     * // after:
+     * expectTypeOf(foo).toBeIdenticalTo<{x: number}>()
+     * // or:
+     * const expected = {x: 1}
+     * expectTypeOf(foo).toBeIdenticalTo<typeof expected>()
+     */
     <
       Expected extends B extends true
         ? Equal<Actual, Expected> extends true
@@ -284,6 +346,8 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
     toBeNull: fn,
     toBeUndefined: fn,
     toBeNullable: fn,
+    toExtend: fn,
+    toBeIdenticalTo: fn,
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeCallableWith: fn,
