@@ -56,65 +56,53 @@ The `expectTypeOf` method takes a single argument, or a generic parameter. Neith
 ### Features
 
 <!-- codegen:start {preset: markdownFromTests, source: test/usage.test.ts} -->
-Check an object's type with `.toEqualTypeOf`:
+Check an object's type with `.toBeIdenticalTo`:
 
 ```typescript
-expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
+expectTypeOf({a: 1}).toBeIdenticalTo<{a: number}>()
 ```
 
-`.toEqualTypeOf` can check that two concrete objects have equivalent types:
-
-```typescript
-expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
-```
-
-`.toEqualTypeOf` succeeds for objects with different values, but the same type:
-
-```typescript
-expectTypeOf({a: 1}).toEqualTypeOf({a: 2})
-```
-
-`.toEqualTypeOf` fails on extra properties:
+`.toBeIdenticalTo` fails on extra properties:
 
 ```typescript
 // @ts-expect-error
-expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
+expectTypeOf({a: 1, b: 1}).toBeIdenticalTo<{a: number}>()
 ```
 
-To allow for extra properties, use `.toMatchTypeOf`. This checks that an object "matches" a type. This is similar to jest's `.toMatchObject`:
+To allow for extra properties, use `.toExtend`. This checks that an object "matches" a type. This is similar to jest's `.toMatchObject`:
 
 ```typescript
-expectTypeOf({a: 1, b: 1}).toMatchTypeOf({a: 1})
+expectTypeOf({a: 1, b: 1}).toExtend<{a: number}>()
 ```
 
-`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties:
+`.toBeIdenticalTo` and `.toExtend` both fail on missing properties:
 
 ```typescript
 // @ts-expect-error
-expectTypeOf({a: 1}).toEqualTypeOf({a: 1, b: 1})
+expectTypeOf({a: 1}).toBeIdenticalTo({a: 1, b: 1})
 // @ts-expect-error
-expectTypeOf({a: 1}).toMatchTypeOf({a: 1, b: 1})
+expectTypeOf({a: 1}).toExtend({a: 1, b: 1})
 ```
 
-Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships:
+Another example of the difference between `.toExtend` and `.toBeIdenticalTo`, using generics. `.toExtend` can be used for "is-a" relationships:
 
 ```typescript
 type Fruit = {type: 'Fruit'; edible: boolean}
 type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
 
-expectTypeOf<Apple>().toMatchTypeOf<Fruit>()
+expectTypeOf<Apple>().toExtend<Fruit>()
 
 // @ts-expect-error
-expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
+expectTypeOf<Fruit>().toExtend<Apple>()
 
 // @ts-expect-error
-expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+expectTypeOf<Apple>().toBeIdenticalTo<Fruit>()
 ```
 
 Assertions can be inverted with `.not`:
 
 ```typescript
-expectTypeOf({a: 1}).not.toMatchTypeOf({b: 1})
+expectTypeOf({a: 1}).not.toExtend<{b: number}>()
 ```
 
 `.not` can be easier than relying on `// @ts-expect-error`:
@@ -123,10 +111,10 @@ expectTypeOf({a: 1}).not.toMatchTypeOf({b: 1})
 type Fruit = {type: 'Fruit'; edible: boolean}
 type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
 
-expectTypeOf<Apple>().toMatchTypeOf<Fruit>()
+expectTypeOf<Apple>().toExtend<Fruit>()
 
-expectTypeOf<Fruit>().not.toMatchTypeOf<Apple>()
-expectTypeOf<Apple>().not.toEqualTypeOf<Fruit>()
+expectTypeOf<Fruit>().not.toExtend<Apple>()
+expectTypeOf<Apple>().not.toBeIdenticalTo<Fruit>()
 ```
 
 Catch any/unknown/never types:
@@ -140,10 +128,10 @@ expectTypeOf<never>().toBeNever()
 expectTypeOf<never>().toBeNumber()
 ```
 
-`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` properties:
+`.toBeIdenticalTo` distinguishes between deeply-nested `any` and `unknown` properties:
 
 ```typescript
-expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
+expectTypeOf<{deeply: {nested: any}}>().not.toBeIdenticalTo<{deeply: {nested: unknown}}>()
 ```
 
 Test for basic javascript types:
@@ -190,8 +178,8 @@ expectTypeOf(1).not.toBeNullable()
 Detect assignability of unioned types:
 
 ```typescript
-expectTypeOf<number>().toMatchTypeOf<string | number>()
-expectTypeOf<string | number>().not.toMatchTypeOf<number>()
+expectTypeOf<number>().toExtend<string | number>()
+expectTypeOf<string | number>().not.toExtend<number>()
 ```
 
 Use `.extract` and `.exclude` to narrow down complex union types:
@@ -206,15 +194,15 @@ const cssProperties: CSSProperties = {margin: '1px', padding: '2px'}
 expectTypeOf(getResponsiveProp(cssProperties))
   .exclude<unknown[]>()
   .exclude<{xs?: unknown}>()
-  .toEqualTypeOf<CSSProperties>()
+  .toBeIdenticalTo<CSSProperties>()
 
 expectTypeOf(getResponsiveProp(cssProperties))
   .extract<unknown[]>()
-  .toEqualTypeOf<CSSProperties[]>()
+  .toBeIdenticalTo<CSSProperties[]>()
 
 expectTypeOf(getResponsiveProp(cssProperties))
   .extract<{xs?: any}>()
-  .toEqualTypeOf<{xs?: CSSProperties; sm?: CSSProperties; md?: CSSProperties}>()
+  .toBeIdenticalTo<{xs?: CSSProperties; sm?: CSSProperties; md?: CSSProperties}>()
 
 expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('sm')
 expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().not.toHaveProperty('xxl')
@@ -246,13 +234,13 @@ expectTypeOf(obj).toHaveProperty('b').toBeString()
 expectTypeOf(obj).toHaveProperty('a').not.toBeString()
 ```
 
-`.toEqualTypeOf` can be used to distinguish between functions:
+`.toBeIdenticalTo` can be used to distinguish between functions:
 
 ```typescript
 type NoParam = () => void
 type HasParam = (s: string) => void
 
-expectTypeOf<NoParam>().not.toEqualTypeOf<HasParam>()
+expectTypeOf<NoParam>().not.toBeIdenticalTo<HasParam>()
 ```
 
 But often it's preferable to use `.parameters` or `.returns` for more specific function assertions:
@@ -261,10 +249,10 @@ But often it's preferable to use `.parameters` or `.returns` for more specific f
 type NoParam = () => void
 type HasParam = (s: string) => void
 
-expectTypeOf<NoParam>().parameters.toEqualTypeOf<[]>()
+expectTypeOf<NoParam>().parameters.toBeIdenticalTo<[]>()
 expectTypeOf<NoParam>().returns.toBeVoid()
 
-expectTypeOf<HasParam>().parameters.toEqualTypeOf<[string]>()
+expectTypeOf<HasParam>().parameters.toBeIdenticalTo<[string]>()
 expectTypeOf<HasParam>().returns.toBeVoid()
 ```
 
@@ -278,15 +266,14 @@ expectTypeOf(f).toBeFunction()
 expectTypeOf(f).toBeCallableWith(1)
 expectTypeOf(f).not.toBeAny()
 expectTypeOf(f).returns.not.toBeAny()
-expectTypeOf(f).returns.toEqualTypeOf([1, 2])
-expectTypeOf(f).returns.toEqualTypeOf([1, 2, 3])
-expectTypeOf(f).parameter(0).not.toEqualTypeOf('1')
-expectTypeOf(f).parameter(0).toEqualTypeOf(1)
+expectTypeOf(f).returns.toBeIdenticalTo<number[]>()
+expectTypeOf(f).parameter(0).not.toBeIdenticalTo<string>()
+expectTypeOf(f).parameter(0).toBeIdenticalTo<number>()
 expectTypeOf(1).parameter(0).toBeNever()
 
 const twoArgFunc = (a: number, b: string) => ({a, b})
 
-expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
+expectTypeOf(twoArgFunc).parameters.toBeIdenticalTo<[number, string]>()
 ```
 
 You can also check type guards & type assertions:
@@ -312,7 +299,7 @@ expectTypeOf(Date).toBeConstructibleWith(0)
 expectTypeOf(Date).toBeConstructibleWith(new Date())
 expectTypeOf(Date).toBeConstructibleWith()
 
-expectTypeOf(Date).constructorParameters.toEqualTypeOf<[] | [string | number | Date]>()
+expectTypeOf(Date).constructorParameters.toBeIdenticalTo<[] | [string | number | Date]>()
 ```
 
 Check function `this` parameters:
@@ -322,7 +309,7 @@ function greet(this: {name: string}, message: string) {
   return `Hello ${this.name}, here's your message: ${message}`
 }
 
-expectTypeOf(greet).thisParameter.toEqualTypeOf<{name: string}>()
+expectTypeOf(greet).thisParameter.toBeIdenticalTo<{name: string}>()
 ```
 
 Distinguish between functions with different `this` parameters:
@@ -336,7 +323,7 @@ function greetCasual(this: {name: string}, message: string) {
   return `Hi ${this.name}, here's your message: ${message}`
 }
 
-expectTypeOf(greetFormal).not.toEqualTypeOf(greetCasual)
+expectTypeOf(greetFormal).not.toBeIdenticalTo<typeof greetCasual>()
 ```
 
 Class instance types:
@@ -373,17 +360,17 @@ expectTypeOf(thrower).returns.toBeNever()
 Generics can be used rather than references:
 
 ```typescript
-expectTypeOf<{a: string}>().not.toEqualTypeOf<{a: number}>()
+expectTypeOf<{a: string}>().not.toBeIdenticalTo<{a: number}>()
 ```
 
 Distinguish between missing/null/optional properties:
 
 ```typescript
-expectTypeOf<{a?: number}>().not.toEqualTypeOf<{}>()
-expectTypeOf<{a?: number}>().not.toEqualTypeOf<{a: number}>()
-expectTypeOf<{a?: number}>().not.toEqualTypeOf<{a: number | undefined}>()
-expectTypeOf<{a?: number | null}>().not.toEqualTypeOf<{a: number | null}>()
-expectTypeOf<{a: {b?: number}}>().not.toEqualTypeOf<{a: {}}>()
+expectTypeOf<{a?: number}>().not.toBeIdenticalTo<{}>()
+expectTypeOf<{a?: number}>().not.toBeIdenticalTo<{a: number}>()
+expectTypeOf<{a?: number}>().not.toBeIdenticalTo<{a: number | undefined}>()
+expectTypeOf<{a?: number | null}>().not.toBeIdenticalTo<{a: number | null}>()
+expectTypeOf<{a: {b?: number}}>().not.toBeIdenticalTo<{a: {}}>()
 ```
 
 Detect the difference between regular and readonly properties:
@@ -392,14 +379,14 @@ Detect the difference between regular and readonly properties:
 type A1 = {readonly a: string; b: string}
 type E1 = {a: string; b: string}
 
-expectTypeOf<A1>().toMatchTypeOf<E1>()
-expectTypeOf<A1>().not.toEqualTypeOf<E1>()
+expectTypeOf<A1>().toExtend<E1>()
+expectTypeOf<A1>().not.toBeIdenticalTo<E1>()
 
 type A2 = {a: string; b: {readonly c: string}}
 type E2 = {a: string; b: {c: string}}
 
-expectTypeOf<A2>().toMatchTypeOf<E2>()
-expectTypeOf<A2>().not.toEqualTypeOf<E2>()
+expectTypeOf<A2>().toExtend<E2>()
+expectTypeOf<A2>().not.toBeIdenticalTo<E2>()
 ```
 
 Distinguish between classes with different constructors:
@@ -418,7 +405,7 @@ class B {
   }
 }
 
-expectTypeOf<typeof A>().not.toEqualTypeOf<typeof B>()
+expectTypeOf<typeof A>().not.toBeIdenticalTo<typeof B>()
 
 class C {
   value: number
@@ -427,7 +414,7 @@ class C {
   }
 }
 
-expectTypeOf<typeof A>().toEqualTypeOf<typeof C>()
+expectTypeOf<typeof A>().toBeIdenticalTo<typeof C>()
 ```
 <!-- codegen:end -->
 

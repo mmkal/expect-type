@@ -1,54 +1,65 @@
+// This file makes sure that the old `toEqualTypeOf` and `toMatchTypeOf` methods are deprecated but not broken/removed.
+// If/when they're removed, this file can be deleted.
+
 /* eslint-disable mmkal/@typescript-eslint/no-empty-function */
 /* eslint-disable mmkal/@typescript-eslint/ban-ts-comment */
 import {expectTypeOf} from '../src'
 
 /* eslint mmkal/prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
 
-test("Check an object's type with `.toBeIdenticalTo`", () => {
-  expectTypeOf({a: 1}).toBeIdenticalTo<{a: number}>()
+test("Check an object's type with `.toEqualTypeOf`", () => {
+  expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('`.toBeIdenticalTo` fails on extra properties', () => {
+test('`.toEqualTypeOf` can check that two concrete objects have equivalent types', () => {
+  expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
+})
+
+test('`.toEqualTypeOf` succeeds for objects with different values, but the same type', () => {
+  expectTypeOf({a: 1}).toEqualTypeOf({a: 2})
+})
+
+test('`.toEqualTypeOf` fails on extra properties', () => {
   // @ts-expect-error
-  expectTypeOf({a: 1, b: 1}).toBeIdenticalTo<{a: number}>()
+  expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('To allow for extra properties, use `.toExtend`. This checks that an object "matches" a type. This is similar to jest\'s `.toMatchObject`', () => {
-  expectTypeOf({a: 1, b: 1}).toExtend<{a: number}>()
+test('To allow for extra properties, use `.toMatchTypeOf`. This checks that an object "matches" a type. This is similar to jest\'s `.toMatchObject`', () => {
+  expectTypeOf({a: 1, b: 1}).toMatchTypeOf({a: 1})
 })
 
-test('`.toBeIdenticalTo` and `.toExtend` both fail on missing properties', () => {
+test('`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties', () => {
   // @ts-expect-error
-  expectTypeOf({a: 1}).toBeIdenticalTo<{a: number; b: number}>()
+  expectTypeOf({a: 1}).toEqualTypeOf({a: 1, b: 1})
   // @ts-expect-error
-  expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
+  expectTypeOf({a: 1}).toMatchTypeOf({a: 1, b: 1})
 })
 
-test('Another example of the difference between `.toExtend` and `.toBeIdenticalTo`, using generics. `.toExtend` can be used for "is-a" relationships', () => {
+test('Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships', () => {
   type Fruit = {type: 'Fruit'; edible: boolean}
   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
 
-  expectTypeOf<Apple>().toExtend<Fruit>()
+  expectTypeOf<Apple>().toMatchTypeOf<Fruit>()
 
   // @ts-expect-error
-  expectTypeOf<Fruit>().toExtend<Apple>()
+  expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
 
   // @ts-expect-error
-  expectTypeOf<Apple>().toBeIdenticalTo<Fruit>()
+  expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
 })
 
 test('Assertions can be inverted with `.not`', () => {
-  expectTypeOf({a: 1}).not.toExtend<{b: number}>()
+  expectTypeOf({a: 1}).not.toMatchTypeOf({b: 1})
 })
 
 test('`.not` can be easier than relying on `// @ts-expect-error`', () => {
   type Fruit = {type: 'Fruit'; edible: boolean}
   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
 
-  expectTypeOf<Apple>().toExtend<Fruit>()
+  expectTypeOf<Apple>().toMatchTypeOf<Fruit>()
 
-  expectTypeOf<Fruit>().not.toExtend<Apple>()
-  expectTypeOf<Apple>().not.toBeIdenticalTo<Fruit>()
+  expectTypeOf<Fruit>().not.toMatchTypeOf<Apple>()
+  expectTypeOf<Apple>().not.toEqualTypeOf<Fruit>()
 })
 
 test('Catch any/unknown/never types', () => {
@@ -60,8 +71,8 @@ test('Catch any/unknown/never types', () => {
   expectTypeOf<never>().toBeNumber()
 })
 
-test('`.toBeIdenticalTo` distinguishes between deeply-nested `any` and `unknown` properties', () => {
-  expectTypeOf<{deeply: {nested: any}}>().not.toBeIdenticalTo<{deeply: {nested: unknown}}>()
+test('`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` properties', () => {
+  expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 })
 
 // eslint-disable-next-line mmkal/jest/valid-title
@@ -101,8 +112,8 @@ test('More `.not` examples', () => {
 })
 
 test('Detect assignability of unioned types', () => {
-  expectTypeOf<number>().toExtend<string | number>()
-  expectTypeOf<string | number>().not.toExtend<number>()
+  expectTypeOf<number>().toMatchTypeOf<string | number>()
+  expectTypeOf<string | number>().not.toMatchTypeOf<number>()
 })
 
 test('Use `.extract` and `.exclude` to narrow down complex union types', () => {
@@ -115,15 +126,15 @@ test('Use `.extract` and `.exclude` to narrow down complex union types', () => {
   expectTypeOf(getResponsiveProp(cssProperties))
     .exclude<unknown[]>()
     .exclude<{xs?: unknown}>()
-    .toBeIdenticalTo<CSSProperties>()
+    .toEqualTypeOf<CSSProperties>()
 
   expectTypeOf(getResponsiveProp(cssProperties))
     .extract<unknown[]>()
-    .toBeIdenticalTo<CSSProperties[]>()
+    .toEqualTypeOf<CSSProperties[]>()
 
   expectTypeOf(getResponsiveProp(cssProperties))
     .extract<{xs?: any}>()
-    .toBeIdenticalTo<{xs?: CSSProperties; sm?: CSSProperties; md?: CSSProperties}>()
+    .toEqualTypeOf<{xs?: CSSProperties; sm?: CSSProperties; md?: CSSProperties}>()
 
   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('sm')
   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().not.toHaveProperty('xxl')
@@ -151,21 +162,21 @@ test('Make assertions about object properties', () => {
   expectTypeOf(obj).toHaveProperty('a').not.toBeString()
 })
 
-test('`.toBeIdenticalTo` can be used to distinguish between functions', () => {
+test('`.toEqualTypeOf` can be used to distinguish between functions', () => {
   type NoParam = () => void
   type HasParam = (s: string) => void
 
-  expectTypeOf<NoParam>().not.toBeIdenticalTo<HasParam>()
+  expectTypeOf<NoParam>().not.toEqualTypeOf<HasParam>()
 })
 
 test("But often it's preferable to use `.parameters` or `.returns` for more specific function assertions", () => {
   type NoParam = () => void
   type HasParam = (s: string) => void
 
-  expectTypeOf<NoParam>().parameters.toBeIdenticalTo<[]>()
+  expectTypeOf<NoParam>().parameters.toEqualTypeOf<[]>()
   expectTypeOf<NoParam>().returns.toBeVoid()
 
-  expectTypeOf<HasParam>().parameters.toBeIdenticalTo<[string]>()
+  expectTypeOf<HasParam>().parameters.toEqualTypeOf<[string]>()
   expectTypeOf<HasParam>().returns.toBeVoid()
 })
 
@@ -177,14 +188,15 @@ test('More examples of ways to work with functions - parameters using `.paramete
   expectTypeOf(f).toBeCallableWith(1)
   expectTypeOf(f).not.toBeAny()
   expectTypeOf(f).returns.not.toBeAny()
-  expectTypeOf(f).returns.toBeIdenticalTo<number[]>()
-  expectTypeOf(f).parameter(0).not.toBeIdenticalTo<string>()
-  expectTypeOf(f).parameter(0).toBeIdenticalTo<number>()
+  expectTypeOf(f).returns.toEqualTypeOf([1, 2])
+  expectTypeOf(f).returns.toEqualTypeOf([1, 2, 3])
+  expectTypeOf(f).parameter(0).not.toEqualTypeOf('1')
+  expectTypeOf(f).parameter(0).toEqualTypeOf(1)
   expectTypeOf(1).parameter(0).toBeNever()
 
   const twoArgFunc = (a: number, b: string) => ({a, b})
 
-  expectTypeOf(twoArgFunc).parameters.toBeIdenticalTo<[number, string]>()
+  expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
 })
 
 test('You can also check type guards & type assertions', () => {
@@ -206,7 +218,7 @@ test('Assert on constructor parameters', () => {
   expectTypeOf(Date).toBeConstructibleWith(new Date())
   expectTypeOf(Date).toBeConstructibleWith()
 
-  expectTypeOf(Date).constructorParameters.toBeIdenticalTo<[] | [string | number | Date]>()
+  expectTypeOf(Date).constructorParameters.toEqualTypeOf<[] | [string | number | Date]>()
 })
 
 test('Check function `this` parameters', () => {
@@ -214,7 +226,7 @@ test('Check function `this` parameters', () => {
     return `Hello ${this.name}, here's your message: ${message}`
   }
 
-  expectTypeOf(greet).thisParameter.toBeIdenticalTo<{name: string}>()
+  expectTypeOf(greet).thisParameter.toEqualTypeOf<{name: string}>()
 })
 
 test('Distinguish between functions with different `this` parameters', () => {
@@ -226,7 +238,7 @@ test('Distinguish between functions with different `this` parameters', () => {
     return `Hi ${this.name}, here's your message: ${message}`
   }
 
-  expectTypeOf(greetFormal).not.toBeIdenticalTo<typeof greetCasual>()
+  expectTypeOf(greetFormal).not.toEqualTypeOf(greetCasual)
 })
 
 test('Class instance types', () => {
@@ -253,29 +265,29 @@ test('Check that functions never return', () => {
 })
 
 test('Generics can be used rather than references', () => {
-  expectTypeOf<{a: string}>().not.toBeIdenticalTo<{a: number}>()
+  expectTypeOf<{a: string}>().not.toEqualTypeOf<{a: number}>()
 })
 
 test('Distinguish between missing/null/optional properties', () => {
-  expectTypeOf<{a?: number}>().not.toBeIdenticalTo<{}>()
-  expectTypeOf<{a?: number}>().not.toBeIdenticalTo<{a: number}>()
-  expectTypeOf<{a?: number}>().not.toBeIdenticalTo<{a: number | undefined}>()
-  expectTypeOf<{a?: number | null}>().not.toBeIdenticalTo<{a: number | null}>()
-  expectTypeOf<{a: {b?: number}}>().not.toBeIdenticalTo<{a: {}}>()
+  expectTypeOf<{a?: number}>().not.toEqualTypeOf<{}>()
+  expectTypeOf<{a?: number}>().not.toEqualTypeOf<{a: number}>()
+  expectTypeOf<{a?: number}>().not.toEqualTypeOf<{a: number | undefined}>()
+  expectTypeOf<{a?: number | null}>().not.toEqualTypeOf<{a: number | null}>()
+  expectTypeOf<{a: {b?: number}}>().not.toEqualTypeOf<{a: {}}>()
 })
 
 test('Detect the difference between regular and readonly properties', () => {
   type A1 = {readonly a: string; b: string}
   type E1 = {a: string; b: string}
 
-  expectTypeOf<A1>().toExtend<E1>()
-  expectTypeOf<A1>().not.toBeIdenticalTo<E1>()
+  expectTypeOf<A1>().toMatchTypeOf<E1>()
+  expectTypeOf<A1>().not.toEqualTypeOf<E1>()
 
   type A2 = {a: string; b: {readonly c: string}}
   type E2 = {a: string; b: {c: string}}
 
-  expectTypeOf<A2>().toExtend<E2>()
-  expectTypeOf<A2>().not.toBeIdenticalTo<E2>()
+  expectTypeOf<A2>().toMatchTypeOf<E2>()
+  expectTypeOf<A2>().not.toEqualTypeOf<E2>()
 })
 
 test('Distinguish between classes with different constructors', () => {
@@ -292,7 +304,7 @@ test('Distinguish between classes with different constructors', () => {
     }
   }
 
-  expectTypeOf<typeof A>().not.toBeIdenticalTo<typeof B>()
+  expectTypeOf<typeof A>().not.toEqualTypeOf<typeof B>()
 
   class C {
     value: number
@@ -301,5 +313,5 @@ test('Distinguish between classes with different constructors', () => {
     }
   }
 
-  expectTypeOf<typeof A>().toBeIdenticalTo<typeof C>()
+  expectTypeOf<typeof A>().toEqualTypeOf<typeof C>()
 })
