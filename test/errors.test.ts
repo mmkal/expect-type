@@ -72,36 +72,71 @@ test('toBeIdenticalTo special types', async () => {
 test('toBeIdenticalTo with literals', async () => {
   expect(
     tsErrors(
-      `expectTypeOf<{a: string}>().toBeIdenticalTo<{a: 'literalstring'}>()`,
-      `expectTypeOf<{a: 'literalstring'}>().toBeIdenticalTo<{a: string}>()`,
-      `expectTypeOf<{a: 'literalstring'}>().toBeIdenticalTo<{a: 'otherliteralstring'}>()`,
+      `expectTypeOf<{a: string}>().toBeIdenticalTo<{a: 'abc'}>()`,
+      `expectTypeOf<{a: 'abc'}>().toBeIdenticalTo<{a: string}>()`,
+      `expectTypeOf<{a: 'abc'}>().toBeIdenticalTo<{a: 'xyz'}>()`,
       `expectTypeOf<{a: number}>().toBeIdenticalTo<{a: 1}>()`,
+      `expectTypeOf<{a: 1}>().toBeIdenticalTo<{a: number}>()`,
+      `expectTypeOf<{a: 1}>().toBeIdenticalTo<{a: 2}>()`,
+      `expectTypeOf<{a: boolean}>().toBeIdenticalTo<{a: true}>()`,
+      `expectTypeOf<{a: true}>().toBeIdenticalTo<{a: boolean}>()`,
+      `expectTypeOf<{a: true}>().toBeIdenticalTo<{a: false}>()`,
     ),
   ).toMatchInlineSnapshot(`
-    "test/test.ts:9:99 - error TS2344: Type '{ a: \\"literalstring\\"; }' does not satisfy the constraint '{ a: \\"Expected: literal string: literalstring, Actual: string\\"; }'.
+    "test/test.ts:9:99 - error TS2344: Type '{ a: \\"abc\\"; }' does not satisfy the constraint '{ a: \\"Expected: literal string: abc, Actual: string\\"; }'.
       Types of property 'a' are incompatible.
-        Type '\\"literalstring\\"' is not assignable to type '\\"Expected: literal string: literalstring, Actual: string\\"'.
+        Type '\\"abc\\"' is not assignable to type '\\"Expected: literal string: abc, Actual: string\\"'.
 
-    9 expectTypeOf<{a: string}>().toBeIdenticalTo<{a: 'literalstring'}>()
-                                                  ~~~~~~~~~~~~~~~~~~~~
-    test/test.ts:9:99 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: literal string: literalstring\\"; }'.
+    9 expectTypeOf<{a: string}>().toBeIdenticalTo<{a: 'abc'}>()
+                                                  ~~~~~~~~~~
+    test/test.ts:9:99 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: literal string: abc\\"; }'.
       Types of property 'a' are incompatible.
-        Type 'string' is not assignable to type '\\"Expected: string, Actual: literal string: literalstring\\"'.
+        Type 'string' is not assignable to type '\\"Expected: string, Actual: literal string: abc\\"'.
 
-    9 expectTypeOf<{a: 'literalstring'}>().toBeIdenticalTo<{a: string}>()
-                                                           ~~~~~~~~~~~
-    test/test.ts:9:99 - error TS2344: Type '{ a: \\"otherliteralstring\\"; }' does not satisfy the constraint '{ a: \\"Expected: literal string: otherliteralstring, Actual: literal string: literalstring\\"; }'.
+    9 expectTypeOf<{a: 'abc'}>().toBeIdenticalTo<{a: string}>()
+                                                 ~~~~~~~~~~~
+    test/test.ts:9:99 - error TS2344: Type '{ a: \\"xyz\\"; }' does not satisfy the constraint '{ a: \\"Expected: literal string: xyz, Actual: literal string: abc\\"; }'.
       Types of property 'a' are incompatible.
-        Type '\\"otherliteralstring\\"' is not assignable to type '\\"Expected: literal string: otherliteralstring, Actual: literal string: literalstring\\"'.
+        Type '\\"xyz\\"' is not assignable to type '\\"Expected: literal string: xyz, Actual: literal string: abc\\"'.
 
-    9 expectTypeOf<{a: 'literalstring'}>().toBeIdenticalTo<{a: 'otherliteralstring'}>()
-                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~
+    9 expectTypeOf<{a: 'abc'}>().toBeIdenticalTo<{a: 'xyz'}>()
+                                                 ~~~~~~~~~~
     test/test.ts:9:99 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 1, Actual: number\\"; }'.
       Types of property 'a' are incompatible.
         Type '1' is not assignable to type '\\"Expected: literal number: 1, Actual: number\\"'.
 
     9 expectTypeOf<{a: number}>().toBeIdenticalTo<{a: 1}>()
                                                   ~~~~~~
+    test/test.ts:9:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: literal number: 1\\"; }'.
+      Types of property 'a' are incompatible.
+        Type 'number' is not assignable to type '\\"Expected: number, Actual: literal number: 1\\"'.
+
+    9 expectTypeOf<{a: 1}>().toBeIdenticalTo<{a: number}>()
+                                             ~~~~~~~~~~~
+    test/test.ts:9:99 - error TS2344: Type '{ a: 2; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 2, Actual: literal number: 1\\"; }'.
+      Types of property 'a' are incompatible.
+        Type '2' is not assignable to type '\\"Expected: literal number: 2, Actual: literal number: 1\\"'.
+
+    9 expectTypeOf<{a: 1}>().toBeIdenticalTo<{a: 2}>()
+                                             ~~~~~~
+    test/test.ts:9:99 - error TS2344: Type '{ a: true; }' does not satisfy the constraint '{ a: \\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"; }'.
+      Types of property 'a' are incompatible.
+        Type 'true' is not assignable to type '\\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"'.
+
+    9 expectTypeOf<{a: boolean}>().toBeIdenticalTo<{a: true}>()
+                                                   ~~~~~~~~~
+    test/test.ts:99:99 - error TS2344: Type '{ a: boolean; }' does not satisfy the constraint '{ a: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+      Types of property 'a' are incompatible.
+        Type 'boolean' is not assignable to type '\\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"'.
+
+    99 expectTypeOf<{a: true}>().toBeIdenticalTo<{a: boolean}>()
+                                                 ~~~~~~~~~~~~
+    test/test.ts:99:99 - error TS2344: Type '{ a: false; }' does not satisfy the constraint '{ a: \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+      Types of property 'a' are incompatible.
+        Type 'false' is not assignable to type '\\"Expected: literal boolean: false, Actual: literal boolean: true\\"'.
+
+    99 expectTypeOf<{a: true}>().toBeIdenticalTo<{a: false}>()
+                                                 ~~~~~~~~~~
     "
   `)
 })
