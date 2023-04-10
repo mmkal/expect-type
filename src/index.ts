@@ -11,6 +11,7 @@ export type IsNever<T> = [T] extends [never] ? true : false
 export type IsAny<T> = [T] extends [Secret] ? Not<IsNever<T>> : false
 export type IsUnknown<T> = [unknown] extends [T] ? Not<IsAny<T>> : false
 export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
+export type IsEmptyObject<T> = And<[Extends<T, {}>, Extends<{}, T>, IsNever<keyof T>]>
 export type BrandSpecial<T> = IsAny<T> extends true
   ? {special: true; type: 'any'}
   : IsUnknown<T> extends true
@@ -45,7 +46,11 @@ export type PrintType<T> = IsUnknown<T> extends true
   ? 'function'
   : T extends []
   ? '[]'
+  : IsEmptyObject<T> extends true
+  ? '{}'
   : '...'
+
+type ieo1 = [IsEmptyObject<{}>, IsEmptyObject<Record<string, unknown>>, IsEmptyObject<string>]
 
 // Helper for showing end-user a hint why their type assertion is failing.
 // This swaps "leaf" types with a literal message about what the actual and expected types are.
@@ -372,7 +377,7 @@ type UnionToIntersection<T> = T // (T extends any ? (x: T) => any : never) exten
 type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
 type TypeRecordInner<T, Props extends string = never, Path extends string = ''> = Or<
-  [IsAny<T>, IsUnknown<T>, IsNever<T>]
+  [IsAny<T>, IsUnknown<T>, IsNever<T>, IsEmptyObject<T>]
 > extends true
   ? Props | `${Path}: ${IsAny<T> extends true ? 'any' : PrintType<T>}`
   : T extends string | number | boolean | null | undefined | readonly []
@@ -395,12 +400,22 @@ type TypeRecordInner<T, Props extends string = never, Path extends string = ''> 
   ? TypeRecordInner<Args, Props, `${Path}:args`> &
       TypeRecordInner<Return, Props, `${Path}:return`> &
       TypeRecordInner<Omit<T, keyof Function>, Props, Path> // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
-  : // prettier-ignore
-    NonNullable<{[K in keyof T]-?: TypeRecordInner<T[K], Props, `${Path}.${Extract<K, string | number>}`>}>
-// NonNullable<{[K in keyof T]-?: TypeRecordInner<NonNullable<T>[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T> ? '(readonly)' : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> extends infer X ? {x: X; kx: keyof X; xkx: X[keyof X]} : never // RUTI<NonNullable<{[K in keyof T]: TypeRecordInner<T[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T>  ? '(readonly)' : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> >
+  : NonNullable<{
+      [K in keyof T]-?: TypeRecordInner<
+        T[K],
+        Props,
+        `${Path}.${Bracketize<Extract<K, string | number>>}${K extends ReadonlyKeys<T>
+          ? '(readonly)'
+          : ''}${K extends OptionalKeys<T> ? '?' : ''}`
+      >
+    }>
 
-type exx<T> = T extends {slice: any} ? T : T[keyof T]
-type t2 = TypeRecord<{a?: {b: 1}}>
+export type Split<S extends string, Delimiter extends string> = S extends `${infer Head}${Delimiter}${infer Tail}`
+  ? [Head, ...Split<Tail, Delimiter>]
+  : S extends Delimiter
+  ? []
+  : [S]
+type Bracketize<Prop extends string | number> = Prop extends `${string}.${string}` ? `[${Prop}]` : Prop
 
 type start = {
   a:
@@ -464,9 +479,12 @@ type obj = {
   }
 }
 
-type TypeRecord<T> = extractstrings<{
-  [K in keyof TypeRecordInner<T>]: TypeRecordInner<T>[K]
-}>
+type TypeRecord<T> = Record<
+  extractstrings<{
+    [K in keyof TypeRecordInner<T>]: TypeRecordInner<T>[K]
+  }>,
+  0
+>
 
 type tt = TypeRecord<obj>
 type t3 = TypeRecord<'a' | undefined>
