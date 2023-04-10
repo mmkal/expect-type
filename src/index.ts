@@ -367,6 +367,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
   return obj as ExpectTypeOf<Actual, true>
 }
 
+type RealUnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never
 type UnionToIntersection<T> = T // (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never
 type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
@@ -393,9 +394,10 @@ type TypeRecordInner<T, Record = {}, Path extends string = ''> = Or<[IsAny<T>, I
       TypeRecordInner<Return, Record, `${Path}:return`> &
       TypeRecordInner<Omit<T, keyof Function>, Record, Path> // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
   : // prettier-ignore
-    NonNullable<{[K in keyof T]: TypeRecordInner<T[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T>
+    RUTI<NonNullable<{[K in keyof T]: TypeRecordInner<T[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T>
       ? '(readonly)'
-      : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> // UnionToIntersection< {[K in keyof T]: 111}[keyof T]>
+      : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> >
+// UnionToIntersection< {[K in keyof T]: 111}[keyof T]>
 type x = 1 extends 1
   ? 1
   : UnionToIntersection<
@@ -413,6 +415,11 @@ type x = 1 extends 1
 type obj = {
   deeply: {
     nested: {
+      optional?: 1
+      readonly readonly: 1
+      readonly optionalreadonly?: 1
+      orundefined: 1 | undefined
+      ornull: 1 | null
       empty: []
       one: ['a']
       const: readonly [1]
@@ -428,7 +435,7 @@ type obj = {
       any: any
       never: never
       unknown: unknown
-      partialish: {a: 1; b: 2}
+      partialish: {a?: 1; b: 2}
     }
     other: {
       val: 1
@@ -453,6 +460,42 @@ type u = {
         '.a?': 'literal number: 1'
       }
     | undefined
+  b?:
+    | {
+        '.b?': 'undefined'
+      }
+    | {
+        '.b?': 'literal number: 1'
+      }
+    | undefined
 }
+type MergyThingKeys<T> = NonNullable<
+  {
+    [K in keyof NonNullable<T>]: NonNullable<K>
+  }[keyof NonNullable<T>]
+>
+
+type u2 = NonNullable<u[keyof u]>
 type k = keyof u
+type x = NonNullable<
+  {
+    [K in keyof u]: NonNullable<K>
+  }[keyof u]
+>
+type x2 = MergyThingKeys<u>
+type x3 = RealUnionToIntersection<
+  {
+    [K in MergyThingKeys<u>]: {
+      [J in keyof NonNullable<u[K]>]: NonNullable<u[K]>[J]
+    }
+  }[MergyThingKeys<u>]
+>
+
+type RUTI<U> = RealUnionToIntersection<
+  {
+    [K in MergyThingKeys<U>]: {
+      [J in keyof NonNullable<U[K]>]: NonNullable<U[K]>[J]
+    }
+  }[MergyThingKeys<U>]
+>
 type v = NonNullable<u['a']>['.a?']
