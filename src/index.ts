@@ -43,6 +43,8 @@ export type PrintType<T> = IsUnknown<T> extends true
   ? 'undefined'
   : T extends (...args: any[]) => any
   ? 'function'
+  : T extends []
+  ? '[]'
   : '...'
 
 // Helper for showing end-user a hint why their type assertion is failing.
@@ -364,3 +366,58 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
 
   return obj as ExpectTypeOf<Actual, true>
 }
+
+type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never
+type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+
+type TypeRecordInner<T, Record = {}, Path extends string = ''> = Or<[IsAny<T>, IsUnknown<T>, IsNever<T>]> extends true
+  ? Record & {[K in Path]: IsAny<T> extends true ? 'any' : PrintType<T>}
+  : T extends string | number | boolean | null | undefined | []
+  ? Record & {[K in Path]: PrintType<T>}
+  : T extends [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
+  ? UnionToIntersection<
+      {
+        [K in keyof T]: TypeRecordInner<T[K], Record, `${Path}[${Extract<K, Digit>}]`>
+      }[Extract<keyof T, Digit> | number]
+    >
+  : T extends Array<infer X>
+  ? TypeRecordInner<X, Record, `${Path}[]`>
+  : T extends (...args: infer Args) => infer Return
+  ? TypeRecordInner<Args, Record, `${Path}:args`> &
+      TypeRecordInner<Return, Record, `${Path}:return`> &
+      TypeRecordInner<Omit<T, keyof Function>, Record, Path> // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
+  : UnionToIntersection<
+      {
+        [K in keyof T]: TypeRecordInner<T[K], Record, `${Path}.${Extract<K, string | number>}`>
+      }[keyof T]
+    >
+
+const obj = {
+  deeply: {
+    nested: {
+      empty: [] as [],
+      one: ['a'] as ['a'],
+      two: ['a', 'b'] as ['a', 'b'],
+      arr: ['a', 'b', 'c'],
+      value: 123,
+      str: 'hi',
+      fn: (x: 1) => x + x,
+      fn2: () => 1,
+      augmented: Object.assign((x: 1, y: 2) => x + y, {abc: 123}),
+      null: null,
+      undefined,
+      any: 1 as any,
+      never: 1 as never,
+      unknown: 1 as unknown,
+    },
+    other: {
+      val: 1,
+    },
+  },
+}
+
+type TypeRecord<T> = {
+  [K in keyof TypeRecordInner<T>]: TypeRecordInner<T>[K]
+}
+
+type tt = TypeRecord<typeof obj>
