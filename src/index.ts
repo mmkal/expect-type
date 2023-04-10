@@ -418,6 +418,7 @@ type obj = {
       optional?: 1
       readonly readonly: 1
       readonly optionalreadonly?: 1
+      optionalobj?: {a: 1}
       orundefined: 1 | undefined
       ornull: 1 | null
       empty: []
