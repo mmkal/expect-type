@@ -394,9 +394,10 @@ type TypeRecordInner<T, Record = {}, Path extends string = ''> = Or<[IsAny<T>, I
       TypeRecordInner<Return, Record, `${Path}:return`> &
       TypeRecordInner<Omit<T, keyof Function>, Record, Path> // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
   : // prettier-ignore
-    RUTI<NonNullable<{[K in keyof T]: TypeRecordInner<T[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T>
-      ? '(readonly)'
-      : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> >
+  NonNullable<{[K in keyof T]-?: TypeRecordInner<NonNullable<T>[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T> ? '(readonly)' : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> extends infer X ? {x: X; kx: keyof X; xkx: X[keyof X]} : never // RUTI<NonNullable<{[K in keyof T]: TypeRecordInner<T[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T>  ? '(readonly)' : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> >
+
+type t2 = TypeRecord<{a?: {b: 1}}>
+
 // UnionToIntersection< {[K in keyof T]: 111}[keyof T]>
 type x = 1 extends 1
   ? 1
@@ -449,7 +450,6 @@ type TypeRecord<T> = {
 }
 
 type tt = TypeRecord<obj>
-type t2 = TypeRecord<{a?: 1; b?: 1}>
 type t3 = TypeRecord<'a' | undefined>
 
 type u = {
