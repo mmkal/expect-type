@@ -371,33 +371,52 @@ type RealUnionToIntersection<T> = (T extends any ? (x: T) => any : never) extend
 type UnionToIntersection<T> = T // (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never
 type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
-type TypeRecordInner<T, Record = {}, Path extends string = ''> = Or<[IsAny<T>, IsUnknown<T>, IsNever<T>]> extends true
-  ? Record & {[K in Path]: IsAny<T> extends true ? 'any' : PrintType<T>}
+type TypeRecordInner<T, Props extends string = never, Path extends string = ''> = Or<
+  [IsAny<T>, IsUnknown<T>, IsNever<T>]
+> extends true
+  ? Props | `${Path}: ${IsAny<T> extends true ? 'any' : PrintType<T>}`
   : T extends string | number | boolean | null | undefined | readonly []
-  ? Record & {[K in Path]: PrintType<T>}
+  ? Props | `${Path}: ${IsAny<T> extends true ? 'any' : PrintType<T>}`
   : T extends [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? UnionToIntersection<
       {
-        [K in keyof T]: TypeRecordInner<T[K], Record, `${Path}[${Extract<K, Digit>}]`>
+        [K in keyof T]: TypeRecordInner<T[K], Props, `${Path}[${Extract<K, Digit>}]`>
       }[Extract<keyof T, Digit> | number]
     >
   : T extends readonly [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? UnionToIntersection<
       {
-        [K in keyof T]: TypeRecordInner<T[K], Record, `${Path}[${Extract<K, Digit>}](readonly)`>
+        [K in keyof T]: TypeRecordInner<T[K], Props, `${Path}[${Extract<K, Digit>}](readonly)`>
       }[Extract<keyof T, Digit> | number]
     >
   : T extends Array<infer X>
-  ? TypeRecordInner<X, Record, `${Path}[]`>
+  ? TypeRecordInner<X, Props, `${Path}[]`>
   : T extends (...args: infer Args) => infer Return
-  ? TypeRecordInner<Args, Record, `${Path}:args`> &
-      TypeRecordInner<Return, Record, `${Path}:return`> &
-      TypeRecordInner<Omit<T, keyof Function>, Record, Path> // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
+  ? TypeRecordInner<Args, Props, `${Path}:args`> &
+      TypeRecordInner<Return, Props, `${Path}:return`> &
+      TypeRecordInner<Omit<T, keyof Function>, Props, Path> // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
   : // prettier-ignore
-  NonNullable<{[K in keyof T]-?: TypeRecordInner<NonNullable<T>[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T> ? '(readonly)' : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> extends infer X ? {x: X; kx: keyof X; xkx: X[keyof X]} : never // RUTI<NonNullable<{[K in keyof T]: TypeRecordInner<T[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T>  ? '(readonly)' : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> >
+    NonNullable<{[K in keyof T]-?: TypeRecordInner<T[K], Props, `${Path}.${Extract<K, string | number>}`>}>
+// NonNullable<{[K in keyof T]-?: TypeRecordInner<NonNullable<T>[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T> ? '(readonly)' : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> extends infer X ? {x: X; kx: keyof X; xkx: X[keyof X]} : never // RUTI<NonNullable<{[K in keyof T]: TypeRecordInner<T[K], Record, `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T>  ? '(readonly)' : ''}${K extends OptionalKeys<T> ? '?' : ''}`>}> >
 
+type exx<T> = T extends {slice: any} ? T : T[keyof T]
 type t2 = TypeRecord<{a?: {b: 1}}>
 
+type start = {
+  a:
+    | '.a: undefined'
+    | {
+        b: '.a.b: literal number: 1'
+      }
+}
+
+type extractstrings<T> = T extends string
+  ? T
+  : {
+      [K in keyof T]: T[K] extends string ? T[K] : extractstrings<T[K]>
+    }[keyof T]
+
+type t4 = extractstrings<start>
 // UnionToIntersection< {[K in keyof T]: 111}[keyof T]>
 type x = 1 extends 1
   ? 1
@@ -445,9 +464,9 @@ type obj = {
   }
 }
 
-type TypeRecord<T> = {
+type TypeRecord<T> = extractstrings<{
   [K in keyof TypeRecordInner<T>]: TypeRecordInner<T>[K]
-}
+}>
 
 type tt = TypeRecord<obj>
 type t3 = TypeRecord<'a' | undefined>
