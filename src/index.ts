@@ -50,8 +50,6 @@ export type PrintType<T> = IsUnknown<T> extends true
   ? '{}'
   : '...'
 
-type ieo1 = [IsEmptyObject<{}>, IsEmptyObject<Record<string, unknown>>, IsEmptyObject<string>]
-
 // Helper for showing end-user a hint why their type assertion is failing.
 // This swaps "leaf" types with a literal message about what the actual and expected types are.
 // Needs to check for Not<IsAny<Actual>> because otherwise LeafTypeOf<Actual> returns never, which extends everything 🤔
@@ -282,6 +280,8 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
   resolves: Actual extends PromiseLike<infer R> ? ExpectTypeOf<R, B> : never
   items: Actual extends ArrayLike<infer R> ? ExpectTypeOf<R, B> : never
   guards: Actual extends (v: any, ...args: any[]) => v is infer T ? ExpectTypeOf<T, B> : never
+  view: {[K in keyof Actual]: Actual[K]}
+  props: {[K in keyof Props<Actual>]: Props<Actual>[K]}
   asserts: Actual extends (v: any, ...args: any[]) => asserts v is infer T
     ? // Guard methods `(v: any) => asserts v is T` does not actually defines a return type. Thus, any function taking 1 argument matches the signature before.
       // In case the inferred assertion type `R` could not be determined (so, `unknown`), consider the function as a non-guard, and return a `never` type.
@@ -333,6 +333,8 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
     'instance',
     'guards',
     'asserts',
+    'view',
+    'props',
   ] as const
   type Keys = keyof ExpectTypeOf<any, any>
 
@@ -397,97 +399,58 @@ type TypeRecordInner<T, Props extends string = never, Path extends string = ''> 
   : T extends Array<infer X>
   ? TypeRecordInner<X, Props, `${Path}[]`>
   : T extends (...args: infer Args) => infer Return
-  ? TypeRecordInner<Args, Props, `${Path}:args`> &
-      TypeRecordInner<Return, Props, `${Path}:return`> &
-      TypeRecordInner<Omit<T, keyof Function>, Props, Path> // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
+  ?
+      | TypeRecordInner<Args, Props, `${Path}:args`>
+      | TypeRecordInner<Return, Props, `${Path}:return`>
+      | (IsEmptyObject<Omit<T, keyof Function>> extends true
+          ? never
+          : TypeRecordInner<Omit<T, keyof Function>, Props, Path>) // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
   : NonNullable<{
       [K in keyof T]-?: TypeRecordInner<
         T[K],
         Props,
-        `${Path}.${Bracketize<Extract<K, string | number>>}${K extends ReadonlyKeys<T>
+        `${Path}.${EscapeProp<Extract<K, string | number>>}${K extends ReadonlyKeys<T>
           ? '(readonly)'
           : ''}${K extends OptionalKeys<T> ? '?' : ''}`
       >
     }>
 
-export type Split<S extends string, Delimiter extends string> = S extends `${infer Head}${Delimiter}${infer Tail}`
-  ? [Head, ...Split<Tail, Delimiter>]
-  : S extends Delimiter
-  ? []
-  : [S]
-type Bracketize<Prop extends string | number> = Prop extends `${string}.${string}` ? `[${Prop}]` : Prop
-
-type start = {
-  a:
-    | '.a: undefined'
-    | {
-        b: '.a.b: literal number: 1'
-      }
-}
-
-type extractstrings<T> = T extends string
+type ExtractStrings<T> = T extends string
   ? T
   : {
-      [K in keyof T]: T[K] extends string ? T[K] : extractstrings<T[K]>
+      [K in keyof T]: T[K] extends string ? T[K] : ExtractStrings<T[K]>
     }[keyof T]
 
-type t4 = extractstrings<start>
-// UnionToIntersection< {[K in keyof T]: 111}[keyof T]>
-type x = 1 extends 1
-  ? 1
-  : UnionToIntersection<
-      {
-        [K in keyof T]: TypeRecordInner<
-          T[K],
-          Record,
-          `${Path}.${Extract<K, string | number>}${K extends ReadonlyKeys<T>
-            ? '(readonly)'
-            : ''}${K extends OptionalKeys<T> ? '?' : ''}`
-        >
-      }[keyof T]
-    >
+type EscapeableCharacters<Escapes extends Record<string, string>> = Extract<keyof Escapes, string>
+type Escape<
+  S extends string | number,
+  Escapes extends Record<string, string>,
+> = S extends `${infer Head}${EscapeableCharacters<Escapes>}${string}`
+  ? Head extends `${string}${EscapeableCharacters<Escapes>}${string}`
+    ? never
+    : S extends `${Head}${EscapeableCharacters<Escapes>}${infer Tail}`
+    ? S extends `${Head}${infer Escapeable}${Tail}`
+      ? `${Head}${Escapes[Escapeable]}${Escape<Tail, Escapes>}`
+      : never
+    : never
+  : S
 
-type obj = {
-  deeply: {
-    nested: {
-      optional?: 1
-      readonly readonly: 1
-      readonly optionalreadonly?: 1
-      optionalobj?: {a: 1}
-      orundefined: 1 | undefined
-      ornull: 1 | null
-      empty: []
-      one: ['a']
-      const: readonly [1]
-      two: ['a', 'b']
-      arr: string[]
-      value: number
-      str: string
-      fn: (x: 1) => number
-      fn2: () => number
-      augmented: ((x: 1, y: 2) => number) & {abc: 123}
-      null: null
-      undefined: undefined
-      any: any
-      never: never
-      unknown: unknown
-      partialish: {a?: 1; b: 2}
-    }
-    other: {
-      val: 1
-    }
+export type EscapeProp<S extends string | number> = Escape<
+  S,
+  {
+    [K in '\\' | '.' | ' ' | '[' | ']']: `\\${K}`
   }
-}
+>
 
-type TypeRecord<T> = Record<
-  extractstrings<{
+export type Props<T> = Record<
+  ExtractStrings<{
     [K in keyof TypeRecordInner<T>]: TypeRecordInner<T>[K]
   }>,
   0
 >
 
-type tt = TypeRecord<obj>
-type t3 = TypeRecord<'a' | undefined>
+type tt = Props<1>
+type t3 = Props<'a' | undefined>
 
 type u = {
   a?:
