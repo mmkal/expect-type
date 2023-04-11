@@ -9,33 +9,33 @@ expectTypeOf<IsEmptyObject<Record<string, unknown>>>().toBeIdenticalTo<false>()
 expectTypeOf<IsEmptyObject<() => 1>>().toBeIdenticalTo<false>()
 
 expectTypeOf<PrintProps<{x: 1}>>().toExtend<{
-  '.x': 'literal number: 1'
+  '.x': 'number: 1'
 }>()
 
 expectTypeOf<PrintProps<{x: 1; y: '1'}>>().toBeIdenticalTo<{
-  '.x': 'literal number: 1'
-  '.y': 'literal string: 1'
+  '.x': 'number: 1'
+  '.y': 'string: 1'
 }>()
 
 expectTypeOf<PrintProps<{x?: 1}>>().toExtend<{
-  '.x?': 'undefined' | 'literal number: 1'
+  '.x?': 'undefined' | 'number: 1'
 }>()
 
 expectTypeOf<PrintProps<{x?: {readonly y?: 1}}>>().toExtend<{
   '.x?': 'undefined'
-  '.x?.y(readonly)?': 'undefined' | 'literal number: 1'
+  '.x?.y(readonly)?': 'undefined' | 'number: 1'
 }>()
 
 expectTypeOf<PrintProps<{x?: () => 1}>>().toExtend<{
   '.x?': 'undefined'
   '.x?:args': '[]'
-  '.x?:return': 'literal number: 1'
+  '.x?:return': 'number: 1'
 }>()
 
 expectTypeOf<PrintProps<{x: undefined | (() => 1)}>>().toExtend<{
   '.x': 'undefined'
   '.x:args': '[]'
-  '.x:return': 'literal number: 1'
+  '.x:return': 'number: 1'
 }>()
 
 expectTypeOf<PrintProps<{x: () => () => () => void}>>().toBeIdenticalTo<{
@@ -50,9 +50,9 @@ expectTypeOf<PrintProps<{x: () => () => () => void}>>().toBeIdenticalTo<{
 
 // escape dots/spaces
 expectTypeOf<PrintProps<{a: {b: 1}; 'a.b': 2; 'a b': 3}>>().toBeIdenticalTo<{
-  '.a.b': 'literal number: 1'
-  '.a\\.b': 'literal number: 2'
-  '.a\\ b': 'literal number: 3'
+  '.a.b': 'number: 1'
+  '.a\\.b': 'number: 2'
+  '.a\\ b': 'number: 3'
 }>()
 
 // handle recursive properties

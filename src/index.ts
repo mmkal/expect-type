@@ -12,13 +12,6 @@ export type IsAny<T> = [T] extends [Secret] ? Not<IsNever<T>> : false
 export type IsUnknown<T> = [unknown] extends [T] ? Not<IsAny<T>> : false
 export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
 export type IsEmptyObject<T> = And<[Extends<T, {}>, Extends<{}, T>, IsNever<keyof T>]>
-export type BrandSpecial<T> = IsAny<T> extends true
-  ? {special: true; type: 'any'}
-  : IsUnknown<T> extends true
-  ? {special: true; type: 'unknown'}
-  : IsNever<T> extends true
-  ? {special: true; type: 'never'}
-  : never
 
 export type PrintType<T> = IsUnknown<T> extends true
   ? 'unknown'
@@ -29,15 +22,15 @@ export type PrintType<T> = IsUnknown<T> extends true
   : T extends string
   ? string extends T
     ? 'string'
-    : `literal string: ${T}`
+    : `string: ${T}`
   : T extends number
   ? number extends T
     ? 'number'
-    : `literal number: ${T}`
+    : `number: ${T}`
   : T extends boolean
   ? boolean extends T
     ? 'boolean'
-    : `literal boolean: ${T}`
+    : `boolean: ${T}`
   : T extends null
   ? 'null'
   : T extends undefined
@@ -65,52 +58,6 @@ export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '..
   : Equal<Actual, Expected> extends true
   ? Actual
   : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Actual>}`
-
-/**
- * Recursively walk a type and replace it with a branded type related to the original. This is useful for
- * equality-checking stricter than `A extends B ? B extends A ? true : false : false`, because it detects
- * the difference between a few edge-case types that vanilla typescript doesn't by default:
- * - `any` vs `unknown`
- * - `{ readonly a: string }` vs `{ a: string }`
- * - `{ a?: string }` vs `{ a: string | undefined }`
- */
-export type DeepBrand<T> = IsNever<T> extends true
-  ? {type: 'never'}
-  : IsAny<T> extends true
-  ? {type: 'any'}
-  : IsUnknown<T> extends true
-  ? {type: 'unknown'}
-  : T extends string | number | boolean | symbol | bigint | null | undefined | void
-  ? {
-      type: 'primitive'
-      value: T
-    }
-  : T extends new (...args: any[]) => any
-  ? {
-      type: 'constructor'
-      params: ConstructorParams<T>
-      instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>>
-    }
-  : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
-  ? {
-      type: 'function'
-      params: DeepBrand<P>
-      return: DeepBrand<R>
-      this: DeepBrand<ThisParameterType<T>>
-    }
-  : T extends any[]
-  ? {
-      type: 'array'
-      items: {[K in keyof T]: T[K]}
-    }
-  : {
-      type: 'object'
-      properties: {[K in keyof T]: DeepBrand<T[K]>}
-      readonly: ReadonlyKeys<T>
-      required: RequiredKeys<T>
-      optional: OptionalKeys<T>
-      constructorParams: DeepBrand<ConstructorParams<T>>
-    }
 
 export type RequiredKeys<T> = Extract<
   {
@@ -376,6 +323,19 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
   return obj as ExpectTypeOf<Actual, true>
 }
 
+/**
+ * Recursively "print" all props (including optional and readonly modifiers, constructor and function parameters, instance types, return values, this-parameters, etc.)
+ * The output type is a string->string record where the left hand side consists of paths to "leaf" properties, and the right hand side are a literal string representation
+ * of the leaf property type.
+ *
+ * Note: what defines a "leaf" is somewhat loose, but roughly, it's anything that it's not worth recursing any further into. So any literal or primitive (string, boolean, number)
+ * but also `any`, `unknown`, `never`, `{}`, `[]`, `void`, `null`, `undefined` etc. are considered "leaf" types too.
+ *
+ * Note: this will bail out at 20 properties deep to avoid `interface X { x: X }` blowing things up.
+ *
+ * Note: the main implementation of this is in @see PrintPropsInner - that creates the `[string[], string]` Path->Printed Type union of pairs. See print-type.test.ts for
+ * a demo of what "printed" types end up looking like.
+ */
 export type PrintProps<T> = ExtractPropPairs<PrintPropsInner<T>> extends [infer Keys, any]
   ? {
       [K in Extract<Keys, string>]: Extract<ExtractPropPairs<PrintPropsInner<T>>, [K, any]>[1]

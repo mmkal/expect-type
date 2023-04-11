@@ -79,9 +79,9 @@ expectTypeOf({a: 1, b: 1}).toExtend<{a: number}>()
 
 ```typescript
 // @ts-expect-error
-expectTypeOf({a: 1}).toBeIdenticalTo({a: 1, b: 1})
+expectTypeOf({a: 1}).toBeIdenticalTo<{a: number; b: number}>()
 // @ts-expect-error
-expectTypeOf({a: 1}).toExtend({a: 1, b: 1})
+expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
 ```
 
 Another example of the difference between `.toExtend` and `.toBeIdenticalTo`, using generics. `.toExtend` can be used for "is-a" relationships:
@@ -415,6 +415,13 @@ class C {
 }
 
 expectTypeOf<typeof A>().toBeIdenticalTo<typeof C>()
+```
+
+Functions with extra properties can be checked too:
+
+```typescript
+const augmented = Object.assign((a: number, b: number) => a + b, {foo: 'bar'})
+expectTypeOf(augmented).toBeIdenticalTo<((a: number, b: number) => number) & {foo: string}>()
 ```
 <!-- codegen:end -->
 
