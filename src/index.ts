@@ -374,35 +374,39 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
   return obj as ExpectTypeOf<Actual, true>
 }
 
+export type Props<T> = ExtractPropPairs<PropsInner<T>> extends [infer Keys, any]
+  ? {
+      [K in Extract<Keys, string>]: Extract<ExtractPropPairs<PropsInner<T>>, [K, any]>[1]
+    }
+  : never
+
 type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
-type TypeRecordInner<T, Props extends [string, string] = never, Path extends string = ''> = Or<
+type PropsInner<T, Union extends [string, string] = never, Path extends string = ''> = Or<
   [IsAny<T>, IsUnknown<T>, IsNever<T>, IsEmptyObject<T>]
 > extends true
-  ? Props | [Path, IsAny<T> extends true ? 'any' : PrintType<T>]
+  ? Union | [Path, IsAny<T> extends true ? 'any' : PrintType<T>]
   : T extends string | number | boolean | null | undefined | readonly []
-  ? Props | [Path, PrintType<T>]
+  ? Union | [Path, PrintType<T>]
   : T extends [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? {
-      [K in keyof T]: TypeRecordInner<T[K], Props, `${Path}[${Extract<K, Digit>}]`>
+      [K in keyof T]: PropsInner<T[K], Union, `${Path}[${Extract<K, Digit>}]`>
     }[Extract<keyof T, Digit> | number]
   : T extends readonly [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? {
-      [K in keyof T]: TypeRecordInner<T[K], Props, `${Path}[${Extract<K, Digit>}](readonly)`>
+      [K in keyof T]: PropsInner<T[K], Union, `${Path}[${Extract<K, Digit>}](readonly)`>
     }[Extract<keyof T, Digit> | number]
   : T extends Array<infer X>
-  ? TypeRecordInner<X, Props, `${Path}[]`>
+  ? PropsInner<X, Union, `${Path}[]`>
   : T extends (...args: infer Args) => infer Return
   ?
-      | TypeRecordInner<Args, Props, `${Path}:args`>
-      | TypeRecordInner<Return, Props, `${Path}:return`>
-      | (IsEmptyObject<Omit<T, keyof Function>> extends true
-          ? never
-          : TypeRecordInner<Omit<T, keyof Function>, Props, Path>) // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
+      | PropsInner<Args, Union, `${Path}:args`>
+      | PropsInner<Return, Union, `${Path}:return`>
+      | (IsEmptyObject<Omit<T, keyof Function>> extends true ? never : PropsInner<Omit<T, keyof Function>, Union, Path>) // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
   : NonNullable<{
-      [K in keyof T]-?: TypeRecordInner<
+      [K in keyof T]-?: PropsInner<
         T[K],
-        Props,
+        Union,
         `${Path}.${EscapeProp<Extract<K, string | number>>}${K extends ReadonlyKeys<T>
           ? '(readonly)'
           : ''}${K extends OptionalKeys<T> ? '?' : ''}`
@@ -435,9 +439,3 @@ export type EscapeProp<S extends string | number> = Escape<
     [K in '\\' | '.' | ' ' | '[' | ']']: `\\${K}`
   }
 >
-
-export type Props<T> = ExtractPropPairs<TypeRecordInner<T>> extends [infer Keys, any]
-  ? {
-      [K in Extract<Keys, string>]: Extract<ExtractPropPairs<TypeRecordInner<T>>, [K, any]>[1]
-    }
-  : never
