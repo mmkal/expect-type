@@ -281,7 +281,7 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
   items: Actual extends ArrayLike<infer R> ? ExpectTypeOf<R, B> : never
   guards: Actual extends (v: any, ...args: any[]) => v is infer T ? ExpectTypeOf<T, B> : never
   view: {[K in keyof Actual]: Actual[K]}
-  props: {[K in keyof Props<Actual>]: Props<Actual>[K]}
+  props: {[K in keyof PrintProps<Actual>]: PrintProps<Actual>[K]}
   asserts: Actual extends (v: any, ...args: any[]) => asserts v is infer T
     ? // Guard methods `(v: any) => asserts v is T` does not actually defines a return type. Thus, any function taking 1 argument matches the signature before.
       // In case the inferred assertion type `R` could not be determined (so, `unknown`), consider the function as a non-guard, and return a `never` type.
@@ -374,39 +374,41 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
   return obj as ExpectTypeOf<Actual, true>
 }
 
-export type Props<T> = ExtractPropPairs<PropsInner<T>> extends [infer Keys, any]
+export type PrintProps<T> = ExtractPropPairs<PrintPropsInner<T>> extends [infer Keys, any]
   ? {
-      [K in Extract<Keys, string>]: Extract<ExtractPropPairs<PropsInner<T>>, [K, any]>[1]
+      [K in Extract<Keys, string>]: Extract<ExtractPropPairs<PrintPropsInner<T>>, [K, any]>[1]
     }
   : never
 
 type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
-type PropsInner<T, Union extends [string, string] = never, Path extends string = ''> = Or<
+type PrintPropsInner<T, Props extends [string, string] = never, Path extends string = ''> = Or<
   [IsAny<T>, IsUnknown<T>, IsNever<T>, IsEmptyObject<T>]
 > extends true
-  ? Union | [Path, IsAny<T> extends true ? 'any' : PrintType<T>]
+  ? Props | [Path, IsAny<T> extends true ? 'any' : PrintType<T>]
   : T extends string | number | boolean | null | undefined | readonly []
-  ? Union | [Path, PrintType<T>]
+  ? Props | [Path, PrintType<T>]
   : T extends [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? {
-      [K in keyof T]: PropsInner<T[K], Union, `${Path}[${Extract<K, Digit>}]`>
+      [K in keyof T]: PrintPropsInner<T[K], Props, `${Path}[${Extract<K, Digit>}]`>
     }[Extract<keyof T, Digit> | number]
   : T extends readonly [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? {
-      [K in keyof T]: PropsInner<T[K], Union, `${Path}[${Extract<K, Digit>}](readonly)`>
+      [K in keyof T]: PrintPropsInner<T[K], Props, `${Path}[${Extract<K, Digit>}](readonly)`>
     }[Extract<keyof T, Digit> | number]
   : T extends Array<infer X>
-  ? PropsInner<X, Union, `${Path}[]`>
+  ? PrintPropsInner<X, Props, `${Path}[]`>
   : T extends (...args: infer Args) => infer Return
   ?
-      | PropsInner<Args, Union, `${Path}:args`>
-      | PropsInner<Return, Union, `${Path}:return`>
-      | (IsEmptyObject<Omit<T, keyof Function>> extends true ? never : PropsInner<Omit<T, keyof Function>, Union, Path>) // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
+      | PrintPropsInner<Args, Props, `${Path}:args`>
+      | PrintPropsInner<Return, Props, `${Path}:return`>
+      | (IsEmptyObject<Omit<T, keyof Function>> extends true
+          ? never
+          : PrintPropsInner<Omit<T, keyof Function>, Props, Path>) // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
   : NonNullable<{
-      [K in keyof T]-?: PropsInner<
+      [K in keyof T]-?: PrintPropsInner<
         T[K],
-        Union,
+        Props,
         `${Path}.${EscapeProp<Extract<K, string | number>>}${K extends ReadonlyKeys<T>
           ? '(readonly)'
           : ''}${K extends OptionalKeys<T> ? '?' : ''}`
