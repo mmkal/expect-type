@@ -186,8 +186,6 @@ test('parity with IsExact from conditional-type-checks', () => {
 test('Equal works with functions', () => {
   expectTypeOf<a.Equal<() => void, () => string>>().toEqualTypeOf<false>()
   expectTypeOf<a.Equal<() => void, (s: string) => void>>().toEqualTypeOf<false>()
-  // todo: workaround https://github.com/microsoft/TypeScript/issues/50670 - https://github.com/mmkal/expect-type/issues/5
-  // expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
   expectTypeOf<a.Equal<() => () => () => void, () => (s: string) => () => void>>().toEqualTypeOf<false>()
 })
 
@@ -200,4 +198,13 @@ test(`undefined isn't removed from unions`, () => {
 
   expectTypeOf<string | null | undefined>().toEqualTypeOf<string | null | undefined>()
   expectTypeOf<string | null | undefined>().toMatchTypeOf<string | null | undefined>()
+})
+
+test('limitations', () => {
+  // these *shouldn't* fail, but kept here to document missing behaviours. Once fixed, remove the expect-error comments to make sure they can't regress
+  // @ts-expect-error typescript can't handle the truth: https://github.com/mmkal/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
+  expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
+
+  // @ts-expect-error this is just a bug - augmented functions slip through the net https://github.com/mmkal/expect-type/issues/26
+  expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })
