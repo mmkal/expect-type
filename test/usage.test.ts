@@ -303,3 +303,8 @@ test('Distinguish between classes with different constructors', () => {
 
   expectTypeOf<typeof A>().toBeIdenticalTo<typeof C>()
 })
+
+test('augmented functions', () => {
+  const augmented = Object.assign((a: number, b: number) => a + b, {foo: 'bar'})
+  expectTypeOf(augmented).toBeIdenticalTo<((a: number, b: number) => number) & {foo: string}>()
+})

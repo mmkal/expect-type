@@ -134,7 +134,7 @@ type ReadonlyEquivalent<X, Y> = Extends<
 >
 
 export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : [L] extends [R] ? true : false
-export type StrictExtends<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
+export type StrictExtends<L, R> = Extends<PrintProps<L>, PrintProps<R>>
 
 export type Equal<Left, Right> = And<[StrictExtends<Left, Right>, StrictExtends<Right, Left>]>
 
@@ -382,26 +382,31 @@ export type PrintProps<T> = ExtractPropPairs<PrintPropsInner<T>> extends [infer 
 
 type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
-type PrintPropsInner<T, Props extends [string, string] = never, Path extends string = ''> = Or<
-  [IsAny<T>, IsUnknown<T>, IsNever<T>, IsEmptyObject<T>]
-> extends true
+type PrintPropsInner<T, Props extends [string, string] = never, Path extends string[] = []> = Path extends {length: 20}
+  ? Props | [[...Path, ' !!! bailing out to avoid infinite recursion !!! '], never]
+  : Or<[IsAny<T>, IsUnknown<T>, IsNever<T>, IsEmptyObject<T>]> extends true
   ? Props | [Path, IsAny<T> extends true ? 'any' : PrintType<T>]
   : T extends string | number | boolean | null | undefined | readonly []
   ? Props | [Path, PrintType<T>]
   : T extends [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? {
-      [K in keyof T]: PrintPropsInner<T[K], Props, `${Path}[${Extract<K, Digit>}]`>
+      [K in keyof T]: PrintPropsInner<T[K], Props, [...Path, `[${Extract<K, Digit>}]`]>
     }[Extract<keyof T, Digit> | number]
   : T extends readonly [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? {
-      [K in keyof T]: PrintPropsInner<T[K], Props, `${Path}[${Extract<K, Digit>}](readonly)`>
+      [K in keyof T]: PrintPropsInner<T[K], Props, [...Path, `[${Extract<K, Digit>}](readonly)`]>
     }[Extract<keyof T, Digit> | number]
   : T extends Array<infer X>
-  ? PrintPropsInner<X, Props, `${Path}[]`>
+  ? PrintPropsInner<X, Props, [...Path, '[]']>
+  : T extends new (...args: any[]) => any
+  ?
+      | PrintPropsInner<ConstructorParams<T>, Props, [...Path, `:constructorParameters`]>
+      | PrintPropsInner<InstanceType<Extract<T, new (...args: any) => any>>, Props, [...Path, ':instance']>
   : T extends (...args: infer Args) => infer Return
   ?
-      | PrintPropsInner<Args, Props, `${Path}:args`>
-      | PrintPropsInner<Return, Props, `${Path}:return`>
+      | PrintPropsInner<Args, Props, [...Path, ':args']>
+      | PrintPropsInner<Return, Props, [...Path, ':return']>
+      | PrintPropsInner<ThisParameterType<T>, Props, [...Path, ':this']>
       | (IsEmptyObject<Omit<T, keyof Function>> extends true
           ? never
           : PrintPropsInner<Omit<T, keyof Function>, Props, Path>) // pick up properties of "augmented" functions e.g. the `foo` of `Object.assign(() => 1, {foo: 'bar'})`
@@ -409,21 +414,18 @@ type PrintPropsInner<T, Props extends [string, string] = never, Path extends str
       [K in keyof T]-?: PrintPropsInner<
         T[K],
         Props,
-        `${Path}.${EscapeProp<Extract<K, string | number>>}${K extends ReadonlyKeys<T>
-          ? '(readonly)'
-          : ''}${K extends OptionalKeys<T> ? '?' : ''}`
+        [
+          ...Path,
+          `.${EscapeProp<Extract<K, string | number>>}`,
+          ...(K extends ReadonlyKeys<T> ? ['(readonly)'] : []),
+          ...(K extends OptionalKeys<T> ? ['?'] : []),
+        ]
       >
     }>
 
-type ExtractPropPairs<T> = T extends [string, string]
-  ? T
-  : {
-      [K in keyof T]: T[K] extends [string, string] ? T[K] : ExtractPropPairs<T[K]>
-    }[keyof T]
-
 type EscapeableCharacters<Escapes extends Record<string, string>> = Extract<keyof Escapes, string>
 type Escape<
-  S extends string | number,
+  S extends string,
   Escapes extends Record<string, string>,
 > = S extends `${infer Head}${EscapeableCharacters<Escapes>}${string}`
   ? Head extends `${string}${EscapeableCharacters<Escapes>}${string}`
@@ -436,8 +438,23 @@ type Escape<
   : S
 
 export type EscapeProp<S extends string | number> = Escape<
-  S,
+  `${S}`,
   {
     [K in '\\' | '.' | ' ' | '[' | ']']: `\\${K}`
   }
 >
+
+/** standard join util */
+export type Join<Parts extends string[], Joiner extends string> = Parts extends [infer Only]
+  ? Only
+  : Parts extends [infer First, ...infer Rest]
+  ? `${Extract<First, string>}${Joiner}${Join<Extract<Rest, string[]>, Joiner>}`
+  : ''
+
+type JoinKey<Pair extends [string[], string]> = [Join<Pair[0], ''>, Pair[1]]
+
+type ExtractPropPairs<T> = T extends [string[], string]
+  ? JoinKey<T>
+  : {
+      [K in keyof T]: ExtractPropPairs<T[K]>
+    }[keyof T]
