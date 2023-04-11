@@ -376,12 +376,12 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
 
 type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
-type TypeRecordInner<T, Props extends string = never, Path extends string = ''> = Or<
+type TypeRecordInner<T, Props extends [string, string] = never, Path extends string = ''> = Or<
   [IsAny<T>, IsUnknown<T>, IsNever<T>, IsEmptyObject<T>]
 > extends true
-  ? Props | `${Path}: ${IsAny<T> extends true ? 'any' : PrintType<T>}`
+  ? Props | [Path, IsAny<T> extends true ? 'any' : PrintType<T>]
   : T extends string | number | boolean | null | undefined | readonly []
-  ? Props | `${Path}: ${IsAny<T> extends true ? 'any' : PrintType<T>}`
+  ? Props | [Path, PrintType<T>]
   : T extends [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? {
       [K in keyof T]: TypeRecordInner<T[K], Props, `${Path}[${Extract<K, Digit>}]`>
@@ -409,10 +409,10 @@ type TypeRecordInner<T, Props extends string = never, Path extends string = ''> 
       >
     }>
 
-type ExtractStrings<T> = T extends string
+type ExtractPropPairs<T> = T extends [string, string]
   ? T
   : {
-      [K in keyof T]: T[K] extends string ? T[K] : ExtractStrings<T[K]>
+      [K in keyof T]: T[K] extends [string, string] ? T[K] : ExtractPropPairs<T[K]>
     }[keyof T]
 
 type EscapeableCharacters<Escapes extends Record<string, string>> = Extract<keyof Escapes, string>
@@ -436,9 +436,8 @@ export type EscapeProp<S extends string | number> = Escape<
   }
 >
 
-export type Props<T> = Record<
-  ExtractStrings<{
-    [K in keyof TypeRecordInner<T>]: TypeRecordInner<T>[K]
-  }>,
-  0
->
+export type Props<T> = ExtractPropPairs<TypeRecordInner<T>> extends [infer Keys, any]
+  ? {
+      [K in Extract<Keys, string>]: Extract<ExtractPropPairs<TypeRecordInner<T>>, [K, any]>[1]
+    }
+  : never
