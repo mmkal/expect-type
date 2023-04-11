@@ -12,9 +12,9 @@ expectTypeOf<Props<{x: 1}>>().toExtend<{
   '.x': 'literal number: 1'
 }>()
 
-expectTypeOf<Props<{x: 1; y: 2}>>().toExtend<{
+expectTypeOf<Props<{x: 1; y: '1'}>>().toBeIdenticalTo<{
   '.x': 'literal number: 1'
-  '.y': 'literal number: 2'
+  '.y': 'literal string: 1'
 }>()
 
 expectTypeOf<Props<{x?: 1}>>().toExtend<{
