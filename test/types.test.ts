@@ -97,6 +97,18 @@ test("any/never types don't break toEqualTypeOf or toMatchTypeOf", () => {
   expectTypeOf<unknown>().toEqualTypeOf({a: 1, b: 1})
 })
 
+test('intersections work properly', () => {
+  expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
+  expectTypeOf<{a: 1} & {b: 2}>().toMatchTypeOf<{a: 1; b: 2}>()
+  expectTypeOf<{a: 1; b: 2}>().toEqualTypeOf<{a: 1} & {b: 2}>()
+  expectTypeOf<{a: 1; b: 2}>().toMatchTypeOf<{a: 1} & {b: 2}>()
+})
+
+test('not cannot be chained', () => {
+  // @ts-expect-error
+  expectTypeOf<number>().not.not.toBeNumber()
+})
+
 test('constructor params', () => {
   // The built-in ConstructorParameters type helper fails to pick up no-argument overloads.
   // This test checks that's still the case to avoid unnecessarily maintaining a workaround,
@@ -201,7 +213,6 @@ test('parity with IsExact from conditional-type-checks', () => {
 test('Equal works with functions', () => {
   expectTypeOf<a.Equal<() => void, () => string>>().toEqualTypeOf<false>()
   expectTypeOf<a.Equal<() => void, (s: string) => void>>().toEqualTypeOf<false>()
-  expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
   expectTypeOf<a.Equal<() => () => () => void, () => (s: string) => () => void>>().toEqualTypeOf<false>()
 })
 
@@ -214,4 +225,11 @@ test(`undefined isn't removed from unions`, () => {
 
   expectTypeOf<string | null | undefined>().toEqualTypeOf<string | null | undefined>()
   expectTypeOf<string | null | undefined>().toMatchTypeOf<string | null | undefined>()
+})
+
+test('limitations', () => {
+  // these *shouldn't* fail, but kept here to document missing behaviours. Once fixed, remove the expect-error comments to make sure they can't regress
+  expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
+
+  expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })
