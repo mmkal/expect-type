@@ -44,6 +44,8 @@ export type PrintType<T> = IsUnknown<T> extends true
   ? 'undefined'
   : T extends (...args: any[]) => any
   ? 'function'
+  : T extends void
+  ? 'void'
   : T extends []
   ? '[]'
   : IsEmptyObject<T> extends true
@@ -386,7 +388,7 @@ type PrintPropsInner<T, Props extends [string, string] = never, Path extends str
   ? Props | [[...Path, ' !!! bailing out to avoid infinite recursion !!! '], never]
   : Or<[IsAny<T>, IsUnknown<T>, IsNever<T>, IsEmptyObject<T>]> extends true
   ? Props | [Path, IsAny<T> extends true ? 'any' : PrintType<T>]
-  : T extends string | number | boolean | null | undefined | readonly []
+  : T extends string | number | boolean | null | undefined | readonly [] | void
   ? Props | [Path, PrintType<T>]
   : T extends [any, ...any[]] // 0-length tuples handled above, 1-or-more element tuples handled separately from arrays
   ? {

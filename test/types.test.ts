@@ -201,8 +201,7 @@ test('parity with IsExact from conditional-type-checks', () => {
 test('Equal works with functions', () => {
   expectTypeOf<a.Equal<() => void, () => string>>().toEqualTypeOf<false>()
   expectTypeOf<a.Equal<() => void, (s: string) => void>>().toEqualTypeOf<false>()
-  // todo: workaround https://github.com/microsoft/TypeScript/issues/50670 - https://github.com/mmkal/expect-type/issues/5
-  // expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
+  expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
   expectTypeOf<a.Equal<() => () => () => void, () => (s: string) => () => void>>().toEqualTypeOf<false>()
 })
 

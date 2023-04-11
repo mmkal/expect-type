@@ -38,6 +38,16 @@ expectTypeOf<PrintProps<{x: undefined | (() => 1)}>>().toExtend<{
   '.x:return': 'literal number: 1'
 }>()
 
+expectTypeOf<PrintProps<{x: () => () => () => void}>>().toBeIdenticalTo<{
+  '.x:args': '[]'
+  '.x:this': 'unknown'
+  '.x:return:args': '[]'
+  '.x:return:return:args': '[]'
+  '.x:return:return:return': 'void'
+  '.x:return:return:this': 'unknown'
+  '.x:return:this': 'unknown'
+}>()
+
 // escape dots/spaces
 expectTypeOf<PrintProps<{a: {b: 1}; 'a.b': 2; 'a b': 3}>>().toBeIdenticalTo<{
   '.a.b': 'literal number: 1'
