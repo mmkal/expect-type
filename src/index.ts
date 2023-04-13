@@ -101,64 +101,68 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     : P
   : never
 
-type MismatchArgs<B extends boolean, C extends boolean> = Eq<B, C> extends true ? [] : [never]
+type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<ActualResult, ExpectedResult> extends true ? [] : [never]
 
-export interface ExpectTypeOf<Actual, B extends boolean, Branded = false> {
-  toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
-  toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, B>) => true
-  toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, B>) => true
-  toBeFunction: (...MISMATCH: MismatchArgs<Extends<Actual, (...args: any[]) => any>, B>) => true
-  toBeObject: (...MISMATCH: MismatchArgs<Extends<Actual, object>, B>) => true
-  toBeArray: (...MISMATCH: MismatchArgs<Extends<Actual, any[]>, B>) => true
-  toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, B>) => true
-  toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
-  toBeBoolean: (...MISMATCH: MismatchArgs<Extends<Actual, boolean>, B>) => true
-  toBeVoid: (...MISMATCH: MismatchArgs<Extends<Actual, void>, B>) => true
-  toBeSymbol: (...MISMATCH: MismatchArgs<Extends<Actual, symbol>, B>) => true
-  toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, B>) => true
-  toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
-  toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Branded>>, B>) => true
+export interface ExpectTypeOfOptions {
+  positive: boolean
+  branded: boolean
+}
+export interface ExpectTypeOf<Actual, Options extends ExpectTypeOfOptions> {
+  toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
+  toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, Options['positive']>) => true
+  toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, Options['positive']>) => true
+  toBeFunction: (...MISMATCH: MismatchArgs<Extends<Actual, (...args: any[]) => any>, Options['positive']>) => true
+  toBeObject: (...MISMATCH: MismatchArgs<Extends<Actual, object>, Options['positive']>) => true
+  toBeArray: (...MISMATCH: MismatchArgs<Extends<Actual, any[]>, Options['positive']>) => true
+  toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, Options['positive']>) => true
+  toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
+  toBeBoolean: (...MISMATCH: MismatchArgs<Extends<Actual, boolean>, Options['positive']>) => true
+  toBeVoid: (...MISMATCH: MismatchArgs<Extends<Actual, void>, Options['positive']>) => true
+  toBeSymbol: (...MISMATCH: MismatchArgs<Extends<Actual, symbol>, Options['positive']>) => true
+  toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, Options['positive']>) => true
+  toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, Options['positive']>) => true
+  toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>) => true
   toMatchTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, B>): true
+    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
+    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
   }
   toEqualTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Branded>, B>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Equal<Actual, Expected, Branded>, B>): true
+    <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
+    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
   }
-  toBeCallableWith: B extends true ? (...args: Params<Actual>) => true : never
-  toBeConstructibleWith: B extends true ? (...args: ConstructorParams<Actual>) => true : never
+  toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
+  toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
   toHaveProperty: <K extends string>(
     key: K,
-    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
-  ) => K extends keyof Actual ? ExpectTypeOf<Actual[K], B, Branded> : true
-  extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, B, Branded>
-  exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, B, Branded>
-  parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], B, Branded>
-  parameters: ExpectTypeOf<Params<Actual>, B, Branded>
-  constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, B, Branded>
-  thisParameter: ExpectTypeOf<ThisParameterType<Actual>, B, Branded>
-  instance: Actual extends new (...args: any[]) => infer I ? ExpectTypeOf<I, B, Branded> : never
-  returns: Actual extends (...args: any[]) => infer R ? ExpectTypeOf<R, B, Branded> : never
-  resolves: Actual extends PromiseLike<infer R> ? ExpectTypeOf<R, B, Branded> : never
-  items: Actual extends ArrayLike<infer R> ? ExpectTypeOf<R, B, Branded> : never
-  guards: Actual extends (v: any, ...args: any[]) => v is infer T ? ExpectTypeOf<T, B, Branded> : never
+    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
+  ) => K extends keyof Actual ? ExpectTypeOf<Actual[K], Options> : true
+  extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, Options>
+  exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, Options>
+  parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], Options>
+  parameters: ExpectTypeOf<Params<Actual>, Options>
+  constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, Options>
+  thisParameter: ExpectTypeOf<ThisParameterType<Actual>, Options>
+  instance: Actual extends new (...args: any[]) => infer I ? ExpectTypeOf<I, Options> : never
+  returns: Actual extends (...args: any[]) => infer R ? ExpectTypeOf<R, Options> : never
+  resolves: Actual extends PromiseLike<infer R> ? ExpectTypeOf<R, Options> : never
+  items: Actual extends ArrayLike<infer R> ? ExpectTypeOf<R, Options> : never
+  guards: Actual extends (v: any, ...args: any[]) => v is infer T ? ExpectTypeOf<T, Options> : never
   asserts: Actual extends (v: any, ...args: any[]) => asserts v is infer T
     ? // Guard methods `(v: any) => asserts v is T` does not actually defines a return type. Thus, any function taking 1 argument matches the signature before.
       // In case the inferred assertion type `R` could not be determined (so, `unknown`), consider the function as a non-guard, and return a `never` type.
       // See https://github.com/microsoft/TypeScript/issues/34636
       unknown extends T
       ? never
-      : ExpectTypeOf<T, B, Branded>
+      : ExpectTypeOf<T, Options>
     : never
-  branded: Omit<ExpectTypeOf<Actual, B, true>, 'branded'>
-  not: Omit<ExpectTypeOf<Actual, Not<B>, Branded>, 'branded'>
+  branded: Omit<ExpectTypeOf<Actual, {positive: Options['positive']; branded: true}>, 'branded'>
+  not: Omit<ExpectTypeOf<Actual, {positive: Not<Options['positive']>; branded: Options['branded']}>, 'not'>
 }
 const fn: any = () => true
 
 export type _ExpectTypeOf = {
-  <Actual>(actual: Actual): ExpectTypeOf<Actual, true>
-  <Actual>(): ExpectTypeOf<Actual, true>
+  <Actual>(actual: Actual): ExpectTypeOf<Actual, {positive: true; branded: false}>
+  <Actual>(): ExpectTypeOf<Actual, {positive: true; branded: false}>
 }
 
 /**
@@ -183,7 +187,7 @@ export type _ExpectTypeOf = {
  * @description
  * See the [full docs](https://npmjs.com/package/expect-type#documentation) for lots more examples.
  */
-export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTypeOf<Actual, true> => {
+export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTypeOf<Actual, {positive: true; branded: false}> => {
   const nonFunctionProperties = [
     'parameters',
     'returns',
@@ -230,5 +234,5 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
   const getterProperties: readonly Keys[] = nonFunctionProperties
   getterProperties.forEach((prop: Keys) => Object.defineProperty(obj, prop, {get: () => expectTypeOf({})}))
 
-  return obj as ExpectTypeOf<Actual, true>
+  return obj as ExpectTypeOf<Actual, {positive: true, branded: false}>
 }
