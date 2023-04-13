@@ -188,8 +188,6 @@ test('parity with IsExact from conditional-type-checks', () => {
 test('Equal works with functions', () => {
   expectTypeOf<a.Equal<() => void, () => string>>().toEqualTypeOf<false>()
   expectTypeOf<a.Equal<() => void, (s: string) => void>>().toEqualTypeOf<false>()
-  // todo: workaround https://github.com/microsoft/TypeScript/issues/50670 - https://github.com/mmkal/expect-type/issues/5
-  // expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
   expectTypeOf<a.Equal<() => () => () => void, () => (s: string) => () => void>>().toEqualTypeOf<false>()
 })
 
@@ -646,4 +644,12 @@ test('Distinguish between identical types that are AND`d together', () => {
   expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number} & {foo: number}>()
   // @ts-expect-error
   expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number}>()
+})
+
+test('limitations', () => {
+  // these *shouldn't* fail, but kept here to document missing behaviours. Once fixed, remove the expect-error comments to make sure they can't regress
+  // @ts-expect-error typescript can't handle the truth: https://github.com/mmkal/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
+  expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
+
+  expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })
