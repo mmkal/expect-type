@@ -283,7 +283,7 @@ export interface ExpectTypeOf<Actual, B extends boolean> {
       ? never
       : ExpectTypeOf<T, B>
     : never
-  not: ExpectTypeOf<Actual, Not<B>>
+  not: Omit<ExpectTypeOf<Actual, Not<B>>, 'not'>
 }
 const fn: any = () => true
 
