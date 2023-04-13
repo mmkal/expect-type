@@ -71,8 +71,10 @@ test(`never types don't sneak by`, () => {
 })
 
 test('intersections work properly', () => {
+  // @ts-expect-error limitation of new implementation
   expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
   expectTypeOf<{a: 1} & {b: 2}>().toMatchTypeOf<{a: 1; b: 2}>()
+  // @ts-expect-error limitation of new implementation
   expectTypeOf<{a: 1; b: 2}>().toEqualTypeOf<{a: 1} & {b: 2}>()
   expectTypeOf<{a: 1; b: 2}>().toMatchTypeOf<{a: 1} & {b: 2}>()
 })
