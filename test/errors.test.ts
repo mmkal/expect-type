@@ -332,82 +332,100 @@ test('usage test', () => {
         118   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:258:31 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:250:25 - error TS2554: Expected 1 arguments, but got 0.
 
-    258   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
+    250   expectTypeOf<any[]>().toEqualTypeOf<number[]>()
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      src/index.ts:130:16
+        130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:262:31 - error TS2554: Expected 1 arguments, but got 0.
+
+    262   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:130:16
         130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:262:32 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:266:32 - error TS2554: Expected 1 arguments, but got 0.
 
-    262   expectTypeOf<{a?: number}>().toEqualTypeOf<{}>()
+    266   expectTypeOf<{a?: number}>().toEqualTypeOf<{}>()
                                        ~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:130:16
         130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:263:32 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:267:32 - error TS2554: Expected 1 arguments, but got 0.
 
-    263   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
+    267   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:130:16
         130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:264:32 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:268:32 - error TS2554: Expected 1 arguments, but got 0.
 
-    264   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
+    268   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:130:16
         130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:265:39 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:269:39 - error TS2554: Expected 1 arguments, but got 0.
 
-    265   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
+    269   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:130:16
         130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:266:37 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:270:37 - error TS2554: Expected 1 arguments, but got 0.
 
-    266   expectTypeOf<{a: {b?: number}}>().toEqualTypeOf<{a: {}}>()
+    270   expectTypeOf<{a: {b?: number}}>().toEqualTypeOf<{a: {}}>()
                                             ~~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:130:16
         130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:274:22 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:278:22 - error TS2554: Expected 1 arguments, but got 0.
 
-    274   expectTypeOf<A1>().toEqualTypeOf<E1>()
+    278   expectTypeOf<A1>().toEqualTypeOf<E1>()
                              ~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:130:16
         130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:280:22 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:284:22 - error TS2554: Expected 1 arguments, but got 0.
 
-    280   expectTypeOf<A2>().toEqualTypeOf<E2>()
+    284   expectTypeOf<A2>().toEqualTypeOf<E2>()
                              ~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:130:16
         130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:297:28 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:301:28 - error TS2554: Expected 1 arguments, but got 0.
 
-    297   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
+    301   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
                                    ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      src/index.ts:130:16
+        130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:316:35 - error TS2554: Expected 1 arguments, but got 0.
+
+    316   expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
+                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:130:16
         130     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true

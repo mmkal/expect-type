@@ -70,11 +70,11 @@ test(`never types don't sneak by`, () => {
   expectTypeOf<never>().toMatchTypeOf<{foo: string}>()
 })
 
-test('intersections work properly', () => {
-  // @ts-expect-error limitation of new implementation
+test('intersections do not currently work properly', () => {
+  // @ts-expect-error limitation of new implementation https://github.com/mmkal/expect-type/pull/21
   expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
   expectTypeOf<{a: 1} & {b: 2}>().toMatchTypeOf<{a: 1; b: 2}>()
-  // @ts-expect-error limitation of new implementation
+  // @ts-expect-error limitation of new implementation https://github.com/mmkal/expect-type/pull/21
   expectTypeOf<{a: 1; b: 2}>().toEqualTypeOf<{a: 1} & {b: 2}>()
   expectTypeOf<{a: 1; b: 2}>().toMatchTypeOf<{a: 1} & {b: 2}>()
 })
