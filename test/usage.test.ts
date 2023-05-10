@@ -246,6 +246,10 @@ test('Array items can be checked with `.items`', () => {
   expectTypeOf([1, 2, 3]).items.not.toBeString()
 })
 
+test('You can also compare arrays directly', () => {
+  expectTypeOf<any[]>().not.toEqualTypeOf<number[]>()
+})
+
 test('Check that functions never return', () => {
   const thrower = () => {
     throw new Error('oh no')
