@@ -84,15 +84,17 @@ type ReadonlyEquivalent<X, Y> = Extends<
 export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : [L] extends [R] ? true : false
 export type StrictExtends<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
 
-type StrictEqual<L, R> =
-  (<T>() => T extends (L & T) | T ? true : false) extends
-  (<T>() => T extends (R & T) | T ? true : false) ?
-    IsNever<L> extends IsNever<R> ? true : false : false
+type StrictEqual<L, R> = (<T>() => T extends (L & T) | T ? true : false) extends <T>() => T extends (R & T) | T
+  ? true
+  : false
+  ? IsNever<L> extends IsNever<R>
+    ? true
+    : false
+  : false
 
-export type Equal<Left, Right, Branded = true> =
-  Branded extends true
-    ? And<[StrictExtends<Left, Right>, StrictExtends<Right, Left>]>
-    : StrictEqual<Left, Right>
+export type Equal<Left, Right, Branded = true> = Branded extends true
+  ? And<[StrictExtends<Left, Right>, StrictExtends<Right, Left>]>
+  : StrictEqual<Left, Right>
 
 export type Params<Actual> = Actual extends (...args: infer P) => any ? P : never
 export type ConstructorParams<Actual> = Actual extends new (...args: infer P) => any
@@ -101,7 +103,12 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     : P
   : never
 
-type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<ActualResult, ExpectedResult> extends true ? [] : [never]
+type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
+  ActualResult,
+  ExpectedResult
+> extends true
+  ? []
+  : [never]
 
 export interface ExpectTypeOfOptions {
   positive: boolean
@@ -121,14 +128,19 @@ export interface ExpectTypeOf<Actual, Options extends ExpectTypeOfOptions> {
   toBeSymbol: (...MISMATCH: MismatchArgs<Extends<Actual, symbol>, Options['positive']>) => true
   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, Options['positive']>) => true
   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, Options['positive']>) => true
-  toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>) => true
+  toBeNullable: (
+    ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
+  ) => true
   toMatchTypeOf: {
     <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
     <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
   }
   toEqualTypeOf: {
     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
+    <Expected>(
+      expected: Expected,
+      ...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>
+    ): true
   }
   toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
   toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
@@ -187,7 +199,9 @@ export type _ExpectTypeOf = {
  * @description
  * See the [full docs](https://npmjs.com/package/expect-type#documentation) for lots more examples.
  */
-export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTypeOf<Actual, {positive: true; branded: false}> => {
+export const expectTypeOf: _ExpectTypeOf = <Actual>(
+  _actual?: Actual,
+): ExpectTypeOf<Actual, {positive: true; branded: false}> => {
   const nonFunctionProperties = [
     'parameters',
     'returns',
@@ -234,5 +248,5 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(_actual?: Actual): ExpectTyp
   const getterProperties: readonly Keys[] = nonFunctionProperties
   getterProperties.forEach((prop: Keys) => Object.defineProperty(obj, prop, {get: () => expectTypeOf({})}))
 
-  return obj as ExpectTypeOf<Actual, {positive: true, branded: false}>
+  return obj as ExpectTypeOf<Actual, {positive: true; branded: false}>
 }
