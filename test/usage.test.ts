@@ -246,6 +246,10 @@ test('Array items can be checked with `.items`', () => {
   expectTypeOf([1, 2, 3]).items.not.toBeString()
 })
 
+test('You can also compare arrays directly', () => {
+  expectTypeOf<any[]>().not.toEqualTypeOf<number[]>()
+})
+
 test('Check that functions never return', () => {
   const thrower = () => {
     throw new Error('oh no')
@@ -304,4 +308,16 @@ test('Distinguish between classes with different constructors', () => {
   }
 
   expectTypeOf<typeof A>().toEqualTypeOf<typeof C>()
+})
+
+test('Known limitation: Intersection types can cause issues with `toEqualTypeOf`', () => {
+  // @ts-expect-error the following line doesn't compile, even though the types are arguably the same.
+  // See https://github.com/mmkal/expect-type/pull/21
+  expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
+})
+
+test('To workaround, you can use a mapped type', () => {
+  type Simplify<T> = {[K in keyof T]: T[K]}
+
+  expectTypeOf<Simplify<{a: 1} & {b: 2}>>().toEqualTypeOf<{a: 1; b: 2}>()
 })
