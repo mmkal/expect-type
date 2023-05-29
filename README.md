@@ -347,6 +347,12 @@ expectTypeOf([1, 2, 3]).items.toBeNumber()
 expectTypeOf([1, 2, 3]).items.not.toBeString()
 ```
 
+You can also compare arrays directly:
+
+```typescript
+expectTypeOf<any[]>().not.toEqualTypeOf<number[]>()
+```
+
 Check that functions never return:
 
 ```typescript
@@ -415,6 +421,22 @@ class C {
 }
 
 expectTypeOf<typeof A>().toBeIdenticalTo<typeof C>()
+```
+
+Known limitation: Intersection types can cause issues with `toEqualTypeOf`:
+
+```typescript
+// @ts-expect-error the following line doesn't compile, even though the types are arguably the same.
+// See https://github.com/mmkal/expect-type/pull/21
+expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
+```
+
+To workaround, you can use a mapped type:
+
+```typescript
+type Simplify<T> = {[K in keyof T]: T[K]}
+
+expectTypeOf<Simplify<{a: 1} & {b: 2}>>().toEqualTypeOf<{a: 1; b: 2}>()
 ```
 <!-- codegen:end -->
 

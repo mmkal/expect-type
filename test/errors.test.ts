@@ -56,8 +56,8 @@ test('toBeIdenticalTo special types', async () => {
                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999     ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/test.ts:9:99 - error TS2344: Type '{ a: unknown; }' does not satisfy the constraint '{ a: \\"Expected: unknown, Actual: literal number: 1\\"; }'.
       Types of property 'a' are incompatible.
@@ -219,8 +219,8 @@ test('usage.test.ts', () => {
                                ~~~~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, B>) => true
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, Options['positive']>) => true
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: never; }; }'.
       The types of 'deeply.nested' are incompatible between these types.
@@ -233,45 +233,45 @@ test('usage.test.ts', () => {
     99   expectTypeOf(undefined).toBeNullable()
                                  ~~~~~~~~~~~~~~
 
-      src/index.ts:999:99
-        999   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      src/index.ts:999:9
+        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
     99   expectTypeOf(null).toBeNullable()
                             ~~~~~~~~~~~~~~
 
-      src/index.ts:999:99
-        999   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      src/index.ts:999:9
+        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
     99   expectTypeOf<1 | undefined>().toBeNullable()
                                        ~~~~~~~~~~~~~~
 
-      src/index.ts:999:99
-        999   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      src/index.ts:999:9
+        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
     99   expectTypeOf<1 | null>().toBeNullable()
                                   ~~~~~~~~~~~~~~
 
-      src/index.ts:999:99
-        999   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      src/index.ts:999:9
+        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
     99   expectTypeOf<1 | undefined | null>().toBeNullable()
                                               ~~~~~~~~~~~~~~
 
-      src/index.ts:999:99
-        999   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      src/index.ts:999:9
+        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -279,8 +279,8 @@ test('usage.test.ts', () => {
                          ~~~~~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, B>) => true
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, Options['positive']>) => true
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -288,8 +288,8 @@ test('usage.test.ts', () => {
                          ~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
-                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -297,8 +297,8 @@ test('usage.test.ts', () => {
                          ~~~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, B>) => true
-                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, Options['positive']>) => true
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -306,8 +306,8 @@ test('usage.test.ts', () => {
                          ~~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, B>) => true
-                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, Options['positive']>) => true
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -315,17 +315,17 @@ test('usage.test.ts', () => {
                          ~~~~~~~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, B>) => true
-                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, Options['positive']>) => true
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
     999   expectTypeOf(1).toBeNullable()
                           ~~~~~~~~~~~~~~
 
-      src/index.ts:999:99
-        999   toBeNullable: (...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>>>, B>) => true
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      src/index.ts:999:9
+        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2344: Type 'number' does not satisfy the constraint '\\"Expected: number, Actual: string\\" | \\"Expected: number, Actual: number\\"'.
 
@@ -337,8 +337,8 @@ test('usage.test.ts', () => {
                                                                               ~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2554: Expected 2 arguments, but got 1.
 
@@ -346,8 +346,8 @@ test('usage.test.ts', () => {
                             ~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, B>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -355,8 +355,8 @@ test('usage.test.ts', () => {
                                                 ~~~~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2344: Type 'HasParam' does not satisfy the constraint '\\"Expected: function, Actual: function\\"'.
 
@@ -368,8 +368,8 @@ test('usage.test.ts', () => {
                           ~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
-                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -377,8 +377,8 @@ test('usage.test.ts', () => {
                                   ~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, B>) => true
-                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2344: Type 'string' does not satisfy the constraint '\\"Expected: string, Actual: number\\"'.
 
@@ -394,8 +394,17 @@ test('usage.test.ts', () => {
                                         ~~~~~~~~~~~~
 
       src/index.ts:999:99
-        999   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, B>) => true
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
+
+    999   expectTypeOf<any[]>().toEqualTypeOf<number[]>()
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      src/index.ts:999:99
+        999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: string\\"; }'.
       Types of property 'a' are incompatible.
@@ -421,8 +430,8 @@ test('usage.test.ts', () => {
                              ~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999     ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -430,8 +439,8 @@ test('usage.test.ts', () => {
                              ~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999     ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -439,8 +448,17 @@ test('usage.test.ts', () => {
                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, B>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        999     ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
+
+    999   expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
+                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      src/index.ts:999:99
+        999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
     "
   `)

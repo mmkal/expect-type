@@ -97,9 +97,11 @@ test("any/never types don't break toEqualTypeOf or toMatchTypeOf", () => {
   expectTypeOf<unknown>().toEqualTypeOf({a: 1, b: 1})
 })
 
-test('intersections work properly', () => {
+test('intersections do not currently work properly', () => {
+  // @ts-expect-error limitation of new implementation https://github.com/mmkal/expect-type/pull/21
   expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
   expectTypeOf<{a: 1} & {b: 2}>().toMatchTypeOf<{a: 1; b: 2}>()
+  // @ts-expect-error limitation of new implementation https://github.com/mmkal/expect-type/pull/21
   expectTypeOf<{a: 1; b: 2}>().toEqualTypeOf<{a: 1} & {b: 2}>()
   expectTypeOf<{a: 1; b: 2}>().toMatchTypeOf<{a: 1} & {b: 2}>()
 })
@@ -227,11 +229,454 @@ test(`undefined isn't removed from unions`, () => {
   expectTypeOf<string | null | undefined>().toMatchTypeOf<string | null | undefined>()
 })
 
+test('Distinguish between functions whose return types differ by readonly prop', () => {
+  type ObjWithReadonlyProp = {readonly x: number}
+  type ObjWithoutReadonlyProp = {x: number}
+
+  function original(o: ObjWithReadonlyProp): ObjWithReadonlyProp {
+    return o
+  }
+
+  function same(o: ObjWithReadonlyProp): ObjWithReadonlyProp {
+    return o
+  }
+
+  function different(o: ObjWithoutReadonlyProp): ObjWithoutReadonlyProp {
+    return o
+  }
+
+  // Self-identity
+  expectTypeOf<typeof original>().toEqualTypeOf<typeof original>()
+  expectTypeOf(original).branded.toEqualTypeOf(original)
+  expectTypeOf<typeof different>().toEqualTypeOf<typeof different>()
+  expectTypeOf(different).toEqualTypeOf(different)
+  // @ts-expect-error
+  expectTypeOf<typeof original>().not.toEqualTypeOf<typeof original>()
+  // @ts-expect-error
+  expectTypeOf(original).not.toEqualTypeOf(original)
+  // @ts-expect-error
+  expectTypeOf<typeof different>().not.toEqualTypeOf<typeof different>()
+  // @ts-expect-error
+  expectTypeOf(different).not.toEqualTypeOf(different)
+
+  // Same shape
+  expectTypeOf<typeof original>().toEqualTypeOf<typeof same>()
+  expectTypeOf(original).toEqualTypeOf(same)
+  // @ts-expect-error
+  expectTypeOf<typeof original>().not.toEqualTypeOf<typeof same>()
+  // @ts-expect-error
+  expectTypeOf(original).not.toEqualTypeOf(same)
+
+  // Different presence of readonly prop
+  expectTypeOf<typeof original>().not.toEqualTypeOf<typeof different>()
+  expectTypeOf(original).not.toEqualTypeOf(different)
+  // @ts-expect-error
+  expectTypeOf<typeof original>().toEqualTypeOf<typeof different>()
+  // @ts-expect-error
+  expectTypeOf(original).toEqualTypeOf(different)
+})
+
+test('Distinguish between classes with only private properties', () => {
+  class Original {
+    // eslint-disable-next-line mmkal/@typescript-eslint/class-literal-property-style
+    private readonly prop = 1
+  }
+
+  class Different {
+    // eslint-disable-next-line mmkal/@typescript-eslint/class-literal-property-style
+    private readonly prop = 1
+  }
+
+  // Self-identity
+  expectTypeOf<Original>().toEqualTypeOf<Original>()
+  expectTypeOf(Original).toEqualTypeOf(Original)
+  expectTypeOf<Different>().toEqualTypeOf<Different>()
+  expectTypeOf(Different).toEqualTypeOf(Different)
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Original>()
+  // @ts-expect-error
+  expectTypeOf(Original).not.toEqualTypeOf(Original)
+  // @ts-expect-error
+  expectTypeOf<Different>().not.toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf(Different).not.toEqualTypeOf(Different)
+
+  // Different classes
+  expectTypeOf<Original>().not.toEqualTypeOf<Different>()
+  expectTypeOf(Original).not.toEqualTypeOf(Different)
+  // @ts-expect-error
+  expectTypeOf<Original>().toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf(Original).toEqualTypeOf(Different)
+})
+
+test('Distinguish between types with generics used in type assertion', () => {
+  interface Guard<T> {
+    // eslint-disable-next-line mmkal/@typescript-eslint/prefer-function-type
+    (arg: unknown): arg is T
+  }
+
+  // Self-identity
+  expectTypeOf<Guard<number>>().toEqualTypeOf<Guard<number>>()
+  // @ts-expect-error
+  expectTypeOf<Guard<number>>().not.toEqualTypeOf<Guard<number>>()
+
+  // Different return types
+  expectTypeOf<Guard<number>>().not.toEqualTypeOf<Guard<string>>()
+  // @ts-expect-error
+  expectTypeOf<Guard<number>>().toEqualTypeOf<Guard<string>>()
+})
+
+test('Distinguish between functions with generics vs unknown', () => {
+  function funcWithGenerics<T>(p1: T, p2: T): T {
+    return p1 || p2
+  }
+
+  function funcWithUnknown(p1: unknown, p2: unknown): unknown {
+    return p1 || p2
+  }
+
+  // Self-identity
+  expectTypeOf<typeof funcWithGenerics>().toEqualTypeOf<typeof funcWithGenerics>()
+  expectTypeOf(funcWithGenerics).toEqualTypeOf(funcWithGenerics)
+  expectTypeOf<typeof funcWithUnknown>().toEqualTypeOf<typeof funcWithUnknown>()
+  expectTypeOf(funcWithUnknown).toEqualTypeOf(funcWithUnknown)
+  // @ts-expect-error
+  expectTypeOf<typeof funcWithGenerics>().not.toEqualTypeOf<typeof funcWithGenerics>()
+  // @ts-expect-error
+  expectTypeOf(funcWithGenerics).not.toEqualTypeOf(funcWithGenerics)
+  // @ts-expect-error
+  expectTypeOf<typeof funcWithUnknown>().not.toEqualTypeOf<typeof funcWithUnknown>()
+  // @ts-expect-error
+  expectTypeOf(funcWithUnknown).not.toEqualTypeOf(funcWithUnknown)
+
+  // Generic vs unknown with otherwise same shape
+  expectTypeOf<typeof funcWithGenerics>().not.toEqualTypeOf<typeof funcWithUnknown>()
+  expectTypeOf(funcWithGenerics).not.toEqualTypeOf(funcWithUnknown)
+  // @ts-expect-error
+  expectTypeOf<typeof funcWithGenerics>().toEqualTypeOf<typeof funcWithUnknown>()
+  // @ts-expect-error
+  expectTypeOf(funcWithGenerics).toEqualTypeOf(funcWithUnknown)
+})
+
+interface BaseFunc {
+  // eslint-disable-next-line mmkal/@typescript-eslint/prefer-function-type
+  (str: string): number
+}
+
+test('Distinguish between functions with readonly properties', () => {
+  interface Original extends BaseFunc {
+    readonly prop: string
+  }
+
+  interface Same extends BaseFunc {
+    readonly prop: string
+  }
+
+  interface Different extends BaseFunc {
+    prop: string
+  }
+
+  // Self-identity
+  expectTypeOf<Original>().toEqualTypeOf<Original>()
+  expectTypeOf<Different>().toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Original>()
+  // @ts-expect-error
+  expectTypeOf<Different>().not.toEqualTypeOf<Different>()
+
+  // Same shape
+  expectTypeOf<Original>().toEqualTypeOf<Same>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Same>()
+
+  // Only one readonly otherwise same shape
+  expectTypeOf<Original>().not.toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().toEqualTypeOf<Different>()
+})
+
+test('Distinguish between functions with optional properties', () => {
+  interface Original extends BaseFunc {
+    prop?: number
+  }
+
+  interface Same extends BaseFunc {
+    prop?: number
+  }
+
+  interface Different extends BaseFunc {
+    prop: number | undefined
+  }
+
+  // Self-identity
+  expectTypeOf<Original>().toEqualTypeOf<Original>()
+  expectTypeOf<Different>().toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Original>()
+  // @ts-expect-error
+  expectTypeOf<Different>().not.toEqualTypeOf<Different>()
+
+  // Same shape
+  expectTypeOf<Original>().toEqualTypeOf<Same>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Same>()
+
+  // Only one optional otherwise same shape
+  expectTypeOf<Original>().not.toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().toEqualTypeOf<Different>()
+})
+
+test('Distinguish between functions with properties of different types', () => {
+  interface Original extends BaseFunc {
+    prop: number
+  }
+
+  interface Same extends BaseFunc {
+    prop: number
+  }
+
+  interface Different extends BaseFunc {
+    prop: string
+  }
+
+  // Self-identity
+  expectTypeOf<Original>().toEqualTypeOf<Original>()
+  expectTypeOf<Different>().toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Original>()
+  // @ts-expect-error
+  expectTypeOf<Different>().not.toEqualTypeOf<Different>()
+
+  // Same shape
+  expectTypeOf<Original>().toEqualTypeOf<Same>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Same>()
+
+  // Only one optional otherwise same shape
+  expectTypeOf<Original>().not.toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().toEqualTypeOf<Different>()
+})
+
+interface BaseConstructor {
+  // eslint-disable-next-line mmkal/@typescript-eslint/prefer-function-type
+  new (str: string): {someProp: number}
+}
+
+test('Distinguish between constructors with readonly properties', () => {
+  interface Original extends BaseConstructor {
+    readonly prop: string
+  }
+
+  interface Same extends BaseConstructor {
+    readonly prop: string
+  }
+
+  interface Different extends BaseConstructor {
+    prop: string
+  }
+
+  // Self-identity
+  expectTypeOf<Original>().toEqualTypeOf<Original>()
+  expectTypeOf<Different>().toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Original>()
+  // @ts-expect-error
+  expectTypeOf<Different>().not.toEqualTypeOf<Different>()
+
+  // Same shape
+  expectTypeOf<Original>().toEqualTypeOf<Same>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Same>()
+
+  // Only one readonly otherwise same shape
+  expectTypeOf<Original>().not.toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().toEqualTypeOf<Different>()
+})
+
+test('Distinguish between constructors with optional properties', () => {
+  interface Original extends BaseConstructor {
+    prop?: number
+  }
+
+  interface Same extends BaseConstructor {
+    prop?: number
+  }
+
+  interface Different extends BaseConstructor {
+    prop: number | undefined
+  }
+
+  // Self-identity
+  expectTypeOf<Original>().toEqualTypeOf<Original>()
+  expectTypeOf<Different>().toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Original>()
+  // @ts-expect-error
+  expectTypeOf<Different>().not.toEqualTypeOf<Different>()
+
+  // Same shape
+  expectTypeOf<Original>().toEqualTypeOf<Same>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Same>()
+
+  // Only one optional otherwise same shape
+  expectTypeOf<Original>().not.toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().toEqualTypeOf<Different>()
+})
+
+test('Distinguish between constructors with properties of different types', () => {
+  interface Original extends BaseConstructor {
+    prop: number
+  }
+
+  interface Same extends BaseConstructor {
+    prop: number
+  }
+
+  interface Different extends BaseConstructor {
+    prop: string
+  }
+
+  // Self-identity
+  expectTypeOf<Original>().toEqualTypeOf<Original>()
+  expectTypeOf<Different>().toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Original>()
+  // @ts-expect-error
+  expectTypeOf<Different>().not.toEqualTypeOf<Different>()
+
+  // Same shape
+  expectTypeOf<Original>().toEqualTypeOf<Same>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Same>()
+
+  // Only one optional otherwise same shape
+  expectTypeOf<Original>().not.toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().toEqualTypeOf<Different>()
+})
+
+test('Distinguish between tuples with differing item type', () => {
+  type Original = [{prop: number}]
+  type Same = [{prop: number}]
+  type Different = [{readonly prop: number}]
+
+  // Self-identity
+  expectTypeOf<Original>().toEqualTypeOf<Original>()
+  expectTypeOf<Different>().toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Original>()
+  // @ts-expect-error
+  expectTypeOf<Different>().not.toEqualTypeOf<Different>()
+
+  // Same shape
+  expectTypeOf<Original>().toEqualTypeOf<Same>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Same>()
+
+  // One item type property readonly otherwise same sape
+  expectTypeOf<Original>().not.toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().toEqualTypeOf<Different>()
+})
+
+test('Distinguish between array with properties', () => {
+  type Original = number[] & {readonly prop: number}
+  type Same = number[] & {readonly prop: number}
+  type Different = number[] & {prop: number}
+
+  // Self-identity
+  expectTypeOf<Original>().toEqualTypeOf<Original>()
+  expectTypeOf<Different>().toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Original>()
+  // @ts-expect-error
+  expectTypeOf<Different>().not.toEqualTypeOf<Different>()
+
+  // Same shape
+  expectTypeOf<Original>().toEqualTypeOf<Same>()
+  // @ts-expect-error
+  expectTypeOf<Original>().not.toEqualTypeOf<Same>()
+
+  // One item type property readonly otherwise same sape
+  expectTypeOf<Original>().not.toEqualTypeOf<Different>()
+  // @ts-expect-error
+  expectTypeOf<Original>().toEqualTypeOf<Different>()
+})
+
+test('Distinguish between different types that are OR`d together', () => {
+  expectTypeOf<{foo: number} | {bar: string}>().toEqualTypeOf<{foo: number} | {bar: string}>()
+  // @ts-expect-error
+  expectTypeOf<{foo: number} | {bar: string}>().not.toEqualTypeOf<{foo: number} | {bar: string}>()
+
+  expectTypeOf<{foo: number} | {bar: string}>().not.toEqualTypeOf<{foo: number}>()
+  // @ts-expect-error
+  expectTypeOf<{foo: number} | {bar: string}>().toEqualTypeOf<{foo: number}>()
+})
+
+test('Distinguish between identical types that are OR`d together', () => {
+  expectTypeOf<{foo: number} | {foo: number}>().toEqualTypeOf<{foo: number} | {foo: number}>()
+  // Note: The `| T` in `Equal` in index.ts makes this work.
+  expectTypeOf<{foo: number} | {foo: number}>().toEqualTypeOf<{foo: number}>()
+  // @ts-expect-error
+  expectTypeOf<{foo: number} | {foo: number}>().not.toEqualTypeOf<{foo: number} | {foo: number}>()
+  // @ts-expect-error
+  expectTypeOf<{foo: number} | {foo: number}>().not.toEqualTypeOf<{foo: number}>()
+})
+
+test('Distinguish between different types that are AND`d together', () => {
+  // Identity
+  expectTypeOf<{foo: number} & {bar: string}>().toEqualTypeOf<{foo: number} & {bar: string}>()
+  // @ts-expect-error
+  expectTypeOf<{foo: number} & {bar: string}>().not.toEqualTypeOf<{foo: number} & {bar: string}>()
+
+  // Two types intersect to an equivalent non-intersected type
+  // This is broken at the moment. See the next test
+  // expectTypeOf<{foo: number} & {bar: string}>().toEqualTypeOf<{foo: number; bar: string}>()
+  // expectTypeOf<{foo: number} & {bar: string}>().not.toEqualTypeOf<{foo: number; bar: string}>()
+})
+
+test('Works arounds tsc bug not handling intersected types for this form of equivalence', () => {
+  // @ts-expect-error This is the bug.
+  expectTypeOf<{foo: number} & {bar: string}>().toEqualTypeOf<{foo: number; bar: string}>()
+  // This should \@ts-expect-error but does not.
+  expectTypeOf<{foo: number} & {bar: string}>().not.toEqualTypeOf<{foo: number; bar: string}>()
+
+  const one: {foo: number} & {bar: string} = {foo: 1, bar: 'a'}
+  const two: {foo: number; bar: string} = {foo: 1, bar: 'a'}
+  // @ts-expect-error It also repros with variables and their inferred types
+  expectTypeOf(one).toEqualTypeOf(two)
+  // This should \@ts-expect-error but does not.
+  expectTypeOf(one).not.toEqualTypeOf(two)
+
+  // The workaround is the new optional .branded modifier.
+  expectTypeOf<{foo: number} & {bar: string}>().branded.toEqualTypeOf<{foo: number; bar: string}>()
+  expectTypeOf(one).branded.toEqualTypeOf(two)
+  // @ts-expect-error
+  expectTypeOf<{foo: number} & {bar: string}>().branded.not.toEqualTypeOf<{foo: number; bar: string}>()
+  // @ts-expect-error
+  expectTypeOf(one).branded.not.toEqualTypeOf(two)
+})
+
+test('Distinguish between identical types that are AND`d together', () => {
+  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
+  // Note: The `& T` in `Equal` in index.ts makes this work.
+  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number}>()
+  // @ts-expect-error
+  expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number} & {foo: number}>()
+  // @ts-expect-error
+  expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number}>()
+})
+
 test('limitations', () => {
   // these *shouldn't* fail, but kept here to document missing behaviours. Once fixed, remove the expect-error comments to make sure they can't regress
   // @ts-expect-error typescript can't handle the truth: https://github.com/mmkal/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
   expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
 
-  // @ts-expect-error this is just a bug - augmented functions slip through the net https://github.com/mmkal/expect-type/issues/26
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })
