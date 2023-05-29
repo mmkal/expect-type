@@ -69,7 +69,7 @@ expectTypeOf({a: 1}).toBeIdenticalTo<{a: number}>()
 expectTypeOf({a: 1, b: 1}).toBeIdenticalTo<{a: number}>()
 ```
 
-To allow for extra properties, use `.toExtend`. This checks that an object "matches" a type. This is similar to jest's `.toMatchObject`:
+To allow for extra properties, use `.toExtend`. This is roughly equivalent to an `extends` constraint in a function type argument.:
 
 ```typescript
 expectTypeOf({a: 1, b: 1}).toExtend<{a: number}>()
@@ -79,9 +79,9 @@ expectTypeOf({a: 1, b: 1}).toExtend<{a: number}>()
 
 ```typescript
 // @ts-expect-error
-expectTypeOf({a: 1}).toBeIdenticalTo({a: 1, b: 1})
+expectTypeOf({a: number}).toBeIdenticalTo<{a: number; b: number}>()
 // @ts-expect-error
-expectTypeOf({a: 1}).toExtend({a: 1, b: 1})
+expectTypeOf({a: number}).toExtend<{a: number; b: number}>()
 ```
 
 Another example of the difference between `.toExtend` and `.toBeIdenticalTo`, using generics. `.toExtend` can be used for "is-a" relationships:
@@ -440,10 +440,31 @@ expectTypeOf<Simplify<{a: 1} & {b: 2}>>().toEqualTypeOf<{a: 1; b: 2}>()
 ```
 <!-- codegen:end -->
 
+### Error messages
+
+When types don't match, `.toBeIdenticalTo` and `toExtend` use a special helper type to produce error messages that are as actionable as possible. But there's a bit of an nuance to understanding them. Since the assertions are written "fluently", the failure should be on the "expected" type, not the "actual" type (`expect<Actual>().toBeIdenticalTo<Expected>()`). This means that type errors can be a little confusing - so this library produces a `MismatchInfo` type to try to make explicit what the expectation is. For example:
+
+```ts
+expectTypeOf({a: 1}).toBeIdenticalTo<{a: string}>()
+```
+
+Is an assertion that will fail, since `{a: 1}` has type `{a: number}` and not `{a: string}`.  The error message in this case will read something like this:
+
+```
+test/test.ts:9:99 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: number\\"; }'.
+  Types of property 'a' are incompatible.
+    Type 'string' is not assignable to type '\\"Expected: string, Actual: number\\"'.
+
+9 expectTypeOf({a: 1}).toBeIdenticalTo<{a: string}>()
+                                        ~~~~~~~~~~~
+```
+
+Not that the type constraint reported is a human-readable messaging specifying both the "expected" and "actual" types. Rather than taking the sentence `Types of property 'a' are incopatible // Type 'string' is not assignable to type "Expected: string, Actual: number"` literally - just look at the property name (`'a'`) and the message: `Expected: string, Actual: number`. This will tell you what's wrong, in most cases. Extremely complex types will of course be more effort to debug, and may require some experimentation. Please [raise an issue](https://github.com/mmkal/expect-type) if the error messages are actually misleading.
+
 ### Within test frameworks
 
 #### Jest & `eslint-plugin-jest`
-If you're using Jest along with `eslint-plugin-jest`, you will get warnings from the [`jest/expect-expect`](https://github.com/jest-community/eslint-plugin-jest/blob/master/docs/rules/expect-expect.md) rule, complaining that "Test has no assertions" for tests that only use `expectTypeOf()`.
+If you're using Jest along with `eslint-plugin-jest`, you may get warnings from the [`jest/expect-expect`](https://github.com/jest-community/eslint-plugin-jest/blob/master/docs/rules/expect-expect.md) rule, complaining that "Test has no assertions" for tests that only use `expectTypeOf()`.
 
 To remove this warning, configure the ESlint rule to consider `expectTypeOf` as an assertion:
 

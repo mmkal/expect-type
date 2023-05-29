@@ -13,15 +13,15 @@ test('`.toBeIdenticalTo` fails on extra properties', () => {
   expectTypeOf({a: 1, b: 1}).toBeIdenticalTo<{a: number}>()
 })
 
-test('To allow for extra properties, use `.toExtend`. This checks that an object "matches" a type. This is similar to jest\'s `.toMatchObject`', () => {
+test('To allow for extra properties, use `.toExtend`. This is roughly equivalent to an `extends` constraint in a function type argument.', () => {
   expectTypeOf({a: 1, b: 1}).toExtend<{a: number}>()
 })
 
 test('`.toBeIdenticalTo` and `.toExtend` both fail on missing properties', () => {
   // @ts-expect-error
-  expectTypeOf({a: 1}).toBeIdenticalTo<{a: number; b: number}>()
+  expectTypeOf({a: number}).toBeIdenticalTo<{a: number; b: number}>()
   // @ts-expect-error
-  expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
+  expectTypeOf({a: number}).toExtend<{a: number; b: number}>()
 })
 
 test('Another example of the difference between `.toExtend` and `.toBeIdenticalTo`, using generics. `.toExtend` can be used for "is-a" relationships', () => {
