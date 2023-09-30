@@ -153,6 +153,18 @@ test('toExtend error message', async () => {
   `)
 })
 
+test('toBeNullable', async () => {
+  const okAssertion = `expectTypeOf<1 | undefined>().toBeNullable()`
+  expect(tsErrors(okAssertion + '\n' + okAssertion.replace('.toBe', '.not.toBe'))).toMatchInlineSnapshot(`
+    "test/test.ts:9:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNullable<1>' has no call signatures.
+
+    9 expectTypeOf<1 | undefined>().toBeNullable()
+                                    ~~~~~~~~~~~~
+    "
+  `)
+})
+
 test('usage.test.ts', () => {
   // remove all `.not`s and `// @ts-expect-error`s from the main test file and snapshot the errors
   const usageTestFile = fs
@@ -213,120 +225,72 @@ test('usage.test.ts', () => {
 
     99   expectTypeOf<Apple>().toBeIdenticalTo<Fruit>()
                                                ~~~~~
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNumber<never>' has no call signatures.
 
     99   expectTypeOf<never>().toBeNumber()
-                               ~~~~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, Options['positive']>) => true
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
+                               ~~~~~~~~~~
     test/usage.test.ts:99:99 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: never; }; }'.
       The types of 'deeply.nested' are incompatible between these types.
         Type 'unknown' is not assignable to type 'never'.
 
     99   expectTypeOf<{deeply: {nested: any}}>().toBeIdenticalTo<{deeply: {nested: unknown}}>()
                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNullable<any>' has no call signatures.
 
     99   expectTypeOf(undefined).toBeNullable()
-                                 ~~~~~~~~~~~~~~
-
-      src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+                                 ~~~~~~~~~~~~
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNullable<any>' has no call signatures.
 
     99   expectTypeOf(null).toBeNullable()
-                            ~~~~~~~~~~~~~~
-
-      src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+                            ~~~~~~~~~~~~
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNullable<1>' has no call signatures.
 
     99   expectTypeOf<1 | undefined>().toBeNullable()
-                                       ~~~~~~~~~~~~~~
-
-      src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+                                       ~~~~~~~~~~~~
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNullable<1>' has no call signatures.
 
     99   expectTypeOf<1 | null>().toBeNullable()
-                                  ~~~~~~~~~~~~~~
-
-      src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+                                  ~~~~~~~~~~~~
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNullable<1>' has no call signatures.
 
     99   expectTypeOf<1 | undefined | null>().toBeNullable()
-                                              ~~~~~~~~~~~~~~
-
-      src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+                                              ~~~~~~~~~~~~
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectUnknown<number>' has no call signatures.
 
     99   expectTypeOf(1).toBeUnknown()
-                         ~~~~~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, Options['positive']>) => true
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+                         ~~~~~~~~~~~
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectAny<number>' has no call signatures.
 
     99   expectTypeOf(1).toBeAny()
-                         ~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
-                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+                         ~~~~~~~
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNever<number>' has no call signatures.
 
     99   expectTypeOf(1).toBeNever()
-                         ~~~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, Options['positive']>) => true
-                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+                         ~~~~~~~~~
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNull<number>' has no call signatures.
 
     99   expectTypeOf(1).toBeNull()
-                         ~~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, Options['positive']>) => true
-                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:99:99 - error TS2554: Expected 1 arguments, but got 0.
+                         ~~~~~~~~
+    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
+      Type 'ExpectUndefined<number>' has no call signatures.
 
     99   expectTypeOf(1).toBeUndefined()
-                         ~~~~~~~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, Options['positive']>) => true
-                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
+                         ~~~~~~~~~~~~~
+    test/usage.test.ts:999:99 - error TS2349: This expression is not callable.
+      Type 'ExpectNullable<number>' has no call signatures.
 
     999   expectTypeOf(1).toBeNullable()
-                          ~~~~~~~~~~~~~~
-
-      src/index.ts:999:9
-        999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
-                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
+                          ~~~~~~~~~~~~
     test/usage.test.ts:999:99 - error TS2344: Type 'number' does not satisfy the constraint '\\"Expected: number, Actual: string\\" | \\"Expected: number, Actual: number\\"'.
 
     999   expectTypeOf<string | number>().toExtend<number>()
@@ -349,37 +313,25 @@ test('usage.test.ts', () => {
         999     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2349: This expression is not callable.
+      Type 'ExpectString<number>' has no call signatures.
 
     999   expectTypeOf(obj).toHaveProperty('a').toBeString()
-                                                ~~~~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
+                                                ~~~~~~~~~~
     test/usage.test.ts:999:99 - error TS2344: Type 'HasParam' does not satisfy the constraint '\\"Expected: function, Actual: function\\"'.
 
     999   expectTypeOf<NoParam>().toBeIdenticalTo<HasParam>()
                                                   ~~~~~~~~
-    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2349: This expression is not callable.
+      Type 'ExpectAny<(a: number) => number[]>' has no call signatures.
 
     999   expectTypeOf(f).toBeAny()
-                          ~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
-                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
+                          ~~~~~~~
+    test/usage.test.ts:999:99 - error TS2349: This expression is not callable.
+      Type 'ExpectAny<number[]>' has no call signatures.
 
     999   expectTypeOf(f).returns.toBeAny()
-                                  ~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
-                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
+                                  ~~~~~~~
     test/usage.test.ts:999:99 - error TS2344: Type 'string' does not satisfy the constraint '\\"Expected: string, Actual: number\\"'.
 
     999   expectTypeOf(f).parameter(0).toBeIdenticalTo<string>()
@@ -388,15 +340,11 @@ test('usage.test.ts', () => {
 
     999   expectTypeOf(greetFormal).toBeIdenticalTo<typeof greetCasual>()
                                                     ~~~~~~~~~~~~~~~~~~
-    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
+    test/usage.test.ts:999:99 - error TS2349: This expression is not callable.
+      Type 'ExpectString<number>' has no call signatures.
 
     999   expectTypeOf([1, 2, 3]).items.toBeString()
-                                        ~~~~~~~~~~~~
-
-      src/index.ts:999:99
-        999   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Arguments for the rest parameter 'MISMATCH' were not provided.
+                                        ~~~~~~~~~~
     test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
     999   expectTypeOf<any[]>().toEqualTypeOf<number[]>()

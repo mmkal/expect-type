@@ -1,3 +1,5 @@
+import { type } from "os"
+
 export type Not<T extends boolean> = T extends true ? false : true
 export type Or<Types extends boolean[]> = Types[number] extends false ? false : true
 export type And<Types extends boolean[]> = Types[number] extends true ? true : false
@@ -161,23 +163,49 @@ export interface ExpectTypeOfOptions {
   positive: boolean
   branded: boolean
 }
+
+const error = Symbol('error')
+type Inverted<T> = {[error]: T}
+
+type ExpectNull<T> = {[error]: T; result: Extends<T, null>}
+type ExpectUndefined<T> = {[error]: T; result: Extends<T, undefined>}
+type ExpectNumber<T> = {[error]: T; result: Extends<T, number>}
+type ExpectString<T> = {[error]: T; result: Extends<T, string>}
+type ExpectFunction<T> = {[error]: T; result: Extends<T, (...args: any[]) => any>}
+type ExpectObject<T> = {[error]: T; result: Extends<T, object>}
+type ExpectArray<T> = {[error]: T; result: Extends<T, any[]>}
+type ExpectBoolean<T> = {[error]: T; result: Extends<T, boolean>}
+type ExpectVoid<T> = {[error]: T; result: Extends<T, void>}
+type ExpectSymbol<T> = {[error]: T; result: Extends<T, symbol>}
+type ExpectAny<T> = {[error]: T; result: IsAny<T>}
+type ExpectUnknown<T> = {[error]: T; result: IsUnknown<T>}
+type ExpectNever<T> = {[error]: T; result: IsNever<T>}
+type ExpectNullable<T> = {[error]: T; result: Not<Equal<T, NonNullable<T>>>}
+
+type Scolder<
+  Expecter extends {result: boolean},
+  Options extends {positive: boolean},
+> = Expecter['result'] extends Options['positive']
+  ? () => true
+  : Options['positive'] extends true
+  ? Expecter
+  : Inverted<Expecter>
+
 export interface ExpectTypeOf<Actual, Options extends ExpectTypeOfOptions> {
-  toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
-  toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, Options['positive']>) => true
-  toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, Options['positive']>) => true
-  toBeFunction: (...MISMATCH: MismatchArgs<Extends<Actual, (...args: any[]) => any>, Options['positive']>) => true
-  toBeObject: (...MISMATCH: MismatchArgs<Extends<Actual, object>, Options['positive']>) => true
-  toBeArray: (...MISMATCH: MismatchArgs<Extends<Actual, any[]>, Options['positive']>) => true
-  toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, Options['positive']>) => true
-  toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
-  toBeBoolean: (...MISMATCH: MismatchArgs<Extends<Actual, boolean>, Options['positive']>) => true
-  toBeVoid: (...MISMATCH: MismatchArgs<Extends<Actual, void>, Options['positive']>) => true
-  toBeSymbol: (...MISMATCH: MismatchArgs<Extends<Actual, symbol>, Options['positive']>) => true
-  toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, Options['positive']>) => true
-  toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, Options['positive']>) => true
-  toBeNullable: (
-    ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
-  ) => true
+  toBeAny: Scolder<ExpectAny<Actual>, Options>
+  toBeUnknown: Scolder<ExpectUnknown<Actual>, Options>
+  toBeNever: Scolder<ExpectNever<Actual>, Options>
+  toBeFunction: Scolder<ExpectFunction<Actual>, Options>
+  toBeObject: Scolder<ExpectObject<Actual>, Options>
+  toBeArray: Scolder<ExpectArray<Actual>, Options>
+  toBeNumber: Scolder<ExpectNumber<Actual>, Options>
+  toBeString: Scolder<ExpectString<Actual>, Options>
+  toBeBoolean: Scolder<ExpectBoolean<Actual>, Options>
+  toBeVoid: Scolder<ExpectVoid<Actual>, Options>
+  toBeSymbol: Scolder<ExpectSymbol<Actual>, Options>
+  toBeNull: Scolder<ExpectNull<Actual>, Options>
+  toBeUndefined: Scolder<ExpectUndefined<Actual>, Options>
+  toBeNullable: Scolder<ExpectNullable<Actual>, Options>
   toExtend: <
     Expected extends Options['positive'] extends true
       ? Extends<Actual, Expected> extends true
