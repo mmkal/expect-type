@@ -19,9 +19,9 @@ test('To allow for extra properties, use `.toExtend`. This is roughly equivalent
 
 test('`.toBeIdenticalTo` and `.toExtend` both fail on missing properties', () => {
   // @ts-expect-error
-  expectTypeOf({a: number}).toBeIdenticalTo<{a: number; b: number}>()
+  expectTypeOf({a: 1}).toBeIdenticalTo<{a: number; b: number}>()
   // @ts-expect-error
-  expectTypeOf({a: number}).toExtend<{a: number; b: number}>()
+  expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
 })
 
 test('Another example of the difference between `.toExtend` and `.toBeIdenticalTo`, using generics. `.toExtend` can be used for "is-a" relationships', () => {
