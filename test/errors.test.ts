@@ -156,7 +156,7 @@ test('toExtend error message', async () => {
 test('usage.test.ts', () => {
   // remove all `.not`s and `// @ts-expect-error`s from the main test file and snapshot the errors
   const usageTestFile = fs
-    .readFileSync( __dirname + '/walkthrough.test.ts')
+    .readFileSync(__dirname + '/walkthrough.test.ts')
     .toString()
     .split('\n')
     .map(line => line.replace('// @ts-expect-error', '// error expected on next line:'))

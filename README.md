@@ -32,6 +32,7 @@ See below for lots more examples.
 - [Installation and usage](#installation-and-usage)
 - [Documentation](#documentation)
    - [Features](#features)
+   - [Error messages](#error-messages)
    - [Within test frameworks](#within-test-frameworks)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
 - [Similar projects](#similar-projects)
@@ -79,9 +80,9 @@ expectTypeOf({a: 1, b: 1}).toExtend<{a: number}>()
 
 ```typescript
 // @ts-expect-error
-expectTypeOf({a: number}).toBeIdenticalTo<{a: number; b: number}>()
+expectTypeOf({a: 1}).toBeIdenticalTo<{a: number; b: number}>()
 // @ts-expect-error
-expectTypeOf({a: number}).toExtend<{a: number; b: number}>()
+expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
 ```
 
 Another example of the difference between `.toExtend` and `.toBeIdenticalTo`, using generics. `.toExtend` can be used for "is-a" relationships:
