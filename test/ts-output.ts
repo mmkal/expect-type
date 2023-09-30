@@ -1,11 +1,19 @@
 import stripAnsi from 'strip-ansi'
 import * as tsmorph from 'ts-morph'
+import * as path from 'path'
 
 export const tsErrors = (...lines: string[]) => {
-  const code = lines.join('\n')
-  const project = new tsmorph.Project()
+  const body = lines.join('\n')
+  return tsFileErrors({filepath: './test/test.ts', content: `import {expectTypeOf} from '../src'\n\n${body}`})
+}
+
+export const tsFileErrors = (params: {filepath: string; content: string}) => {
+  const project = new tsmorph.Project({
+    tsConfigFilePath: path.resolve(__dirname, '../tsconfig.json'),
+    libFolderPath: path.resolve(__dirname, '../node_modules/typescript/lib'),
+  })
   project.addSourceFileAtPath('./src/index.ts')
-  project.createSourceFile('./test/test.ts', `import {expectTypeOf} from '../src'\n\n${code}`)
+  project.createSourceFile(params.filepath, params.content)
   const diagnostics = project.getPreEmitDiagnostics()
   const formatted = project.formatDiagnosticsWithColorAndContext(diagnostics)
   return simplifyTsOutput(formatted)

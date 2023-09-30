@@ -1,7 +1,5 @@
 import * as fs from 'fs'
-import stripAnsi from 'strip-ansi'
-import * as tsmorph from 'ts-morph'
-import {tsErrors, simplifyTsOutput} from './ts-output'
+import {tsErrors, tsFileErrors} from './ts-output'
 
 test('toBeIdenticalTo error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toBeIdenticalTo<{a: string}>()`)).toMatchInlineSnapshot(`
@@ -157,10 +155,10 @@ test('toBeNullable', async () => {
   const okAssertion = `expectTypeOf<1 | undefined>().toBeNullable()`
   expect(tsErrors(okAssertion + '\n' + okAssertion.replace('.toBe', '.not.toBe'))).toMatchInlineSnapshot(`
     "test/test.ts:9:99 - error TS2349: This expression is not callable.
-      Type 'ExpectNullable<1>' has no call signatures.
+      Type 'Inverted<ExpectNullable<1 | undefined>>' has no call signatures.
 
-    9 expectTypeOf<1 | undefined>().toBeNullable()
-                                    ~~~~~~~~~~~~
+    9 expectTypeOf<1 | undefined>().not.toBeNullable()
+                                        ~~~~~~~~~~~~
     "
   `)
 })
@@ -174,13 +172,8 @@ test('usage.test.ts', () => {
     .map(line => line.replace('// @ts-expect-error', '// error expected on next line:'))
     .map(line => line.replace('.not.', '.'))
     .join('\n')
-  const project = new tsmorph.Project()
-  project.addSourceFileAtPath('./src/index.ts')
-  project.createSourceFile('./test/usage.test.ts', usageTestFile, {overwrite: true})
-  const diagnostics = project.getPreEmitDiagnostics()
-  const formatted = stripAnsi(project.formatDiagnosticsWithColorAndContext(diagnostics))
 
-  expect(simplifyTsOutput(formatted)).toMatchInlineSnapshot(`
+  expect(tsFileErrors({filepath: 'test/usage.test.ts', content: usageTestFile})).toMatchInlineSnapshot(`
     "test/usage.test.ts:99:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: number; b: \\"Expected: never, Actual: number\\"; }'.
       Property 'b' is missing in type '{ a: number; }' but required in type '{ a: number; b: \\"Expected: never, Actual: number\\"; }'.
 
@@ -198,14 +191,14 @@ test('usage.test.ts', () => {
 
     99   expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
                                        ~~~~~~~~~~~~~~~~~~~~~~
-    test/usage.test.ts:99:99 - error TS2344: Type 'Apple' does not satisfy the constraint '{ type: \\"Fruit\\"; name: \\"Expected: literal string: Apple, Actual: never\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"; }'.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple, Actual: never\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"; }'.
       Types of property 'name' are incompatible.
         Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple, Actual: never\\"'.
 
     99   expectTypeOf<Fruit>().toExtend<Apple>()
                                         ~~~~~
-    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: \\"Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
-      Property 'name' is missing in type 'Fruit' but required in type '{ type: \\"Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+      Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
 
     99   expectTypeOf<Apple>().toBeIdenticalTo<Fruit>()
                                                ~~~~~
@@ -214,14 +207,14 @@ test('usage.test.ts', () => {
 
     99   expectTypeOf({a: 1}).toExtend<{b: number}>()
                                        ~~~~~~~~~~~
-    test/usage.test.ts:99:99 - error TS2344: Type 'Apple' does not satisfy the constraint '{ type: \\"Fruit\\"; name: \\"Expected: literal string: Apple, Actual: never\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"; }'.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple, Actual: never\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\" | \\"Expected: literal boolean: true, Actual: literal boolean: true\\"; }'.
       Types of property 'name' are incompatible.
         Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple, Actual: never\\"'.
 
     99   expectTypeOf<Fruit>().toExtend<Apple>()
                                         ~~~~~
-    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: \\"Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
-      Property 'name' is missing in type 'Fruit' but required in type '{ type: \\"Fruit\\"; name: \\"Expected: never, Actual: literal string: Apple\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
+      Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: true\\" | \\"Expected: literal boolean: false, Actual: literal boolean: true\\"; }'.
 
     99   expectTypeOf<Apple>().toBeIdenticalTo<Fruit>()
                                                ~~~~~
@@ -237,30 +230,15 @@ test('usage.test.ts', () => {
     99   expectTypeOf<{deeply: {nested: any}}>().toBeIdenticalTo<{deeply: {nested: unknown}}>()
                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
     test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
-      Type 'ExpectNullable<any>' has no call signatures.
+      Type 'ExpectNull<undefined>' has no call signatures.
 
-    99   expectTypeOf(undefined).toBeNullable()
-                                 ~~~~~~~~~~~~
+    99   expectTypeOf(undefined).toBeNull()
+                                 ~~~~~~~~
     test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
-      Type 'ExpectNullable<any>' has no call signatures.
+      Type 'ExpectUndefined<null>' has no call signatures.
 
-    99   expectTypeOf(null).toBeNullable()
-                            ~~~~~~~~~~~~
-    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
-      Type 'ExpectNullable<1>' has no call signatures.
-
-    99   expectTypeOf<1 | undefined>().toBeNullable()
-                                       ~~~~~~~~~~~~
-    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
-      Type 'ExpectNullable<1>' has no call signatures.
-
-    99   expectTypeOf<1 | null>().toBeNullable()
-                                  ~~~~~~~~~~~~
-    test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
-      Type 'ExpectNullable<1>' has no call signatures.
-
-    99   expectTypeOf<1 | undefined | null>().toBeNullable()
-                                              ~~~~~~~~~~~~
+    99   expectTypeOf(null).toBeUndefined()
+                            ~~~~~~~~~~~~~
     test/usage.test.ts:99:99 - error TS2349: This expression is not callable.
       Type 'ExpectUnknown<number>' has no call signatures.
 
@@ -360,18 +338,39 @@ test('usage.test.ts', () => {
 
     999   expectTypeOf<{a: string}>().toBeIdenticalTo<{a: number}>()
                                                       ~~~~~~~~~~~
-    test/usage.test.ts:999:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '\\"Expected: ..., Actual: unknown\\"'.
+    test/usage.test.ts:999:99 - error TS2344: Type '{}' does not satisfy the constraint '{ a: \\"Expected: never, Actual: number\\" | \\"Expected: never, Actual: undefined\\"; }'.
+      Property 'a' is missing in type '{}' but required in type '{ a: \\"Expected: never, Actual: number\\" | \\"Expected: never, Actual: undefined\\"; }'.
+
+    999   expectTypeOf<{a?: number}>().toBeIdenticalTo<{}>()
+                                                       ~~
+    test/usage.test.ts:999:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: number\\" | \\"Expected: number, Actual: undefined\\"; }'.
+      Types of property 'a' are incompatible.
+        Type 'number' is not assignable to type '\\"Expected: number, Actual: number\\" | \\"Expected: number, Actual: undefined\\"'.
 
     999   expectTypeOf<{a?: number}>().toBeIdenticalTo<{a: number}>()
                                                        ~~~~~~~~~~~
-    test/usage.test.ts:999:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '\\"Expected: ..., Actual: unknown\\"'.
+    test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
     999   expectTypeOf<{a?: number}>().toBeIdenticalTo<{a: number | undefined}>()
-                                                       ~~~~~~~~~~~~~~~~~~~~~~~
-    test/usage.test.ts:999:99 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '\\"Expected: ..., Actual: unknown\\"'.
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      src/index.ts:999:9
+        999     ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, Options['positive']>
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Arguments for the rest parameter 'MISMATCH' were not provided.
+    test/usage.test.ts:999:99 - error TS2344: Type '{ a: number | null; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: number\\" | \\"Expected: number, Actual: undefined\\" | \\"Expected: number, Actual: null\\" | \\"Expected: null, Actual: number\\" | \\"Expected: null, Actual: undefined\\" | \\"Expected: null, Actual: null\\"; }'.
+      Types of property 'a' are incompatible.
+        Type 'number | null' is not assignable to type '\\"Expected: number, Actual: number\\" | \\"Expected: number, Actual: undefined\\" | \\"Expected: number, Actual: null\\" | \\"Expected: null, Actual: number\\" | \\"Expected: null, Actual: undefined\\" | \\"Expected: null, Actual: null\\"'.
+          Type 'null' is not assignable to type '\\"Expected: number, Actual: number\\" | \\"Expected: number, Actual: undefined\\" | \\"Expected: number, Actual: null\\" | \\"Expected: null, Actual: number\\" | \\"Expected: null, Actual: undefined\\" | \\"Expected: null, Actual: null\\"'.
 
     999   expectTypeOf<{a?: number | null}>().toBeIdenticalTo<{a: number | null}>()
                                                               ~~~~~~~~~~~~~~~~~~
+    test/usage.test.ts:999:99 - error TS2344: Type '{ a: {}; }' does not satisfy the constraint '{ a: { b: \\"Expected: never, Actual: number\\" | \\"Expected: never, Actual: undefined\\"; }; }'.
+      Types of property 'a' are incompatible.
+        Property 'b' is missing in type '{}' but required in type '{ b: \\"Expected: never, Actual: number\\" | \\"Expected: never, Actual: undefined\\"; }'.
+
+    999   expectTypeOf<{a: {b?: number}}>().toBeIdenticalTo<{a: {}}>()
+                                                            ~~~~~~~
     test/usage.test.ts:999:99 - error TS2554: Expected 1 arguments, but got 0.
 
     999   expectTypeOf<A1>().toBeIdenticalTo<E1>()
