@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import {tsErrors, tsFileErrors} from './ts-output'
 
-test('toEqualTypeOf error message', async () => {
+test('toEqualTypeOf<...>() error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
     "test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: number\\"; }'.
       Types of property 'a' are incompatible.
@@ -9,6 +9,16 @@ test('toEqualTypeOf error message', async () => {
 
     999 expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
                                            ~~~~~~~~~~~"
+  `)
+})
+
+test('toEqualTypeOf(...) error message', async () => {
+  expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})`)).toMatchInlineSnapshot(`
+    "test/test.ts:999:999 - error TS2345: Argument of type '{ a: string; }' is not assignable to parameter of type 'Mismatch'.
+      Object literal may only specify known properties, and 'a' does not exist in type 'Mismatch'.
+
+    999 expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})
+                                            ~~~~~~~~"
   `)
 })
 
@@ -136,7 +146,7 @@ test('toEqualTypeOf with literals', async () => {
   `)
 })
 
-test('.toMatchTypeOf error message', async () => {
+test('toMatchTypeOf<...>() error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
     "test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: number\\"; }'.
       Types of property 'a' are incompatible.
@@ -144,6 +154,15 @@ test('.toMatchTypeOf error message', async () => {
 
     999 expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()
                                            ~~~~~~~~~~~"
+  `)
+})
+
+test('toMatchTypeOf(...) error message', async () => {
+  expect(tsErrors(`expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})`)).toMatchInlineSnapshot(`
+    "test/test.ts:999:999 - error TS2554: Expected 0 arguments, but got 1.
+
+    999 expectTypeOf({a: 1}).toMatchTypeOf({a: 'one'})
+                                           ~~~~~~~~~~"
   `)
 })
 
