@@ -160,7 +160,8 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
 
 const error = Symbol('error')
 type Mismatch = {[error]: 'mismatch'}
-type AValue = {[error]?: undefined}
+/** A type which should match anything passed as a value but *doesn't* match `Mismatch` - helps TypeScript select the right overload for `toEqualTypeOf` and `toMatchTypeOf`. */
+type AValue = {[error]?: undefined} | string | number | boolean | symbol | bigint | null | undefined | void
 type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
   ActualResult,
   ExpectedResult
@@ -262,7 +263,7 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
   toMatchTypeOf: {
     <Expected>(
       value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
-      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>
     ): true
     <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
   }
