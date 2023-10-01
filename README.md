@@ -57,13 +57,13 @@ The `expectTypeOf` method takes a single argument, or a generic parameter. Neith
 ### Features
 
 <!-- codegen:start {preset: markdownFromTests, source: test/usage.test.ts} -->
-Check an object's type with `.toBeIdenticalTo`:
+Check an object's type with `.toEqualTypeOf`:
 
 ```typescript
 expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 ```
 
-`.toBeIdenticalTo` fails on extra properties:
+`.toEqualTypeOf` fails on extra properties:
 
 ```typescript
 // @ts-expect-error
@@ -76,7 +76,7 @@ To allow for extra properties, use `.toMatchTypeOf`. This is roughly equivalent 
 expectTypeOf({a: 1, b: 1}).toMatchTypeOf<{a: number}>()
 ```
 
-`.toBeIdenticalTo` and `.toMatchTypeOf` both fail on missing properties:
+`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties:
 
 ```typescript
 // @ts-expect-error
@@ -85,7 +85,7 @@ expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
 expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
 ```
 
-Another example of the difference between `.toMatchTypeOf` and `.toBeIdenticalTo`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships:
+Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships:
 
 ```typescript
 type Fruit = {type: 'Fruit'; edible: boolean}
@@ -129,7 +129,7 @@ expectTypeOf<never>().toBeNever()
 expectTypeOf<never>().toBeNumber()
 ```
 
-`.toBeIdenticalTo` distinguishes between deeply-nested `any` and `unknown` properties:
+`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` properties:
 
 ```typescript
 expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
@@ -235,7 +235,7 @@ expectTypeOf(obj).toHaveProperty('b').toBeString()
 expectTypeOf(obj).toHaveProperty('a').not.toBeString()
 ```
 
-`.toBeIdenticalTo` can be used to distinguish between functions:
+`.toEqualTypeOf` can be used to distinguish between functions:
 
 ```typescript
 type NoParam = () => void
@@ -476,10 +476,10 @@ expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().branded.toEqualTypeOf<
 
 ### Error messages
 
-When types don't match, `.toBeIdenticalTo` and `toExtend` use a special helper type to produce error messages that are as actionable as possible. But there's a bit of an nuance to understanding them. Since the assertions are written "fluently", the failure should be on the "expected" type, not the "actual" type (`expect<Actual>().toBeIdenticalTo<Expected>()`). This means that type errors can be a little confusing - so this library produces a `MismatchInfo` type to try to make explicit what the expectation is. For example:
+When types don't match, `.toEqualTypeOf` and `toMatchTypeOf` use a special helper type to produce error messages that are as actionable as possible. But there's a bit of an nuance to understanding them. Since the assertions are written "fluently", the failure should be on the "expected" type, not the "actual" type (`expect<Actual>().toEqualTypeOf<Expected>()`). This means that type errors can be a little confusing - so this library produces a `MismatchInfo` type to try to make explicit what the expectation is. For example:
 
 ```ts
-expectTypeOf({a: 1}).toBeIdenticalTo<{a: string}>()
+expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
 ```
 
 Is an assertion that will fail, since `{a: 1}` has type `{a: number}` and not `{a: string}`.  The error message in this case will read something like this:
@@ -489,7 +489,7 @@ test/test.ts:9:99 - error TS2344: Type '{ a: string; }' does not satisfy the con
   Types of property 'a' are incompatible.
     Type 'string' is not assignable to type '\\"Expected: string, Actual: number\\"'.
 
-9 expectTypeOf({a: 1}).toBeIdenticalTo<{a: string}>()
+9 expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
                                         ~~~~~~~~~~~
 ```
 

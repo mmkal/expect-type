@@ -687,7 +687,7 @@ test('limitations', () => {
   // @ts-expect-error typescript can't handle the truth: https://github.com/mmkal/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
   expectTypeOf<a.StrictEqualUsingBranding<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
 
-  // @ts-expect-error toBeIdenticalTo relies on TypeScript's internal `toBeIdentical` function which falls down with intersection types, but is otherwise accurate and performant: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
+  // @ts-expect-error toEqualTypeOf relies on TypeScript's internal `toBeIdentical` function which falls down with intersection types, but is otherwise accurate and performant: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
   expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
   // use `.branded` to get around this, at the cost of performance.
   expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()

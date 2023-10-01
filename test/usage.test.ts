@@ -4,11 +4,11 @@ import {expectTypeOf} from '../src'
 
 /* eslint mmkal/prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
 
-test("Check an object's type with `.toBeIdenticalTo`", () => {
+test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('`.toBeIdenticalTo` fails on extra properties', () => {
+test('`.toEqualTypeOf` fails on extra properties', () => {
   // @ts-expect-error
   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
 })
@@ -17,14 +17,14 @@ test('To allow for extra properties, use `.toMatchTypeOf`. This is roughly equiv
   expectTypeOf({a: 1, b: 1}).toMatchTypeOf<{a: number}>()
 })
 
-test('`.toBeIdenticalTo` and `.toMatchTypeOf` both fail on missing properties', () => {
+test('`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties', () => {
   // @ts-expect-error
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
   // @ts-expect-error
   expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
 })
 
-test('Another example of the difference between `.toMatchTypeOf` and `.toBeIdenticalTo`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships', () => {
+test('Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships', () => {
   type Fruit = {type: 'Fruit'; edible: boolean}
   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
 
@@ -60,7 +60,7 @@ test('Catch any/unknown/never types', () => {
   expectTypeOf<never>().toBeNumber()
 })
 
-test('`.toBeIdenticalTo` distinguishes between deeply-nested `any` and `unknown` properties', () => {
+test('`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` properties', () => {
   expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 })
 
@@ -151,7 +151,7 @@ test('Make assertions about object properties', () => {
   expectTypeOf(obj).toHaveProperty('a').not.toBeString()
 })
 
-test('`.toBeIdenticalTo` can be used to distinguish between functions', () => {
+test('`.toEqualTypeOf` can be used to distinguish between functions', () => {
   type NoParam = () => void
   type HasParam = (s: string) => void
 
