@@ -59,7 +59,7 @@ export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '..
     }
   : Equal<Actual, Expected> extends true
   ? Actual
-  : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Actual>}`
+  : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
 
 /**
  * Recursively walk a type and replace it with a branded type related to the original. This is useful for
