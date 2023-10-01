@@ -1,4 +1,4 @@
-import { type } from "os"
+import {type} from 'os'
 
 export type Not<T extends boolean> = T extends true ? false : true
 export type Or<Types extends boolean[]> = Types[number] extends false ? false : true
@@ -57,7 +57,7 @@ export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '..
         K extends keyof Expected ? Expected[K] : never
       >
     }
-  : Equal<Actual, Expected> extends true
+  : StrictEqualUsingBranding<Actual, Expected> extends true
   ? Actual
   : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
 
@@ -92,6 +92,7 @@ export type DeepBrand<T> = IsNever<T> extends true
       params: DeepBrand<P>
       return: DeepBrand<R>
       this: DeepBrand<ThisParameterType<T>>
+      props: DeepBrand<Omit<T, keyof Function>>
     }
   : T extends any[]
   ? {
@@ -131,19 +132,26 @@ type ReadonlyEquivalent<X, Y> = Extends<
 >
 
 export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : [L] extends [R] ? true : false
-export type StrictExtends<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
+export type ExtendsUsingBranding<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
 
-type StrictEqual<L, R> = (<T>() => T extends (L & T) | T ? true : false) extends <T>() => T extends (R & T) | T
-  ? true
-  : false
+// much history: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
+type StrictEqualUsingTSInternalIdenticalToOperator<L, R> = (<T>() => T extends (L & T) | T ? true : false) extends <
+  T,
+>() => T extends (R & T) | T ? true : false
   ? IsNever<L> extends IsNever<R>
     ? true
     : false
   : false
 
-export type Equal<Left, Right, Branded = true> = Branded extends true
-  ? And<[StrictExtends<Left, Right>, StrictExtends<Right, Left>]>
-  : StrictEqual<Left, Right>
+export type StrictEqualUsingBranding<Left, Right> =
+   And<[ExtendsUsingBranding<Left, Right>, ExtendsUsingBranding<Right, Left>]>
+
+export type HopefullyPerformantEqual<Left, Right> = StrictEqualUsingTSInternalIdenticalToOperator<
+  Left,
+  Right
+> extends true
+  ? true
+  : StrictEqualUsingBranding<Left, Right>
 
 export type Params<Actual> = Actual extends (...args: infer P) => any ? P : never
 export type ConstructorParams<Actual> = Actual extends new (...args: infer P) => any
@@ -180,7 +188,7 @@ type ExpectSymbol<T> = {[error]: T; result: Extends<T, symbol>}
 type ExpectAny<T> = {[error]: T; result: IsAny<T>}
 type ExpectUnknown<T> = {[error]: T; result: IsUnknown<T>}
 type ExpectNever<T> = {[error]: T; result: IsNever<T>}
-type ExpectNullable<T> = {[error]: T; result: Not<Equal<T, NonNullable<T>>>}
+type ExpectNullable<T> = {[error]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
 
 type Scolder<
   Expecter extends {result: boolean},
@@ -191,7 +199,51 @@ type Scolder<
   ? Expecter
   : Inverted<Expecter>
 
-export interface ExpectTypeOf<Actual, Options extends ExpectTypeOfOptions> {
+export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
+  toBeIdenticalTo: <
+    Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
+      ? unknown
+      : MismatchInfo<Actual, Expected>,
+  >(
+    ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+  ) => true
+
+  toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+  ) => true
+
+  not: NegativeExpectTypeOf<Actual>
+
+  branded: {
+    toBeIdenticalTo: <
+      Expected extends StrictEqualUsingBranding<Actual, Expected> extends true
+        ? unknown
+        : MismatchInfo<Actual, Expected>,
+    >(
+      ...MISMATCH: MismatchArgs<StrictEqualUsingBranding<Actual, Expected>, true>
+    ) => true
+  }
+}
+
+export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: false}> {
+  toBeIdenticalTo: <Expected>(
+    ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
+  ) => true
+
+  toExtend: <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>) => true
+
+  branded: {
+    toBeIdenticalTo: <Expected>(
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
+    ) => true
+  }
+}
+
+export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = (Options['positive'] extends true
+  ? PositiveExpectTypeOf<Actual>
+  : NegativeExpectTypeOf<Actual>) 
+
+export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   toBeAny: Scolder<ExpectAny<Actual>, Options>
   toBeUnknown: Scolder<ExpectUnknown<Actual>, Options>
   toBeNever: Scolder<ExpectNever<Actual>, Options>
@@ -206,35 +258,31 @@ export interface ExpectTypeOf<Actual, Options extends ExpectTypeOfOptions> {
   toBeNull: Scolder<ExpectNull<Actual>, Options>
   toBeUndefined: Scolder<ExpectUndefined<Actual>, Options>
   toBeNullable: Scolder<ExpectNullable<Actual>, Options>
-  toExtend: <
-    Expected extends Options['positive'] extends true
-      ? Extends<Actual, Expected> extends true
-        ? unknown
-        : MismatchInfo<Actual, Expected>
-      : unknown,
-  >(
-    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>
-  ) => true
-  toBeIdenticalTo: <
-    Expected extends Options['positive'] extends true
-      ? Equal<Actual, Expected> extends true
-        ? unknown
-        : MismatchInfo<Actual, Expected>
-      : unknown,
-  >(
-    ...MISMATCH: MismatchArgs<Equal<Actual, Expected>, Options['positive']>
-  ) => true
+
+
+  /**
+   * @deprecated use `toExtend` instead. Note that `toExtend` requires a typearg, unlike this function which can be infer a typearg from a value.
+   * Inferring from a value support removed because it makes error messages worse.
+   */
   toMatchTypeOf: {
     <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
     <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
   }
+
+  /**
+   * @deprecated use `toBeIdenticalTo` instead. Note that `toBeIdenticalTo` requires a typearg, unlike this method which can be infer a typearg from a value.
+   * Inferring from a value support removed because it makes error messages worse.
+   */
   toEqualTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
+    <Expected>(
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, Options['positive']>
+    ): true
     <Expected>(
       expected: Expected,
-      ...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, Options['positive']>
     ): true
   }
+
   toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
   toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
   toHaveProperty: <K extends string>(
@@ -260,8 +308,6 @@ export interface ExpectTypeOf<Actual, Options extends ExpectTypeOfOptions> {
       ? never
       : ExpectTypeOf<T, Options>
     : never
-  branded: Omit<ExpectTypeOf<Actual, {positive: Options['positive']; branded: true}>, 'branded'>
-  not: Omit<ExpectTypeOf<Actual, {positive: Not<Options['positive']>; branded: Options['branded']}>, 'not'>
 }
 const fn: any = () => true
 
@@ -308,7 +354,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     'asserts',
     'branded',
   ] as const
-  type Keys = keyof ExpectTypeOf<any, any>
+  type Keys = keyof PositiveExpectTypeOf<any> | keyof NegativeExpectTypeOf<any>
 
   type FunctionsDict = Record<Exclude<Keys, typeof nonFunctionProperties[number]>, any>
   const obj: FunctionsDict = {

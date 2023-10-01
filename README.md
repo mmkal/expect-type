@@ -351,7 +351,7 @@ expectTypeOf([1, 2, 3]).items.not.toBeString()
 You can also compare arrays directly:
 
 ```typescript
-expectTypeOf<any[]>().not.toEqualTypeOf<number[]>()
+expectTypeOf<any[]>().not.toBeIdenticalTo<number[]>()
 ```
 
 Check that functions never return:
@@ -429,15 +429,48 @@ Known limitation: Intersection types can cause issues with `toEqualTypeOf`:
 ```typescript
 // @ts-expect-error the following line doesn't compile, even though the types are arguably the same.
 // See https://github.com/mmkal/expect-type/pull/21
-expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
+expectTypeOf<{a: 1} & {b: 2}>().toBeIdenticalTo<{a: 1; b: 2}>()
 ```
 
-To workaround, you can use a mapped type:
+To workaround for simple cases, you can use a mapped type:
 
 ```typescript
 type Simplify<T> = {[K in keyof T]: T[K]}
 
 expectTypeOf<Simplify<{a: 1} & {b: 2}>>().toEqualTypeOf<{a: 1; b: 2}>()
+```
+
+But this won't work if the nesting is deeper in the type. For these situations, you can use the `.branded` helper. Note that this comes at a performance cost, and can cause the compiler to 'give up' if used with excessively deep types, so use sparingly. This helper is under `.branded` because it depply transforms the Actual and Expected types into a pseudo-AST:
+
+```typescript
+// @ts-expect-error
+expectTypeOf<{a: {b: 1} & {c: 1}}>().toBeIdenticalTo<{a: {b: 1; c: 1}}>()
+
+expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toBeIdenticalTo<{a: {b: 1; c: 1}}>()
+```
+
+Be careful with `.branded` for very deep or complex types, though. If possible you should find a way to simplify your test to avoid needing to use it:
+
+```typescript
+// This *should* result in an error, but the "branding" mechanism produces too large a type and TypeScript just gives up! https://github.com/microsoft/TypeScript/issues/50670
+expectTypeOf<() => () => () => () => 1>().branded.toBeIdenticalTo<() => () => () => () => 2>()
+
+// @ts-expect-error the non-branded implementation catches the error as expected.
+expectTypeOf<() => () => () => () => 1>().toBeIdenticalTo<() => () => () => () => 2>()
+```
+
+So, if you have an extremely deep type which ALSO has an intersection in it, you're out of luck and this library won't be able to test your type properly:
+
+```typescript
+// @ts-expect-error this fails, but it should succeed.
+expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toBeIdenticalTo<
+  () => () => () => () => {a: 1; b: 2}
+>()
+
+// this succeeds, but it should fail.
+expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().branded.toBeIdenticalTo<
+  () => () => () => () => {a: 1; c: 2}
+>()
 ```
 <!-- codegen:end -->
 

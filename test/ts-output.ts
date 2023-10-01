@@ -1,6 +1,6 @@
+import * as path from 'path'
 import stripAnsi from 'strip-ansi'
 import * as tsmorph from 'ts-morph'
-import * as path from 'path'
 
 export const tsErrors = (...lines: string[]) => {
   const body = lines.join('\n')
