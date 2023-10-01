@@ -13,7 +13,7 @@ export const tsFileErrors = (params: {filepath: string; content: string}) => {
     libFolderPath: path.resolve(__dirname, '../node_modules/typescript/lib'),
   })
   project.addSourceFileAtPath('./src/index.ts')
-  project.createSourceFile(params.filepath, params.content)
+  project.createSourceFile(params.filepath, params.content, {overwrite: true})
   const diagnostics = project.getPreEmitDiagnostics()
   const formatted = project.formatDiagnosticsWithColorAndContext(diagnostics)
   return simplifyTsOutput(formatted)

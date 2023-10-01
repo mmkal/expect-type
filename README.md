@@ -56,7 +56,7 @@ The `expectTypeOf` method takes a single argument, or a generic parameter. Neith
 
 ### Features
 
-<!-- codegen:start {preset: markdownFromTests, source: test/walkthrough.test.ts} -->
+<!-- codegen:start {preset: markdownFromTests, source: test/usage.test.ts} -->
 Check an object's type with `.toBeIdenticalTo`:
 
 ```typescript
@@ -554,6 +554,6 @@ In most cases, it's worth checking existing issues or creating on to discuss a n
 
 Once you're ready to make a pull request: clone the repo, and install pnpm if you don't have it already with `npm install --global pnpm`. Lockfiles for `npm` and `yarn` are gitignored.
 
-If you're adding a feature, you should write a self-contained usage example in the form of a test, in [test/walkthrough.test.ts](./test/walkthrough.test.ts). This file is used to populate the bulk of this readme using [eslint-plugin-codegen](https://npmjs.com/package/eslint-plugin-codegen), and to generate an ["errors" test file](./test/errors.test.ts), which captures the error messages that are emitted for failing assertions by the typescript compiler. So, the test name should be written as a human-readable sentence explaining the usage example. Have a look at the existing tests for an idea of the style.
+If you're adding a feature, you should write a self-contained usage example in the form of a test, in [test/usage.test.ts](./test/usage.test.ts). This file is used to populate the bulk of this readme using [eslint-plugin-codegen](https://npmjs.com/package/eslint-plugin-codegen), and to generate an ["errors" test file](./test/errors.test.ts), which captures the error messages that are emitted for failing assertions by the typescript compiler. So, the test name should be written as a human-readable sentence explaining the usage example. Have a look at the existing tests for an idea of the style.
 
 After adding the tests, run `npm run lint -- --fix` to update the readme, and `npm test -- --updateSnapshot` to update the errors test. The generated documentation and tests should be pushed to the same branch as the source code, and submitted as a pull request. CI will test that the docs and tests are up to date if you forget to run these commands.
