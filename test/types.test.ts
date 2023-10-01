@@ -249,7 +249,7 @@ test('Distinguish between functions whose return types differ by readonly prop',
 
   // Self-identity
   expectTypeOf<typeof original>().toEqualTypeOf<typeof original>()
-  expectTypeOf(original).branded.toBeIdenticalTo<typeof original>()
+  expectTypeOf(original).branded.toEqualTypeOf<typeof original>()
   expectTypeOf<typeof different>().toEqualTypeOf<typeof different>()
   expectTypeOf(different).toEqualTypeOf(different)
   // @ts-expect-error
@@ -657,8 +657,8 @@ test('Works arounds tsc bug not handling intersected types for this form of equi
   expectTypeOf(one).not.toEqualTypeOf(two)
 
   // The workaround is the new optional .branded modifier.
-  expectTypeOf<{foo: number} & {bar: string}>().branded.toBeIdenticalTo<{foo: number; bar: string}>()
-  expectTypeOf(one).branded.toBeIdenticalTo<typeof two>()
+  expectTypeOf<{foo: number} & {bar: string}>().branded.toEqualTypeOf<{foo: number; bar: string}>()
+  expectTypeOf(one).branded.toEqualTypeOf<typeof two>()
   // @ts-expect-error
   expectTypeOf<{foo: number} & {bar: string}>().branded.not.toEqualTypeOf<{foo: number; bar: string}>()
   // @ts-expect-error
@@ -674,12 +674,12 @@ test('Distinguish between identical types that are AND`d together', () => {
   // @ts-expect-error
   expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number}>()
 
-  expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toBeIdenticalTo<{a: {b: 1; c: 1}}>()
-  expectTypeOf<() => () => () => {a: 1} & {b: 1}>().not.toBeIdenticalTo<() => () => () => {a: 1; c: 1}>()
+  expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
+  expectTypeOf<() => () => () => {a: 1} & {b: 1}>().not.toEqualTypeOf<() => () => () => {a: 1; c: 1}>()
 
-  expectTypeOf<{foo: number} & {foo: number}>().toBeIdenticalTo<{foo: number} & {foo: number}>()
+  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
-  expectTypeOf<(() => 1) & {x: 1}>().not.toBeIdenticalTo<() => 1>()
+  expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })
 
 test('limitations', () => {
@@ -688,23 +688,23 @@ test('limitations', () => {
   expectTypeOf<a.StrictEqualUsingBranding<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
 
   // @ts-expect-error toBeIdenticalTo relies on TypeScript's internal `toBeIdentical` function which falls down with intersection types, but is otherwise accurate and performant: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
-  expectTypeOf<{a: {b: 1} & {c: 1}}>().toBeIdenticalTo<{a: {b: 1; c: 1}}>()
+  expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
   // use `.branded` to get around this, at the cost of performance.
-  expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toBeIdenticalTo<{a: {b: 1; c: 1}}>()
+  expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
 })
 
 test('PrintType', () => {
-  expectTypeOf<a.PrintType<boolean>>().toBeIdenticalTo<'boolean'>()
-  expectTypeOf<a.PrintType<string>>().toBeIdenticalTo<'string'>()
-  expectTypeOf<a.PrintType<number>>().toBeIdenticalTo<'number'>()
-  expectTypeOf<a.PrintType<never>>().toBeIdenticalTo<'never'>()
-  expectTypeOf<a.PrintType<unknown>>().toBeIdenticalTo<'unknown'>()
-  expectTypeOf<a.PrintType<1>>().toBeIdenticalTo<'literal number: 1'>()
-  expectTypeOf<a.PrintType<'a'>>().toBeIdenticalTo<'literal string: a'>()
-  expectTypeOf<a.PrintType<true>>().toBeIdenticalTo<'literal boolean: true'>()
-  expectTypeOf<a.PrintType<false>>().toBeIdenticalTo<'literal boolean: false'>()
-  expectTypeOf<a.PrintType<null>>().toBeIdenticalTo<'null'>()
-  expectTypeOf<a.PrintType<undefined>>().toBeIdenticalTo<'undefined'>()
-  expectTypeOf<a.PrintType<() => {}>>().toBeIdenticalTo<'function'>()
+  expectTypeOf<a.PrintType<boolean>>().toEqualTypeOf<'boolean'>()
+  expectTypeOf<a.PrintType<string>>().toEqualTypeOf<'string'>()
+  expectTypeOf<a.PrintType<number>>().toEqualTypeOf<'number'>()
+  expectTypeOf<a.PrintType<never>>().toEqualTypeOf<'never'>()
+  expectTypeOf<a.PrintType<unknown>>().toEqualTypeOf<'unknown'>()
+  expectTypeOf<a.PrintType<1>>().toEqualTypeOf<'literal number: 1'>()
+  expectTypeOf<a.PrintType<'a'>>().toEqualTypeOf<'literal string: a'>()
+  expectTypeOf<a.PrintType<true>>().toEqualTypeOf<'literal boolean: true'>()
+  expectTypeOf<a.PrintType<false>>().toEqualTypeOf<'literal boolean: false'>()
+  expectTypeOf<a.PrintType<null>>().toEqualTypeOf<'null'>()
+  expectTypeOf<a.PrintType<undefined>>().toEqualTypeOf<'undefined'>()
+  expectTypeOf<a.PrintType<() => {}>>().toEqualTypeOf<'function'>()
   expectTypeOf<a.PrintType<any>>().toBeNever()
 })

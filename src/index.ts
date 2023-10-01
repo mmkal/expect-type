@@ -207,7 +207,7 @@ type Scolder<
   : Inverted<Expecter>
 
 export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
-  toBeIdenticalTo: {
+  toEqualTypeOf: {
     <
       Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
         ? unknown
@@ -225,7 +225,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
   }
 
-  toExtend:{
+  toMatchTypeOf:{
     <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
       value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
@@ -238,7 +238,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
   not: NegativeExpectTypeOf<Actual>
 
   branded: {
-    toBeIdenticalTo: <
+    toEqualTypeOf: <
       Expected extends StrictEqualUsingBranding<Actual, Expected> extends true
         ? unknown
         : MismatchInfo<Actual, Expected>,
@@ -249,14 +249,26 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
 }
 
 export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: false}> {
-  toBeIdenticalTo: <Expected>(
-    ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
-  ) => true
+  toEqualTypeOf: {
+    <Expected>(
+      value: Expected & AValue,
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
+    ): true
+    <Expected>(
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
+    ): true
+  }
 
-  toExtend: <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>) => true
+  toMatchTypeOf: {
+    <Expected>(
+      value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+    ): true
+    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
+  }
 
   branded: {
-    toBeIdenticalTo: <Expected>(
+    toEqualTypeOf: <Expected>(
       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
     ) => true
   }
@@ -281,30 +293,6 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   toBeNull: Scolder<ExpectNull<Actual>, Options>
   toBeUndefined: Scolder<ExpectUndefined<Actual>, Options>
   toBeNullable: Scolder<ExpectNullable<Actual>, Options>
-
-
-  /**
-   * @deprecated use `toExtend` instead. Note that `toExtend` requires a typearg, unlike this function which can be infer a typearg from a value.
-   * Inferring from a value support removed because it makes error messages worse.
-   */
-  toMatchTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
-  }
-
-  /**
-   * @deprecated use `toBeIdenticalTo` instead. Note that `toBeIdenticalTo` requires a typearg, unlike this method which can be infer a typearg from a value.
-   * Inferring from a value support removed because it makes error messages worse.
-   */
-  toEqualTypeOf: {
-    <Expected>(
-      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, Options['positive']>
-    ): true
-    <Expected>(
-      expected: Expected,
-      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, Options['positive']>
-    ): true
-  }
 
   toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
   toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
@@ -396,8 +384,6 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toBeNull: fn,
     toBeUndefined: fn,
     toBeNullable: fn,
-    toExtend: fn,
-    toBeIdenticalTo: fn,
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeCallableWith: fn,

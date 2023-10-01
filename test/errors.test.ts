@@ -139,13 +139,13 @@ test('toBeIdenticalTo with literals', async () => {
   `)
 })
 
-test('toExtend error message', async () => {
-  expect(tsErrors(`expectTypeOf({a: 1}).toExtend<{a: string}>()`)).toMatchInlineSnapshot(`
+test('.toMatchTypeOf error message', async () => {
+  expect(tsErrors(`expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
     "test/test.ts:9:99 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: number\\"; }'.
       Types of property 'a' are incompatible.
         Type 'string' is not assignable to type '\\"Expected: string, Actual: number\\"'.
 
-    9 expectTypeOf({a: 1}).toExtend<{a: string}>()
+    9 expectTypeOf({a: 1}).toMatchTypeOf<{a: string}>()
                                     ~~~~~~~~~~~
     "
   `)
@@ -189,13 +189,13 @@ test('usage.test.ts', () => {
       Types of property 'b' are incompatible.
         Type 'number' is not assignable to type '\\"Expected: number, Actual: never\\"'.
 
-    99   expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
+    99   expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
                                        ~~~~~~~~~~~~~~~~~~~~~~
     test/usage.test.ts:99:99 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple, Actual: never\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\"; }'.
       Types of property 'name' are incompatible.
         Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple, Actual: never\\"'.
 
-    99   expectTypeOf<Fruit>().toExtend<Apple>()
+    99   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
                                         ~~~~~
     test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
       Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
@@ -205,13 +205,13 @@ test('usage.test.ts', () => {
     test/usage.test.ts:99:99 - error TS2344: Type '{ b: number; }' does not satisfy the constraint '{ a: \\"Expected: never, Actual: number\\"; b: \\"Expected: number, Actual: never\\"; }'.
       Property 'a' is missing in type '{ b: number; }' but required in type '{ a: \\"Expected: never, Actual: number\\"; b: \\"Expected: number, Actual: never\\"; }'.
 
-    99   expectTypeOf({a: 1}).toExtend<{b: number}>()
+    99   expectTypeOf({a: 1}).toMatchTypeOf<{b: number}>()
                                        ~~~~~~~~~~~
     test/usage.test.ts:99:99 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple, Actual: never\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\"; }'.
       Types of property 'name' are incompatible.
         Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple, Actual: never\\"'.
 
-    99   expectTypeOf<Fruit>().toExtend<Apple>()
+    99   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
                                         ~~~~~
     test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
       Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
@@ -271,7 +271,7 @@ test('usage.test.ts', () => {
                           ~~~~~~~~~~~~
     test/usage.test.ts:999:99 - error TS2344: Type 'number' does not satisfy the constraint '\\"Expected: number, Actual: string\\"'.
 
-    999   expectTypeOf<string | number>().toExtend<number>()
+    999   expectTypeOf<string | number>().toMatchTypeOf<number>()
                                                    ~~~~~~
     test/usage.test.ts:999:99 - error TS2554: Expected 2 arguments, but got 1.
 
