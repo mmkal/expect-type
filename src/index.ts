@@ -183,19 +183,22 @@ export interface ExpectTypeOfOptions {
 
 type Inverted<T> = {[error]: T}
 
-type ExpectNull<T> = {[error]: T; result: Extends<T, null>}
-type ExpectUndefined<T> = {[error]: T; result: Extends<T, undefined>}
-type ExpectNumber<T> = {[error]: T; result: Extends<T, number>}
-type ExpectString<T> = {[error]: T; result: Extends<T, string>}
+type ExpectNull<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, null>}
+type ExpectUndefined<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, undefined>}
+type ExpectNumber<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, number>}
+type ExpectString<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, string>}
+type ExpectBoolean<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, boolean>}
+type ExpectVoid<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, void>}
+
 type ExpectFunction<T> = {[error]: T; result: Extends<T, (...args: any[]) => any>}
 type ExpectObject<T> = {[error]: T; result: Extends<T, object>}
 type ExpectArray<T> = {[error]: T; result: Extends<T, any[]>}
-type ExpectBoolean<T> = {[error]: T; result: Extends<T, boolean>}
-type ExpectVoid<T> = {[error]: T; result: Extends<T, void>}
 type ExpectSymbol<T> = {[error]: T; result: Extends<T, symbol>}
+
 type ExpectAny<T> = {[error]: T; result: IsAny<T>}
 type ExpectUnknown<T> = {[error]: T; result: IsUnknown<T>}
 type ExpectNever<T> = {[error]: T; result: IsNever<T>}
+
 type ExpectNullable<T> = {[error]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
 
 type Scolder<

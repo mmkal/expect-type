@@ -708,3 +708,10 @@ test('PrintType', () => {
   expectTypeOf<a.PrintType<() => {}>>().toEqualTypeOf<'function'>()
   expectTypeOf<a.PrintType<any>>().toBeNever()
 })
+
+test('https://github.com/mmkal/expect-type/issues/32', () => {
+  let x!: any
+  expectTypeOf(x).not.toBeBoolean()
+  expectTypeOf(x).not.toEqualTypeOf<boolean>()
+  expectTypeOf(x).not.toBeString()
+})
