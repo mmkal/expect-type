@@ -167,6 +167,5 @@ test('usage.test.ts', () => {
     .map(line => line.replace('// @ts-expect-error', '// error expected on next line:'))
     .map(line => line.replace('.not.', '.'))
     .join('\n')
-
   expect(tsFileErrors({filepath: 'test/usage.test.ts', content: usageTestFile})).toMatchSnapshot()
 })
