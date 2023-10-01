@@ -123,9 +123,9 @@ test('toBeIdenticalTo with literals', async () => {
 
     9 expectTypeOf<{a: boolean}>().toBeIdenticalTo<{a: true}>()
                                                    ~~~~~~~~~
-    test/test.ts:99:99 - error TS2344: Type '{ a: boolean; }' does not satisfy the constraint '{ a: \\"Expected: literal boolean: false, Actual: never\\" | \\"Expected: literal boolean: true, Actual: never\\"; }'.
+    test/test.ts:99:99 - error TS2344: Type '{ a: boolean; }' does not satisfy the constraint '{ a: \\"Expected: boolean, Actual: never\\"; }'.
       Types of property 'a' are incompatible.
-        Type 'boolean' is not assignable to type '\\"Expected: literal boolean: false, Actual: never\\" | \\"Expected: literal boolean: true, Actual: never\\"'.
+        Type 'boolean' is not assignable to type '\\"Expected: boolean, Actual: never\\"'.
 
     99 expectTypeOf<{a: true}>().toBeIdenticalTo<{a: boolean}>()
                                                  ~~~~~~~~~~~~
@@ -197,8 +197,8 @@ test('usage.test.ts', () => {
 
     99   expectTypeOf<Fruit>().toExtend<Apple>()
                                         ~~~~~
-    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: false, Actual: never\\" | \\"Expected: literal boolean: true, Actual: never\\"; }'.
-      Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: false, Actual: never\\" | \\"Expected: literal boolean: true, Actual: never\\"; }'.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
+      Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
 
     99   expectTypeOf<Apple>().toBeIdenticalTo<Fruit>()
                                                ~~~~~
@@ -213,8 +213,8 @@ test('usage.test.ts', () => {
 
     99   expectTypeOf<Fruit>().toExtend<Apple>()
                                         ~~~~~
-    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: false, Actual: never\\" | \\"Expected: literal boolean: true, Actual: never\\"; }'.
-      Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: false, Actual: never\\" | \\"Expected: literal boolean: true, Actual: never\\"; }'.
+    test/usage.test.ts:99:99 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
+      Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
 
     99   expectTypeOf<Apple>().toBeIdenticalTo<Fruit>()
                                                ~~~~~

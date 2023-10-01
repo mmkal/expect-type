@@ -27,6 +27,10 @@ export type PrintType<T> = IsUnknown<T> extends true
   ? 'never'
   : IsAny<T> extends true
   ? never // special case, can't use `'any'` because that would match `any`
+  : boolean extends T
+  ? 'boolean'
+  : T extends boolean
+  ? `literal boolean: ${T}`
   : T extends string
   ? string extends T
     ? 'string'
@@ -35,10 +39,6 @@ export type PrintType<T> = IsUnknown<T> extends true
   ? number extends T
     ? 'number'
     : `literal number: ${T}`
-  : T extends boolean
-  ? boolean extends T
-    ? 'boolean'
-    : `literal boolean: ${T}`
   : T extends null
   ? 'null'
   : T extends undefined

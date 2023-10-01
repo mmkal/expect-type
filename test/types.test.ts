@@ -680,3 +680,19 @@ test('limitations', () => {
 
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })
+
+test('PrintType', () => {
+  expectTypeOf<a.PrintType<boolean>>().toBeIdenticalTo<'boolean'>()
+  expectTypeOf<a.PrintType<string>>().toBeIdenticalTo<'string'>()
+  expectTypeOf<a.PrintType<number>>().toBeIdenticalTo<'number'>()
+  expectTypeOf<a.PrintType<never>>().toBeIdenticalTo<'never'>()
+  expectTypeOf<a.PrintType<unknown>>().toBeIdenticalTo<'unknown'>()
+  expectTypeOf<a.PrintType<1>>().toBeIdenticalTo<'literal number: 1'>()
+  expectTypeOf<a.PrintType<'a'>>().toBeIdenticalTo<'literal string: a'>()
+  expectTypeOf<a.PrintType<true>>().toBeIdenticalTo<'literal boolean: true'>()
+  expectTypeOf<a.PrintType<false>>().toBeIdenticalTo<'literal boolean: false'>()
+  expectTypeOf<a.PrintType<null>>().toBeIdenticalTo<'null'>()
+  expectTypeOf<a.PrintType<undefined>>().toBeIdenticalTo<'undefined'>()
+  expectTypeOf<a.PrintType<() => {}>>().toBeIdenticalTo<'function'>()
+  expectTypeOf<a.PrintType<any>>().toBeNever()
+})
