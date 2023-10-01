@@ -158,10 +158,11 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     : P
   : never
 
-const error = Symbol('error')
-type Mismatch = {[error]: 'mismatch'}
+const mismatch = Symbol('mismatch')
+type Mismatch = {[mismatch]: 'mismatch'}
 /** A type which should match anything passed as a value but *doesn't* match `Mismatch` - helps TypeScript select the right overload for `toEqualTypeOf` and `toMatchTypeOf`. */
-type AValue = {[error]?: undefined} | string | number | boolean | symbol | bigint | null | undefined | void
+const avalue = Symbol('avalue')
+type AValue = {[avalue]?: undefined} | string | number | boolean | symbol | bigint | null | undefined | void
 type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
   ActualResult,
   ExpectedResult
@@ -181,25 +182,40 @@ export interface ExpectTypeOfOptions {
   branded: boolean
 }
 
-type Inverted<T> = {[error]: T}
+const inverted = Symbol('inverted')
+type Inverted<T> = {[inverted]: T}
 
-type ExpectNull<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, null>}
-type ExpectUndefined<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, undefined>}
-type ExpectNumber<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, number>}
-type ExpectString<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, string>}
-type ExpectBoolean<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, boolean>}
-type ExpectVoid<T> = {[error]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, void>}
+const expectNull = Symbol('expectNull')
+type ExpectNull<T> = {[expectNull]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, null>}
+const expectUndefined = Symbol('expectUndefined')
+type ExpectUndefined<T> = {[expectUndefined]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, undefined>}
+const expectNumber = Symbol('expectNumber')
+type ExpectNumber<T> = {[expectNumber]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, number>}
+const expectString = Symbol('expectString')
+type ExpectString<T> = {[expectString]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, string>}
+const expectBoolean = Symbol('expectBoolean')
+type ExpectBoolean<T> = {[expectBoolean]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, boolean>}
+const expectVoid = Symbol('expectVoid')
+type ExpectVoid<T> = {[expectVoid]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, void>}
 
-type ExpectFunction<T> = {[error]: T; result: Extends<T, (...args: any[]) => any>}
-type ExpectObject<T> = {[error]: T; result: Extends<T, object>}
-type ExpectArray<T> = {[error]: T; result: Extends<T, any[]>}
-type ExpectSymbol<T> = {[error]: T; result: Extends<T, symbol>}
+const expectFunction = Symbol('expectFunction')
+type ExpectFunction<T> = {[expectFunction]: T; result: Extends<T, (...args: any[]) => any>}
+const expectObject = Symbol('expectObject') 
+type ExpectObject<T> = {[expectObject]: T; result: Extends<T, object>}
+const expectArray = Symbol('expectArray')
+type ExpectArray<T> = {[expectArray]: T; result: Extends<T, any[]>}
+const expectSymbol = Symbol('expectSymbol')
+type ExpectSymbol<T> = {[expectSymbol]: T; result: Extends<T, symbol>}
 
-type ExpectAny<T> = {[error]: T; result: IsAny<T>}
-type ExpectUnknown<T> = {[error]: T; result: IsUnknown<T>}
-type ExpectNever<T> = {[error]: T; result: IsNever<T>}
+const expectAny = Symbol('expectAny')
+type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}
+const expectUnknown = Symbol('expectUnknown')
+type ExpectUnknown<T> = {[expectUnknown]: T; result: IsUnknown<T>}
+const expectNever = Symbol('expectNever')
+type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
 
-type ExpectNullable<T> = {[error]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
+const expectNullable = Symbol('expectNullable')
+type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
 
 type Scolder<
   Expecter extends {result: boolean},

@@ -166,6 +166,17 @@ test('toMatchTypeOf(...) error message', async () => {
   `)
 })
 
+test('toBeString', async () => {
+  const badString = `expectTypeOf(1).toBeString()`
+  expect(tsErrors(badString)).toMatchInlineSnapshot(`
+    "test/test.ts:999:999 - error TS2349: This expression is not callable.
+      Type 'ExpectString<number>' has no call signatures.
+
+    999 expectTypeOf(1).toBeString()
+                        ~~~~~~~~~~"
+  `)
+})
+
 test('toBeNullable', async () => {
   const okAssertion = `expectTypeOf<1 | undefined>().toBeNullable()`
   expect(tsErrors(okAssertion + '\n' + okAssertion.replace('.toBe', '.not.toBe'))).toMatchInlineSnapshot(`
