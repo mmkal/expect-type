@@ -32,6 +32,8 @@ See below for lots more examples.
 - [Installation and usage](#installation-and-usage)
 - [Documentation](#documentation)
    - [Features](#features)
+   - [Where is `.toExtend`?](#where-is-toextend)
+   - [Use internal type helpers at your own risk](#use-internal-type-helpers-at-your-own-risk)
    - [Error messages](#error-messages)
    - [Within test frameworks](#within-test-frameworks)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
@@ -486,6 +488,18 @@ expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().branded.toEqualTypeOf<
 >()
 ```
 <!-- codegen:end -->
+
+### Where is `.toExtend`?
+
+A few people have asked for a method like `toExtend` - this is essentially what `toMatchTypeOf` is. There are some cases where it doesn't _precisely_ match the `extends` operator in TypeScript, but for most practical use cases, you can think of this as the same thing.
+
+### Use internal type helpers at your own risk
+
+This library also exports some helper types for performing boolean operations on types, checking extension/equality in various ways, branding types, and checking for various special types like `never`, `any`, `unknown`. Nothing is stopping you using these beyond the following warning:
+
+>All internal types that are not documented here are _not_ part of the supported API surface, and may be renamed, modified, or removed, without warning or documentation in release notes.
+
+For a dedicated internal type library, feel free to look at the [source code](./src/index.ts) for inspiration - or better, use a library like [type-fest](https://npmjs.com/package/type-fest).
 
 ### Error messages
 
