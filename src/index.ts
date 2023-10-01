@@ -1,5 +1,3 @@
-import {type} from 'os'
-
 export type Not<T extends boolean> = T extends true ? false : true
 export type Or<Types extends boolean[]> = Types[number] extends false ? false : true
 export type And<Types extends boolean[]> = Types[number] extends true ? true : false
@@ -160,19 +158,28 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     : P
   : never
 
+const error = Symbol('error')
+type Mismatch = {[error]: 'mismatch'}
+type AValue = {[error]?: undefined}
 type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
   ActualResult,
   ExpectedResult
 > extends true
   ? []
-  : [never]
+  : [Mismatch]
+
+  type MismatchArgs2<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
+  ActualResult,
+  ExpectedResult
+> extends true
+  ? []
+  : [Mismatch, Mismatch]
 
 export interface ExpectTypeOfOptions {
   positive: boolean
   branded: boolean
 }
 
-const error = Symbol('error')
 type Inverted<T> = {[error]: T}
 
 type ExpectNull<T> = {[error]: T; result: Extends<T, null>}
@@ -200,17 +207,33 @@ type Scolder<
   : Inverted<Expecter>
 
 export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
-  toBeIdenticalTo: <
-    Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
-      ? unknown
-      : MismatchInfo<Actual, Expected>,
-  >(
-    ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
-  ) => true
+  toBeIdenticalTo: {
+    <
+      Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
+        ? unknown
+        : MismatchInfo<Actual, Expected>,
+    >(
+      value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+    ): true
+    <
+      Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
+        ? unknown
+        : MismatchInfo<Actual, Expected>,
+    >(
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+    ): true
+  }
 
-  toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
-    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
-  ) => true
+  toExtend:{
+    <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+      value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+    ): true
+    <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+    ): true
+  }
 
   not: NegativeExpectTypeOf<Actual>
 
