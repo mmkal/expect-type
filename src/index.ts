@@ -236,6 +236,11 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
   }
 
+  toHaveProperty: <K extends keyof Actual>(
+    key: K,
+    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, true>
+  ) => K extends keyof Actual ? PositiveExpectTypeOf<Actual[K]> : true
+
   not: NegativeExpectTypeOf<Actual>
 
   branded: {
@@ -268,6 +273,11 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
   }
 
+  toHaveProperty: <K extends string | number | symbol>(
+    key: K,
+    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, false>
+  ) => true
+
   branded: {
     toEqualTypeOf: <Expected>(
       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
@@ -297,10 +307,6 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
 
   toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
   toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
-  toHaveProperty: <K extends string>(
-    key: K,
-    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
-  ) => K extends keyof Actual ? ExpectTypeOf<Actual[K], Options> : true
   extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, Options>
   exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, Options>
   parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], Options>

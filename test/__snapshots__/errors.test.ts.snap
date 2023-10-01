@@ -99,24 +99,14 @@ test/usage.test.ts:999:999 - error TS2344: Type 'number' does not satisfy the co
 
 999   expectTypeOf<string | number>().toMatchTypeOf<number>()
                                                     ~~~~~~
-test/usage.test.ts:999:999 - error TS2554: Expected 2 arguments, but got 1.
+test/usage.test.ts:999:999 - error TS2345: Argument of type '\\"xxl\\"' is not assignable to parameter of type '\\"xs\\" | \\"sm\\" | \\"md\\"'.
 
 999   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')
-                                                                          ~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 2 arguments, but got 1.
+                                                                                         ~~~~~
+test/usage.test.ts:999:999 - error TS2345: Argument of type '\\"c\\"' is not assignable to parameter of type '\\"a\\" | \\"b\\"'.
 
 999   expectTypeOf(obj).toHaveProperty('c')
-                        ~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
+                                       ~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
   Type 'ExpectString<number>' has no call signatures.
 
