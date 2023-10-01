@@ -13,7 +13,9 @@ export const tsFileErrors = (params: {filepath: string; content: string}) => {
     libFolderPath: path.resolve(__dirname, '../node_modules/typescript/lib'),
   })
   project.addSourceFileAtPath('./src/index.ts')
-  project.createSourceFile(params.filepath, params.content, {overwrite: true})
+  // Add 100 lines to the beginning so all line numbers have three digits. Later when we call `simplifyTsOutput` we replace all line numbers with 999 so if they don't have three digits it messes up typescript's squiggly underlines slightly.
+  // Note: if the file being tested runs over 1000 lines this will break down.
+  project.createSourceFile(params.filepath, '\n'.repeat(100) + params.content, {overwrite: true})
   const diagnostics = project.getPreEmitDiagnostics()
   const formatted = project.formatDiagnosticsWithColorAndContext(diagnostics)
   return simplifyTsOutput(formatted)
@@ -22,5 +24,6 @@ export const tsFileErrors = (params: {filepath: string; content: string}) => {
 export const simplifyTsOutput = (output: string) =>
   stripAnsi(output)
     // replace digits in line numbers with 9s so snapshots don't change all the time
-    .replace(/:\d+:\d+/g, s => s.replace(/\d+/g, '99'))
-    .replace(/^\s+\d+/gm, s => s.replace(/\d+/g, '99'))
+    .replace(/:\d+:\d+/g, s => s.replace(/\d+/g, '999'))
+    .replace(/^\s+\d+/gm, s => s.replace(/\d+/g, '999'))
+    .trim()
