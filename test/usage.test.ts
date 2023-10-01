@@ -355,3 +355,19 @@ test("So, if you have an extremely deep type which ALSO has an intersection in i
     () => () => () => () => {a: 1; c: 2}
   >()
 })
+
+test('Another limitation: passing `this` references to `expectTypeOf` results in errors.', () => {
+  class B {
+    b = 'b'
+
+    foo() {
+      // @ts-expect-error
+      expectTypeOf(this).toEqualTypeOf(this)
+      // @ts-expect-error
+      expectTypeOf(this).toMatchTypeOf(this)
+    }
+  }
+
+  // Instead of the above, try something like this:
+  expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
+})

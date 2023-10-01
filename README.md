@@ -487,6 +487,24 @@ expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().branded.toEqualTypeOf<
   () => () => () => () => {a: 1; c: 2}
 >()
 ```
+
+Another limitation: passing `this` references to `expectTypeOf` results in errors.:
+
+```typescript
+class B {
+  b = 'b'
+
+  foo() {
+    // @ts-expect-error
+    expectTypeOf(this).toEqualTypeOf(this)
+    // @ts-expect-error
+    expectTypeOf(this).toMatchTypeOf(this)
+  }
+}
+
+// Instead of the above, try something like this:
+expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
+```
 <!-- codegen:end -->
 
 ### Where is `.toExtend`?
