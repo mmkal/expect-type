@@ -292,6 +292,15 @@ const twoArgFunc = (a: number, b: string) => ({a, b})
 expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
 ```
 
+You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error::
+
+```typescript
+const f = (a: number) => [a, a]
+
+// @ts-expect-error
+expectTypeOf(f).toBeCallableWith('foo')
+```
+
 You can also check type guards & type assertions:
 
 ```typescript

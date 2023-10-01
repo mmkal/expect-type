@@ -196,6 +196,13 @@ test('More examples of ways to work with functions - parameters using `.paramete
   expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
 })
 
+test("You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error:", () => {
+  const f = (a: number) => [a, a]
+
+  // @ts-expect-error
+  expectTypeOf(f).toBeCallableWith('foo')
+})
+
 test('You can also check type guards & type assertions', () => {
   const assertNumber = (v: any): asserts v is number => {
     if (typeof v !== 'number') {
