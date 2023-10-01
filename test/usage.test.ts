@@ -8,6 +8,14 @@ test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 })
 
+test('`.toEqualTypeOf` can check that two concrete objects have equivalent types', () => {
+  expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
+})
+
+test('`.toEqualTypeOf` succeeds for objects with different values, but the same type', () => {
+  expectTypeOf({a: 1}).toEqualTypeOf({a: 2})
+})
+
 test('`.toEqualTypeOf` fails on extra properties', () => {
   // @ts-expect-error
   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
@@ -38,7 +46,7 @@ test('Another example of the difference between `.toMatchTypeOf` and `.toEqualTy
 })
 
 test('Assertions can be inverted with `.not`', () => {
-  expectTypeOf({a: 1}).not.toMatchTypeOf<{b: number}>()
+  expectTypeOf({a: 1}).not.toMatchTypeOf({b: 1})
 })
 
 test('`.not` can be easier than relying on `// @ts-expect-error`', () => {
@@ -177,9 +185,10 @@ test('More examples of ways to work with functions - parameters using `.paramete
   expectTypeOf(f).toBeCallableWith(1)
   expectTypeOf(f).not.toBeAny()
   expectTypeOf(f).returns.not.toBeAny()
-  expectTypeOf(f).returns.toEqualTypeOf<number[]>()
-  expectTypeOf(f).parameter(0).not.toEqualTypeOf<string>()
-  expectTypeOf(f).parameter(0).toEqualTypeOf<number>()
+  expectTypeOf(f).returns.toEqualTypeOf([1, 2])
+  expectTypeOf(f).returns.toEqualTypeOf([1, 2, 3])
+  expectTypeOf(f).parameter(0).not.toEqualTypeOf('1')
+  expectTypeOf(f).parameter(0).toEqualTypeOf(1)
   expectTypeOf(1).parameter(0).toBeNever()
 
   const twoArgFunc = (a: number, b: string) => ({a, b})
@@ -226,7 +235,7 @@ test('Distinguish between functions with different `this` parameters', () => {
     return `Hi ${this.name}, here's your message: ${message}`
   }
 
-  expectTypeOf(greetFormal).not.toEqualTypeOf<typeof greetCasual>()
+  expectTypeOf(greetFormal).not.toEqualTypeOf(greetCasual)
 })
 
 test('Class instance types', () => {

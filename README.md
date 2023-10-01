@@ -63,6 +63,18 @@ Check an object's type with `.toEqualTypeOf`:
 expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 ```
 
+`.toEqualTypeOf` can check that two concrete objects have equivalent types:
+
+```typescript
+expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
+```
+
+`.toEqualTypeOf` succeeds for objects with different values, but the same type:
+
+```typescript
+expectTypeOf({a: 1}).toEqualTypeOf({a: 2})
+```
+
 `.toEqualTypeOf` fails on extra properties:
 
 ```typescript
@@ -103,7 +115,7 @@ expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
 Assertions can be inverted with `.not`:
 
 ```typescript
-expectTypeOf({a: 1}).not.toMatchTypeOf<{b: number}>()
+expectTypeOf({a: 1}).not.toMatchTypeOf({b: 1})
 ```
 
 `.not` can be easier than relying on `// @ts-expect-error`:
@@ -267,9 +279,10 @@ expectTypeOf(f).toBeFunction()
 expectTypeOf(f).toBeCallableWith(1)
 expectTypeOf(f).not.toBeAny()
 expectTypeOf(f).returns.not.toBeAny()
-expectTypeOf(f).returns.toEqualTypeOf<number[]>()
-expectTypeOf(f).parameter(0).not.toEqualTypeOf<string>()
-expectTypeOf(f).parameter(0).toEqualTypeOf<number>()
+expectTypeOf(f).returns.toEqualTypeOf([1, 2])
+expectTypeOf(f).returns.toEqualTypeOf([1, 2, 3])
+expectTypeOf(f).parameter(0).not.toEqualTypeOf('1')
+expectTypeOf(f).parameter(0).toEqualTypeOf(1)
 expectTypeOf(1).parameter(0).toBeNever()
 
 const twoArgFunc = (a: number, b: string) => ({a, b})
@@ -324,7 +337,7 @@ function greetCasual(this: {name: string}, message: string) {
   return `Hi ${this.name}, here's your message: ${message}`
 }
 
-expectTypeOf(greetFormal).not.toEqualTypeOf<typeof greetCasual>()
+expectTypeOf(greetFormal).not.toEqualTypeOf(greetCasual)
 ```
 
 Class instance types:
