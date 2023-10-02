@@ -8,7 +8,7 @@ test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('`.toEqualTypeOf` can check that two concrete objects have equivalent types', () => {
+test('`.toEqualTypeOf` can check that two concrete objects have equivalent types (note: when these assertions _fail_, the error messages can be less informative vs the generic typearg syntax above - see [error messages docs](#error-messages))', () => {
   expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
 })
 

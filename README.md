@@ -35,6 +35,7 @@ See below for lots more examples.
    - [Where is `.toExtend`?](#where-is-toextend)
    - [Internal type helpers](#internal-type-helpers)
    - [Error messages](#error-messages)
+      - [Concrete "expected" objects vs typeargs](#concrete-expected-objects-vs-typeargs)
    - [Within test frameworks](#within-test-frameworks)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
 - [Similar projects](#similar-projects)
@@ -65,7 +66,7 @@ Check an object's type with `.toEqualTypeOf`:
 expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 ```
 
-`.toEqualTypeOf` can check that two concrete objects have equivalent types:
+`.toEqualTypeOf` can check that two concrete objects have equivalent types (note: when these assertions _fail_, the error messages can be less informative vs the generic typearg syntax above - see [error messages docs](#error-messages)):
 
 ```typescript
 expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
@@ -588,6 +589,29 @@ test/test.ts:999:999 - error TS2349: This expression is not callable.
 The `This expression is not callable` part isn't all that helpful - the meaningful error is the next line, `Type 'ExpectString<number> has no call signatures`. This essentially means you passed a number but asserted it should be a string.
 
 If TypeScript added support for ["throw" types](https://github.com/microsoft/TypeScript/pull/40468) these error messagess could be improved significantly. Until then they will take a certain amount of squinting.
+
+#### Concrete "expected" objects vs typeargs
+
+Error messages for an assertion like this:
+
+```ts
+expectTypeOf({a: 1}).toEqualTypeOf({a: ''})
+```
+
+Will be less helpful than for an assertion like this:
+
+```ts
+expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
+```
+
+This is because the TypeScript compiler needs to infer the typearg for the `.toEqualTypeOf({a: ''})` style, and this library can only mark it as a failure by comparing it against a generic `Mismatch` type. So, where possible, use a typearg rather than a concrete type for `.toEqualTypeOf` and `toMatchTypeOf`. If it's much more convenient to compare two concrete types, you can use `typeof`:
+
+```ts
+const one = valueFromFunctionOne({some: {complex: inputs}})
+const two = valueFromFunctionTwo({some: {other: inputs}})
+
+expectTypeOf(one).toEqualTypeof<typeof two>()
+```
 
 ### Within test frameworks
 
