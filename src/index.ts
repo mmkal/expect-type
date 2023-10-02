@@ -29,14 +29,14 @@ export type PrintType<T> = IsUnknown<T> extends true
   ? 'boolean'
   : T extends boolean
   ? `literal boolean: ${T}`
+  : string extends T
+  ? 'string'
   : T extends string
-  ? string extends T
-    ? 'string'
-    : `literal string: ${T}`
+  ? `literal string: ${T}`
+  : number extends T
+  ? 'number'
   : T extends number
-  ? number extends T
-    ? 'number'
-    : `literal number: ${T}`
+  ? `literal number: ${T}`
   : T extends null
   ? 'null'
   : T extends undefined
@@ -66,6 +66,9 @@ export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '..
  * - `any` vs `unknown`
  * - `{ readonly a: string }` vs `{ a: string }`
  * - `{ a?: string }` vs `{ a: string | undefined }`
+ *
+ * Note: not very performant for complex types - this should only be used when you know you need it. If doing
+ * an equality check, it's almost always better to use `StrictEqualUsingTSInternalIdenticalToOperator`.
  */
 export type DeepBrand<T> = IsNever<T> extends true
   ? {type: 'never'}
@@ -141,8 +144,9 @@ type StrictEqualUsingTSInternalIdenticalToOperator<L, R> = (<T>() => T extends (
     : false
   : false
 
-export type StrictEqualUsingBranding<Left, Right> =
-   And<[ExtendsUsingBranding<Left, Right>, ExtendsUsingBranding<Right, Left>]>
+export type StrictEqualUsingBranding<Left, Right> = And<
+  [ExtendsUsingBranding<Left, Right>, ExtendsUsingBranding<Right, Left>]
+>
 
 export type HopefullyPerformantEqual<Left, Right> = StrictEqualUsingTSInternalIdenticalToOperator<
   Left,
@@ -170,7 +174,7 @@ type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> 
   ? []
   : [Mismatch]
 
-  type MismatchArgs2<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
+type MismatchArgs2<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
   ActualResult,
   ExpectedResult
 > extends true
@@ -200,7 +204,7 @@ type ExpectVoid<T> = {[expectVoid]: T; result: StrictEqualUsingTSInternalIdentic
 
 const expectFunction = Symbol('expectFunction')
 type ExpectFunction<T> = {[expectFunction]: T; result: Extends<T, (...args: any[]) => any>}
-const expectObject = Symbol('expectObject') 
+const expectObject = Symbol('expectObject')
 type ExpectObject<T> = {[expectObject]: T; result: Extends<T, object>}
 const expectArray = Symbol('expectArray')
 type ExpectArray<T> = {[expectArray]: T; result: Extends<T, any[]>}
@@ -245,7 +249,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
   }
 
-  toMatchTypeOf:{
+  toMatchTypeOf: {
     <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
       value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
@@ -279,9 +283,7 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
       value: Expected & AValue,
       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
     ): true
-    <Expected>(
-      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
-    ): true
+    <Expected>(...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>): true
   }
 
   toMatchTypeOf: {
@@ -304,9 +306,9 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
   }
 }
 
-export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = (Options['positive'] extends true
+export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options['positive'] extends true
   ? PositiveExpectTypeOf<Actual>
-  : NegativeExpectTypeOf<Actual>) 
+  : NegativeExpectTypeOf<Actual>
 
 export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   toBeAny: Scolder<ExpectAny<Actual>, Options>
