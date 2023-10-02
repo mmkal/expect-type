@@ -56,6 +56,11 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; };
 999   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectNumber<any>' has no call signatures.
+
+999   expectTypeOf(badIntParser).returns.toBeNumber()
+                                         ~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
   Type 'ExpectNull<undefined>' has no call signatures.
 
 999   expectTypeOf(undefined).toBeNull()
@@ -245,9 +250,9 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<
                                                               ~~~~~~~~~~~~~~
-457     () => () => () => () => {a: 1; b: 2}
+480     () => () => () => () => {a: 1; b: 2}
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-458   >()
+481   >()
     ~~~~~
 
   src/index.ts:999:999

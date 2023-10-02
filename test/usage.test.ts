@@ -85,6 +85,29 @@ test('Test for basic javascript types', () => {
   expectTypeOf(Symbol(1)).toBeSymbol()
 })
 
+test('`.toBe...` methods allow for types which extend the expected type', () => {
+  expectTypeOf<number>().toBeNumber()
+  expectTypeOf<1>().toBeNumber()
+
+  expectTypeOf<any[]>().toBeArray()
+  expectTypeOf<number[]>().toBeArray()
+
+  expectTypeOf<string>().toBeString()
+  expectTypeOf<'foo'>().toBeString()
+
+  expectTypeOf<boolean>().toBeBoolean()
+  expectTypeOf<true>().toBeBoolean()
+})
+
+test('`.toBe...` methods protect against `any`', () => {
+  const goodIntParser = (s: string) => Number.parseInt(s, 10)
+  const badIntParser = (s: string) => JSON.parse(s) // uh-oh - works at runtime if the input is a number, but return 'any'
+
+  expectTypeOf(goodIntParser).returns.toBeNumber()
+  // @ts-expect-error - if you write a test like this, `.toBeNumber()` will let you know your implementation returns `any`.
+  expectTypeOf(badIntParser).returns.toBeNumber()
+})
+
 test('Nullable types', () => {
   expectTypeOf(undefined).toBeUndefined()
   expectTypeOf(undefined).toBeNullable()

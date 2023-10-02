@@ -125,8 +125,10 @@ type ReadonlyEquivalent<X, Y> = Extends<
   (<T>() => T extends Y ? true : false)
 >
 
+/** Returns true if `L extends R`. Explicitly checks for `never` since that can give unexpected results. */
 export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : [L] extends [R] ? true : false
 export type ExtendsUsingBranding<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
+export type ExtendsExcludingAnyOrNever<L, R> = IsAny<L> extends true ? IsAny<R> : Extends<L, R>
 
 // much history: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
 type StrictEqualUsingTSInternalIdenticalToOperator<L, R> = (<T>() => T extends (L & T) | T ? true : false) extends <
@@ -167,14 +169,7 @@ type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> 
   ? []
   : [Mismatch]
 
-type MismatchArgs2<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
-  ActualResult,
-  ExpectedResult
-> extends true
-  ? []
-  : [Mismatch, Mismatch]
-
-export interface ExpectTypeOfOptions {
+  export interface ExpectTypeOfOptions {
   positive: boolean
   branded: boolean
 }
@@ -183,26 +178,26 @@ const inverted = Symbol('inverted')
 type Inverted<T> = {[inverted]: T}
 
 const expectNull = Symbol('expectNull')
-type ExpectNull<T> = {[expectNull]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, null>}
+type ExpectNull<T> = {[expectNull]: T; result: ExtendsExcludingAnyOrNever<T, null>}
 const expectUndefined = Symbol('expectUndefined')
-type ExpectUndefined<T> = {[expectUndefined]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, undefined>}
+type ExpectUndefined<T> = {[expectUndefined]: T; result: ExtendsExcludingAnyOrNever<T, undefined>}
 const expectNumber = Symbol('expectNumber')
-type ExpectNumber<T> = {[expectNumber]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, number>}
+type ExpectNumber<T> = {[expectNumber]: T; result: ExtendsExcludingAnyOrNever<T, number>}
 const expectString = Symbol('expectString')
-type ExpectString<T> = {[expectString]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, string>}
+type ExpectString<T> = {[expectString]: T; result: ExtendsExcludingAnyOrNever<T, string>}
 const expectBoolean = Symbol('expectBoolean')
-type ExpectBoolean<T> = {[expectBoolean]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, boolean>}
+type ExpectBoolean<T> = {[expectBoolean]: T; result: ExtendsExcludingAnyOrNever<T, boolean>}
 const expectVoid = Symbol('expectVoid')
-type ExpectVoid<T> = {[expectVoid]: T; result: StrictEqualUsingTSInternalIdenticalToOperator<T, void>}
+type ExpectVoid<T> = {[expectVoid]: T; result: ExtendsExcludingAnyOrNever<T, void>}
 
 const expectFunction = Symbol('expectFunction')
-type ExpectFunction<T> = {[expectFunction]: T; result: Extends<T, (...args: any[]) => any>}
+type ExpectFunction<T> = {[expectFunction]: T; result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>}
 const expectObject = Symbol('expectObject')
-type ExpectObject<T> = {[expectObject]: T; result: Extends<T, object>}
+type ExpectObject<T> = {[expectObject]: T; result: ExtendsExcludingAnyOrNever<T, object>}
 const expectArray = Symbol('expectArray')
-type ExpectArray<T> = {[expectArray]: T; result: Extends<T, any[]>}
+type ExpectArray<T> = {[expectArray]: T; result: ExtendsExcludingAnyOrNever<T, any[]>}
 const expectSymbol = Symbol('expectSymbol')
-type ExpectSymbol<T> = {[expectSymbol]: T; result: Extends<T, symbol>}
+type ExpectSymbol<T> = {[expectSymbol]: T; result: ExtendsExcludingAnyOrNever<T, symbol>}
 
 const expectAny = Symbol('expectAny')
 type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}

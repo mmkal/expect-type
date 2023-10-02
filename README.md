@@ -33,7 +33,7 @@ See below for lots more examples.
 - [Documentation](#documentation)
    - [Features](#features)
    - [Where is `.toExtend`?](#where-is-toextend)
-   - [Use internal type helpers at your own risk](#use-internal-type-helpers-at-your-own-risk)
+   - [Internal type helpers](#internal-type-helpers)
    - [Error messages](#error-messages)
    - [Within test frameworks](#within-test-frameworks)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
@@ -161,6 +161,33 @@ expectTypeOf(true).toBeBoolean()
 expectTypeOf(() => {}).returns.toBeVoid()
 expectTypeOf(Promise.resolve(123)).resolves.toBeNumber()
 expectTypeOf(Symbol(1)).toBeSymbol()
+```
+
+`.toBe...` methods allow for types which extend the expected type:
+
+```typescript
+expectTypeOf<number>().toBeNumber()
+expectTypeOf<1>().toBeNumber()
+
+expectTypeOf<any[]>().toBeArray()
+expectTypeOf<number[]>().toBeArray()
+
+expectTypeOf<string>().toBeString()
+expectTypeOf<'foo'>().toBeString()
+
+expectTypeOf<boolean>().toBeBoolean()
+expectTypeOf<true>().toBeBoolean()
+```
+
+`.toBe...` methods protect against `any`:
+
+```typescript
+const goodIntParser = (s: string) => Number.parseInt(s, 10)
+const badIntParser = (s: string) => JSON.parse(s) // uh-oh - works at runtime if the input is a number, but return 'any'
+
+expectTypeOf(goodIntParser).returns.toBeNumber()
+// @ts-expect-error - if you write a test like this, `.toBeNumber()` will let you know your implementation returns `any`.
+expectTypeOf(badIntParser).returns.toBeNumber()
 ```
 
 Nullable types:
@@ -520,9 +547,9 @@ expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
 
 A few people have asked for a method like `toExtend` - this is essentially what `toMatchTypeOf` is. There are some cases where it doesn't _precisely_ match the `extends` operator in TypeScript, but for most practical use cases, you can think of this as the same thing.
 
-### Use internal type helpers at your own risk
+### Internal type helpers
 
-This library also exports some helper types for performing boolean operations on types, checking extension/equality in various ways, branding types, and checking for various special types like `never`, `any`, `unknown`. Nothing is stopping you using these beyond the following warning:
+🚧 This library also exports some helper types for performing boolean operations on types, checking extension/equality in various ways, branding types, and checking for various special types like `never`, `any`, `unknown`. Use at your own risk! Nothing is stopping you using these beyond this warning:
 
 >All internal types that are not documented here are _not_ part of the supported API surface, and may be renamed, modified, or removed, without warning or documentation in release notes.
 
