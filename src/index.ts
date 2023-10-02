@@ -11,13 +11,6 @@ export type IsNever<T> = [T] extends [never] ? true : false
 export type IsAny<T> = [T] extends [Secret] ? Not<IsNever<T>> : false
 export type IsUnknown<T> = [unknown] extends [T] ? Not<IsAny<T>> : false
 export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
-export type BrandSpecial<T> = IsAny<T> extends true
-  ? {special: true; type: 'any'}
-  : IsUnknown<T> extends true
-  ? {special: true; type: 'unknown'}
-  : IsNever<T> extends true
-  ? {special: true; type: 'never'}
-  : never
 
 export type PrintType<T> = IsUnknown<T> extends true
   ? 'unknown'
