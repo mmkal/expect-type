@@ -286,12 +286,6 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     key: K,
     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, false>
   ) => true
-
-  branded: {
-    toEqualTypeOf: <Expected>(
-      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
-    ) => true
-  }
 }
 
 export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options['positive'] extends true

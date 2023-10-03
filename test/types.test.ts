@@ -276,6 +276,12 @@ test('Distinguish between functions whose return types differ by readonly prop',
   expectTypeOf<typeof original>().toEqualTypeOf<typeof different>()
   // @ts-expect-error
   expectTypeOf(original).toEqualTypeOf(different)
+
+  // not and branded can't be combined
+  // @ts-expect-error
+  expectTypeOf<{}>().not.branded
+  // @ts-expect-error
+  expectTypeOf<{}>().branded.not
 })
 
 test('Distinguish between classes with only private properties', () => {
