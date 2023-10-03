@@ -148,9 +148,8 @@ test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
 
 999   expectTypeOf([1, 2, 3]).items.toBeString()
                                     ~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'number[]' does not satisfy the constraint '{ [x: number]: never; }'.
-  'number' index signatures are incompatible.
-    Type 'number' is not assignable to type 'never'.
+test/usage.test.ts:999:999 - error TS2344: Type 'number[]' does not satisfy the constraint 'never[]'.
+  Type 'number' is not assignable to type 'never'.
 
 999   expectTypeOf<any[]>().toEqualTypeOf<number[]>()
                                           ~~~~~~~~

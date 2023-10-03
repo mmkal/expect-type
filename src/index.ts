@@ -54,12 +54,14 @@ export type UsefulKeys<T> = T extends any[]
 // This swaps "leaf" types with a literal message about what the actual and expected types are.
 // Needs to check for Not<IsAny<Actual>> because otherwise LeafTypeOf<Actual> returns never, which extends everything 🤔
 export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
-  ? {
-      [K in UsefulKeys<Actual> | UsefulKeys<Expected>]: MismatchInfo<
-        K extends keyof Actual ? Actual[K] : never,
-        K extends keyof Expected ? Expected[K] : never
-      >
-    }
+  ? And<[Extends<any[], Actual>, Extends<any[], Expected>]> extends true
+    ? Array<MismatchInfo<Extract<Actual, any[]>[number], Extract<Expected, any[]>[number]>>
+    : {
+        [K in UsefulKeys<Actual> | UsefulKeys<Expected>]: MismatchInfo<
+          K extends keyof Actual ? Actual[K] : never,
+          K extends keyof Expected ? Expected[K] : never
+        >
+      }
   : StrictEqualUsingBranding<Actual, Expected> extends true
   ? Actual
   : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
