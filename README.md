@@ -46,7 +46,7 @@ See below for lots more examples.
 ## Installation and usage
 
 ```cli
-npm install expect-type
+npm install expect-type --save-dev
 ```
 
 ```typescript
