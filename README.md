@@ -32,6 +32,7 @@ See below for lots more examples.
 - [Installation and usage](#installation-and-usage)
 - [Documentation](#documentation)
    - [Features](#features)
+   - [Why is my assertion failing?](#why-is-my-assertion-failing)
    - [Where is `.toExtend`?](#where-is-toextend)
    - [Internal type helpers](#internal-type-helpers)
    - [Error messages](#error-messages)
@@ -543,6 +544,17 @@ class B {
 expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
 ```
 <!-- codegen:end -->
+
+### Why is my assertion failing?
+
+For complex types, an assertion might fail when it should if the `Actual` type contains a deeply-nested intersection type but the `Expected` doesn't. In these cases you can use `.branded` as described above:
+
+```typescript
+// @ts-expect-error this unfortunately fails - a TypeScript limitation prevents making this pass without a big perf hit
+expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
+
+expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
+```
 
 ### Where is `.toExtend`?
 
