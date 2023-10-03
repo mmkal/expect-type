@@ -188,6 +188,18 @@ test('toBeNullable', async () => {
   `)
 })
 
+test('toEqualTypeOf with tuples', () => {
+  const assertion = `expectTypeOf<[[number], [1], []]>().toEqualTypeOf<[[number], [2], []]>()`
+  expect(tsErrors(assertion)).toMatchInlineSnapshot(`
+    "test/test.ts:999:999 - error TS2344: Type '[[number], [2], []]' does not satisfy the constraint '{ 0: { 0: number; }; 1: { 0: \\"Expected: literal number: 2, Actual: literal number: 1\\"; }; 2: {}; }'.
+      The types of '1[0]' are incompatible between these types.
+        Type '2' is not assignable to type '\\"Expected: literal number: 2, Actual: literal number: 1\\"'.
+
+    999 expectTypeOf<[[number], [1], []]>().toEqualTypeOf<[[number], [2], []]>()
+                                                          ~~~~~~~~~~~~~~~~~~~"
+  `)
+})
+
 test('usage.test.ts', () => {
   // remove all `.not`s and `// @ts-expect-error`s from the main test file and snapshot the errors
   const usageTestFile = fs
