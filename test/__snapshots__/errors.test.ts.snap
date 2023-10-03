@@ -1,301 +1,206 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`usage test 1`] = `
-"test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+exports[`usage.test.ts 1`] = `
+"test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: number; b: \\"Expected: never, Actual: number\\"; }'.
+  Property 'b' is missing in type '{ a: number; }' but required in type '{ a: number; b: \\"Expected: never, Actual: number\\"; }'.
 
 999   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
-                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                               ~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: \\"Expected: number, Actual: never\\"; }'.
+  Types of property 'b' are incompatible.
+    Type 'number' is not assignable to type '\\"Expected: number, Actual: never\\"'.
 
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+999   expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
+                                         ~~~~~~~~~~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: \\"Expected: number, Actual: never\\"; }'.
+  Types of property 'b' are incompatible.
+    Type 'number' is not assignable to type '\\"Expected: number, Actual: never\\"'.
+
+999   expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
+                                         ~~~~~~~~~~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple, Actual: never\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\"; }'.
+  Types of property 'name' are incompatible.
+    Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple, Actual: never\\"'.
 
 999   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
-                            ~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                          ~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
+  Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
 
 999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
-                            ~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 2 arguments, but got 1.
+                                          ~~~~~
+test/usage.test.ts:999:999 - error TS2554: Expected 0 arguments, but got 1.
 
 999   expectTypeOf({a: 1}).toMatchTypeOf({b: 1})
-                           ~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
-                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                         ~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple, Actual: never\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\"; }'.
+  Types of property 'name' are incompatible.
+    Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple, Actual: never\\"'.
 
 999   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
-                            ~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                          ~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
+  Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
 
 999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
-                            ~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                          ~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectNumber<never>' has no call signatures.
 
 999   expectTypeOf<never>().toBeNumber()
-                            ~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, Options['positive']>) => true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                            ~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: \\"Expected: unknown, Actual: never\\"; }; }'.
+  The types of 'deeply.nested' are incompatible between these types.
+    Type 'unknown' is not assignable to type '\\"Expected: unknown, Actual: never\\"'.
 
 999   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
-                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectNumber<any>' has no call signatures.
 
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+999   expectTypeOf(badIntParser).returns.toBeNumber()
+                                         ~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectNull<undefined>' has no call signatures.
 
 999   expectTypeOf(undefined).toBeNull()
-                              ~~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, Options['positive']>) => true
-                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                              ~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectUndefined<null>' has no call signatures.
 
 999   expectTypeOf(null).toBeUndefined()
-                         ~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, Options['positive']>) => true
-                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                         ~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectUnknown<number>' has no call signatures.
 
 999   expectTypeOf(1).toBeUnknown()
-                      ~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, Options['positive']>) => true
-                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                      ~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectAny<number>' has no call signatures.
 
 999   expectTypeOf(1).toBeAny()
-                      ~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
-                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                      ~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectNever<number>' has no call signatures.
 
 999   expectTypeOf(1).toBeNever()
-                      ~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, Options['positive']>) => true
-                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                      ~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectNull<number>' has no call signatures.
 
 999   expectTypeOf(1).toBeNull()
-                      ~~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, Options['positive']>) => true
-                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                      ~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectUndefined<number>' has no call signatures.
 
 999   expectTypeOf(1).toBeUndefined()
-                      ~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, Options['positive']>) => true
-                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                      ~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectNullable<number>' has no call signatures.
 
 999   expectTypeOf(1).toBeNullable()
-                      ~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                      ~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'number' does not satisfy the constraint '\\"Expected: number, Actual: string\\"'.
 
 999   expectTypeOf<string | number>().toMatchTypeOf<number>()
-                                      ~~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 2 arguments, but got 1.
+                                                    ~~~~~~
+test/usage.test.ts:999:999 - error TS2345: Argument of type '\\"xxl\\"' is not assignable to parameter of type '\\"xs\\" | \\"sm\\" | \\"md\\"'.
 
 999   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')
-                                                                          ~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 2 arguments, but got 1.
+                                                                                         ~~~~~
+test/usage.test.ts:999:999 - error TS2345: Argument of type '\\"c\\"' is not assignable to parameter of type '\\"a\\" | \\"b\\"'.
 
 999   expectTypeOf(obj).toHaveProperty('c')
-                        ~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                       ~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectString<number>' has no call signatures.
 
 999   expectTypeOf(obj).toHaveProperty('a').toBeString()
-                                            ~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                            ~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'HasParam' does not satisfy the constraint '\\"Expected: function, Actual: never\\"'.
 
 999   expectTypeOf<NoParam>().toEqualTypeOf<HasParam>()
-                              ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                            ~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectAny<(a: number) => number[]>' has no call signatures.
 
 999   expectTypeOf(f).toBeAny()
-                      ~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
-                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                      ~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectAny<number[]>' has no call signatures.
 
 999   expectTypeOf(f).returns.toBeAny()
-                              ~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
-                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+                              ~~~~~~~
+test/usage.test.ts:999:999 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'Mismatch'.
 
 999   expectTypeOf(f).parameter(0).toEqualTypeOf('1')
                                                  ~~~
-test/usage.test.ts:999:999 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'never'.
+test/usage.test.ts:999:999 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+
+999   expectTypeOf(f).toBeCallableWith('foo')
+                                       ~~~~~
+test/usage.test.ts:999:999 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'Mismatch'.
 
 999   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
                                               ~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectString<number>' has no call signatures.
 
 999   expectTypeOf([1, 2, 3]).items.toBeString()
-                                    ~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999   toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                    ~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'number[]' does not satisfy the constraint '{ [x: number]: never; [iterator]: \\"Expected: function, Actual: never\\"; [unscopables]: () => { copyWithin: boolean; entries: boolean; fill: boolean; find: boolean; findIndex: boolean; keys: boolean; values: boolean; }; length: number; toString: () => string; concat: { (...items: ConcatArray<any>[]): any[]; (...items: any[]): any[]; }; indexOf: (searchElement: any, fromIndex?: number | undefined) => number; lastIndexOf: (searchElement: any, fromIndex?: number | undefined) => number; slice: (start?: number | undefined, end?: number | undefined) => any[]; includes: (searchElement: any, fromIndex?: number | undefined) => boolean; toLocaleString: () => string; join: (separator?: string | undefined) => string; every: { <S extends any>(predicate: (value: any, index: number, array: any[]) => value is S, thisArg?: any): this is S[]; (predicate: (value: any, index: number, array: any[]) => unknown, thisArg?: any): boolean; }; some: (predicate: (value: any, index: number, array: any[]) => unknown, thisArg?: any) => boolean; forEach: (callbackfn: (value: any, index: number, array: any[]) => void, thisArg?: any) => void; map: <U>(callbackfn: (value: any, index: number, array: any[]) => U, thisArg?: any) => U[]; filter: { <S extends any>(predicate: (value: any, index: number, array: any[]) => value is S, thisArg?: any): S[]; (predicate: (value: any, index: number, array: any[]) => unknown, thisArg?: any): any[]; }; reduce: { (callbackfn: (previousValue: any, currentValue: any, currentIndex: number, array: any[]) => any): any; (callbackfn: (previousValue: any, currentValue: any, currentIndex: number, array: any[]) => any, initialValue: any): any; <U>(callbackfn: (previousValue: U, currentValue: any, currentIndex: number, array: any[]) => U, initialValue: U): U; }; reduceRight: { (callbackfn: (previousValue: any, currentValue: any, currentIndex: number, array: any[]) => any): any; (callbackfn: (previousValue: any, currentValue: any, currentIndex: number, array: any[]) => any, initialValue: any): any; <U>(callbackfn: (previousValue: U, currentValue: any, currentIndex: number, array: any[]) => U, initialValue: U): U; }; find: \\"Expected: function, Actual: never\\"; findIndex: (predicate: (value: any, index: number, obj: any[]) => unknown, thisArg?: any) => number; entries: () => IterableIterator<[number, any]>; keys: () => IterableIterator<number>; values: \\"Expected: function, Actual: never\\"; pop: \\"Expected: function, Actual: never\\"; push: (...items: any[]) => number; reverse: () => any[]; shift: \\"Expected: function, Actual: never\\"; sort: (compareFn?: ((a: any, b: any) => number) | undefined) => any[]; splice: { (start: number, deleteCount?: number | undefined): any[]; (start: number, deleteCount: number, ...items: any[]): any[]; }; unshift: (...items: any[]) => number; fill: (value: any, start?: number | undefined, end?: number | undefined) => any[]; copyWithin: (target: number, start: number, end?: number | undefined) => any[]; }'.
+  Types of property '[iterator]' are incompatible.
+    Type '() => IterableIterator<number>' is not assignable to type '\\"Expected: function, Actual: never\\"'.
 
 999   expectTypeOf<any[]>().toEqualTypeOf<number[]>()
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                          ~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: string\\"; }'.
+  Types of property 'a' are incompatible.
+    Type 'number' is not assignable to type '\\"Expected: number, Actual: string\\"'.
 
 999   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                                ~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{}' does not satisfy the constraint '{ a: \\"Expected: never, Actual: number\\" | \\"Expected: never, Actual: undefined\\"; }'.
+  Property 'a' is missing in type '{}' but required in type '{ a: \\"Expected: never, Actual: number\\" | \\"Expected: never, Actual: undefined\\"; }'.
 
 999   expectTypeOf<{a?: number}>().toEqualTypeOf<{}>()
-                                   ~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                                 ~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: undefined\\"; }'.
+  Types of property 'a' are incompatible.
+    Type 'number' is not assignable to type '\\"Expected: number, Actual: undefined\\"'.
 
 999   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
-                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
+                                                 ~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number | null; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: undefined\\" | \\"Expected: null, Actual: undefined\\"; }'.
+  Types of property 'a' are incompatible.
+    Type 'number | null' is not assignable to type '\\"Expected: number, Actual: undefined\\" | \\"Expected: null, Actual: undefined\\"'.
+      Type 'null' is not assignable to type '\\"Expected: number, Actual: undefined\\" | \\"Expected: null, Actual: undefined\\"'.
 
 999   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
-                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+                                                        ~~~~~~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: {}; }' does not satisfy the constraint '{ a: { b: \\"Expected: never, Actual: number\\" | \\"Expected: never, Actual: undefined\\"; }; }'.
+  Types of property 'a' are incompatible.
+    Property 'b' is missing in type '{}' but required in type '{ b: \\"Expected: never, Actual: number\\" | \\"Expected: never, Actual: undefined\\"; }'.
 
 999   expectTypeOf<{a: {b?: number}}>().toEqualTypeOf<{a: {}}>()
-                                        ~~~~~~~~~~~~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
+                                                      ~~~~~~~
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<A1>().toEqualTypeOf<E1>()
                          ~~~~~~~~~~~~~~~~~~~
 
   src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Arguments for the rest parameter 'MISMATCH' were not provided.
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -303,8 +208,8 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
                          ~~~~~~~~~~~~~~~~~~~
 
   src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Arguments for the rest parameter 'MISMATCH' were not provided.
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -312,8 +217,8 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
                                ~~~~~~~~~~~~~~~~~~~~~~~~~
 
   src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Arguments for the rest parameter 'MISMATCH' were not provided.
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
@@ -321,7 +226,66 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   src/index.ts:999:999
-    999     <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided."
+    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided.
+test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+
+999   expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
+                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  src/index.ts:999:999
+    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided.
+test/usage.test.ts:999:999 - error TS2344: Type '() => () => () => () => 2' does not satisfy the constraint '() => () => () => () => 1'.
+  Call signature return types '() => () => () => 2' and '() => () => () => 1' are incompatible.
+    Call signature return types '() => () => 2' and '() => () => 1' are incompatible.
+      Call signature return types '() => 2' and '() => 1' are incompatible.
+        Type '2' is not assignable to type '1'.
+
+999   expectTypeOf<() => () => () => () => 1>().toEqualTypeOf<() => () => () => () => 2>()
+                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+
+999   expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<
+                                                              ~~~~~~~~~~~~~~
+480     () => () => () => () => {a: 1; b: 2}
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+481   >()
+    ~~~~~
+
+  src/index.ts:999:999
+    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided.
+test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
+  Overload 1 of 2, '(value: ((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & AValue, ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<this, (IsNever<...> extends IsNever<...> ? true : false) extends true ? unknown : MismatchInfo<...>>, true>): true', gave the following error.
+    Argument of type 'this' is not assignable to parameter of type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & AValue'.
+      Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & AValue'.
+        Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+          Type 'this' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+            Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+              Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
+                Type 'this' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
+                  Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
+  Argument of type '[this]' is not assignable to parameter of type 'MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<this, StrictEqualUsingTSInternalIdenticalToOperator<this, unknown> extends true ? unknown : MismatchInfo<this, unknown>>, true>'.
+
+999       expectTypeOf(this).toEqualTypeOf(this)
+                                           ~~~~
+
+test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
+  Overload 1 of 2, '(value: (Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue, ...MISMATCH: MismatchArgs<Extends<this, Extends<this, this> extends true ? unknown : MismatchInfo<...>>, true>): true', gave the following error.
+    Argument of type 'this' is not assignable to parameter of type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue'.
+      Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue'.
+        Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+          Type 'this' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+            Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+              Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
+                Type 'this' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
+                  Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
+  Argument of type '[this]' is not assignable to parameter of type 'MismatchArgs<Extends<this, Extends<this, unknown> extends true ? unknown : MismatchInfo<this, unknown>>, true>'.
+
+999       expectTypeOf(this).toMatchTypeOf(this)
+                                           ~~~~"
 `;

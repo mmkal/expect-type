@@ -38,16 +38,16 @@ test('boolean type logic', () => {
   expectTypeOf<a.Extends<1, number>>().toEqualTypeOf<true>()
   expectTypeOf<a.Extends<number, 1>>().toEqualTypeOf<false>()
 
-  expectTypeOf<a.Equal<1, 1>>().toEqualTypeOf<true>()
-  expectTypeOf<a.Equal<1, number>>().toEqualTypeOf<false>()
-  expectTypeOf<a.Equal<{a: 1}, {a: 1}>>().toEqualTypeOf<true>()
-  expectTypeOf<a.Equal<[{a: 1}], [{a: 1}]>>().toEqualTypeOf<true>()
-  expectTypeOf<a.Equal<never, never>>().toEqualTypeOf<true>()
-  expectTypeOf<a.Equal<any, any>>().toEqualTypeOf<true>()
-  expectTypeOf<a.Equal<unknown, unknown>>().toEqualTypeOf<true>()
-  expectTypeOf<a.Equal<any, never>>().toEqualTypeOf<false>()
-  expectTypeOf<a.Equal<any, unknown>>().toEqualTypeOf<false>()
-  expectTypeOf<a.Equal<never, unknown>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<1, 1>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<1, number>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<{a: 1}, {a: 1}>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<[{a: 1}], [{a: 1}]>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<never, never>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<any, any>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<unknown, unknown>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<any, never>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<any, unknown>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<never, unknown>>().toEqualTypeOf<false>()
 })
 
 test(`never types don't sneak by`, () => {
@@ -68,6 +68,33 @@ test(`never types don't sneak by`, () => {
 
   // @ts-expect-error
   expectTypeOf<never>().toMatchTypeOf<{foo: string}>()
+})
+
+test("any/never types don't break toEqualTypeOf or toMatchTypeOf", () => {
+  // @ts-expect-error
+  expectTypeOf<never>().toEqualTypeOf<any>()
+  // @ts-expect-error
+  expectTypeOf<never>().toEqualTypeOf<unknown>()
+  // @ts-expect-error
+  expectTypeOf<any>().toEqualTypeOf<never>()
+  // @ts-expect-error
+  expectTypeOf<any>().toEqualTypeOf<unknown>()
+  // @ts-expect-error
+  expectTypeOf<unknown>().toEqualTypeOf<any>()
+  // @ts-expect-error
+  expectTypeOf<unknown>().toEqualTypeOf<never>()
+  // @ts-expect-error
+  expectTypeOf<{a: number}>().toEqualTypeOf<any>()
+  // @ts-expect-error
+  expectTypeOf<{a: number}>().toEqualTypeOf<never>()
+  // @ts-expect-error
+  expectTypeOf<{a: number}>().toEqualTypeOf<unknown>()
+  // @ts-expect-error
+  expectTypeOf<any>().toEqualTypeOf({a: 1, b: 1})
+  // @ts-expect-error
+  expectTypeOf<never>().toEqualTypeOf({a: 1, b: 1})
+  // @ts-expect-error
+  expectTypeOf<unknown>().toEqualTypeOf({a: 1, b: 1})
 })
 
 test('intersections do not currently work properly', () => {
@@ -116,7 +143,7 @@ test('parity with IsExact from conditional-type-checks', () => {
   /** shim conditional-type-check's `assert` */
   const assert = <T extends boolean>(_result: T) => true
   /** shim conditional-type-check's `IsExact` using `Equal` */
-  type IsExact<T, U> = a.Equal<T, U>
+  type IsExact<T, U> = a.StrictEqualUsingBranding<T, U>
 
   // basic test for `assert` shim:
   expectTypeOf(assert).toBeCallableWith(true)
@@ -186,9 +213,11 @@ test('parity with IsExact from conditional-type-checks', () => {
 })
 
 test('Equal works with functions', () => {
-  expectTypeOf<a.Equal<() => void, () => string>>().toEqualTypeOf<false>()
-  expectTypeOf<a.Equal<() => void, (s: string) => void>>().toEqualTypeOf<false>()
-  expectTypeOf<a.Equal<() => () => () => void, () => (s: string) => () => void>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<() => void, () => string>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<() => void, (s: string) => void>>().toEqualTypeOf<false>()
+  expectTypeOf<
+    a.StrictEqualUsingBranding<() => () => () => void, () => (s: string) => () => void>
+  >().toEqualTypeOf<false>()
 })
 
 test(`undefined isn't removed from unions`, () => {
@@ -220,7 +249,7 @@ test('Distinguish between functions whose return types differ by readonly prop',
 
   // Self-identity
   expectTypeOf<typeof original>().toEqualTypeOf<typeof original>()
-  expectTypeOf(original).branded.toEqualTypeOf(original)
+  expectTypeOf(original).branded.toEqualTypeOf<typeof original>()
   expectTypeOf<typeof different>().toEqualTypeOf<typeof different>()
   expectTypeOf(different).toEqualTypeOf(different)
   // @ts-expect-error
@@ -629,7 +658,7 @@ test('Works arounds tsc bug not handling intersected types for this form of equi
 
   // The workaround is the new optional .branded modifier.
   expectTypeOf<{foo: number} & {bar: string}>().branded.toEqualTypeOf<{foo: number; bar: string}>()
-  expectTypeOf(one).branded.toEqualTypeOf(two)
+  expectTypeOf(one).branded.toEqualTypeOf<typeof two>()
   // @ts-expect-error
   expectTypeOf<{foo: number} & {bar: string}>().branded.not.toEqualTypeOf<{foo: number; bar: string}>()
   // @ts-expect-error
@@ -644,12 +673,38 @@ test('Distinguish between identical types that are AND`d together', () => {
   expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number} & {foo: number}>()
   // @ts-expect-error
   expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number}>()
+
+  expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
+  expectTypeOf<() => () => () => {a: 1} & {b: 1}>().not.toEqualTypeOf<() => () => () => {a: 1; c: 1}>()
+
+  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
+  expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
+  expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })
 
 test('limitations', () => {
   // these *shouldn't* fail, but kept here to document missing behaviours. Once fixed, remove the expect-error comments to make sure they can't regress
   // @ts-expect-error typescript can't handle the truth: https://github.com/mmkal/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
-  expectTypeOf<a.Equal<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
 
-  expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
+  // @ts-expect-error toEqualTypeOf relies on TypeScript's internal `toBeIdentical` function which falls down with intersection types, but is otherwise accurate and performant: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
+  expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
+  // use `.branded` to get around this, at the cost of performance.
+  expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
+})
+
+test('PrintType', () => {
+  expectTypeOf<a.PrintType<boolean>>().toEqualTypeOf<'boolean'>()
+  expectTypeOf<a.PrintType<string>>().toEqualTypeOf<'string'>()
+  expectTypeOf<a.PrintType<number>>().toEqualTypeOf<'number'>()
+  expectTypeOf<a.PrintType<never>>().toEqualTypeOf<'never'>()
+  expectTypeOf<a.PrintType<unknown>>().toEqualTypeOf<'unknown'>()
+  expectTypeOf<a.PrintType<1>>().toEqualTypeOf<'literal number: 1'>()
+  expectTypeOf<a.PrintType<'a'>>().toEqualTypeOf<'literal string: a'>()
+  expectTypeOf<a.PrintType<true>>().toEqualTypeOf<'literal boolean: true'>()
+  expectTypeOf<a.PrintType<false>>().toEqualTypeOf<'literal boolean: false'>()
+  expectTypeOf<a.PrintType<null>>().toEqualTypeOf<'null'>()
+  expectTypeOf<a.PrintType<undefined>>().toEqualTypeOf<'undefined'>()
+  expectTypeOf<a.PrintType<() => {}>>().toEqualTypeOf<'function'>()
+  expectTypeOf<a.PrintType<any>>().toBeNever()
 })

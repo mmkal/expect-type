@@ -32,6 +32,10 @@ See below for lots more examples.
 - [Installation and usage](#installation-and-usage)
 - [Documentation](#documentation)
    - [Features](#features)
+   - [Where is `.toExtend`?](#where-is-toextend)
+   - [Internal type helpers](#internal-type-helpers)
+   - [Error messages](#error-messages)
+      - [Concrete "expected" objects vs typeargs](#concrete-expected-objects-vs-typeargs)
    - [Within test frameworks](#within-test-frameworks)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
 - [Similar projects](#similar-projects)
@@ -62,7 +66,7 @@ Check an object's type with `.toEqualTypeOf`:
 expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 ```
 
-`.toEqualTypeOf` can check that two concrete objects have equivalent types:
+`.toEqualTypeOf` can check that two concrete objects have equivalent types (note: when these assertions _fail_, the error messages can be less informative vs the generic typearg syntax above - see [error messages docs](#error-messages)):
 
 ```typescript
 expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
@@ -81,10 +85,19 @@ expectTypeOf({a: 1}).toEqualTypeOf({a: 2})
 expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
 ```
 
-To allow for extra properties, use `.toMatchTypeOf`. This checks that an object "matches" a type. This is similar to jest's `.toMatchObject`:
+To allow for extra properties, use `.toMatchTypeOf`. This is roughly equivalent to an `extends` constraint in a function type argument.:
 
 ```typescript
-expectTypeOf({a: 1, b: 1}).toMatchTypeOf({a: 1})
+expectTypeOf({a: 1, b: 1}).toMatchTypeOf<{a: number}>()
+```
+
+`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties:
+
+```typescript
+// @ts-expect-error
+expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
+// @ts-expect-error
+expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
 ```
 
 Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships:
@@ -149,6 +162,33 @@ expectTypeOf(true).toBeBoolean()
 expectTypeOf(() => {}).returns.toBeVoid()
 expectTypeOf(Promise.resolve(123)).resolves.toBeNumber()
 expectTypeOf(Symbol(1)).toBeSymbol()
+```
+
+`.toBe...` methods allow for types which extend the expected type:
+
+```typescript
+expectTypeOf<number>().toBeNumber()
+expectTypeOf<1>().toBeNumber()
+
+expectTypeOf<any[]>().toBeArray()
+expectTypeOf<number[]>().toBeArray()
+
+expectTypeOf<string>().toBeString()
+expectTypeOf<'foo'>().toBeString()
+
+expectTypeOf<boolean>().toBeBoolean()
+expectTypeOf<true>().toBeBoolean()
+```
+
+`.toBe...` methods protect against `any`:
+
+```typescript
+const goodIntParser = (s: string) => Number.parseInt(s, 10)
+const badIntParser = (s: string) => JSON.parse(s) // uh-oh - works at runtime if the input is a number, but return 'any'
+
+expectTypeOf(goodIntParser).returns.toBeNumber()
+// @ts-expect-error - if you write a test like this, `.toBeNumber()` will let you know your implementation returns `any`.
+expectTypeOf(badIntParser).returns.toBeNumber()
 ```
 
 Nullable types:
@@ -278,6 +318,15 @@ expectTypeOf(1).parameter(0).toBeNever()
 const twoArgFunc = (a: number, b: string) => ({a, b})
 
 expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
+```
+
+You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error::
+
+```typescript
+const f = (a: number) => [a, a]
+
+// @ts-expect-error
+expectTypeOf(f).toBeCallableWith('foo')
 ```
 
 You can also check type guards & type assertions:
@@ -435,19 +484,139 @@ Known limitation: Intersection types can cause issues with `toEqualTypeOf`:
 expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
 ```
 
-To workaround, you can use a mapped type:
+To workaround for simple cases, you can use a mapped type:
 
 ```typescript
 type Simplify<T> = {[K in keyof T]: T[K]}
 
 expectTypeOf<Simplify<{a: 1} & {b: 2}>>().toEqualTypeOf<{a: 1; b: 2}>()
 ```
+
+But this won't work if the nesting is deeper in the type. For these situations, you can use the `.branded` helper. Note that this comes at a performance cost, and can cause the compiler to 'give up' if used with excessively deep types, so use sparingly. This helper is under `.branded` because it depply transforms the Actual and Expected types into a pseudo-AST:
+
+```typescript
+// @ts-expect-error
+expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
+
+expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
+```
+
+Be careful with `.branded` for very deep or complex types, though. If possible you should find a way to simplify your test to avoid needing to use it:
+
+```typescript
+// This *should* result in an error, but the "branding" mechanism produces too large a type and TypeScript just gives up! https://github.com/microsoft/TypeScript/issues/50670
+expectTypeOf<() => () => () => () => 1>().branded.toEqualTypeOf<() => () => () => () => 2>()
+
+// @ts-expect-error the non-branded implementation catches the error as expected.
+expectTypeOf<() => () => () => () => 1>().toEqualTypeOf<() => () => () => () => 2>()
+```
+
+So, if you have an extremely deep type which ALSO has an intersection in it, you're out of luck and this library won't be able to test your type properly:
+
+```typescript
+// @ts-expect-error this fails, but it should succeed.
+expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<
+  () => () => () => () => {a: 1; b: 2}
+>()
+
+// this succeeds, but it should fail.
+expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().branded.toEqualTypeOf<
+  () => () => () => () => {a: 1; c: 2}
+>()
+```
+
+Another limitation: passing `this` references to `expectTypeOf` results in errors.:
+
+```typescript
+class B {
+  b = 'b'
+
+  foo() {
+    // @ts-expect-error
+    expectTypeOf(this).toEqualTypeOf(this)
+    // @ts-expect-error
+    expectTypeOf(this).toMatchTypeOf(this)
+  }
+}
+
+// Instead of the above, try something like this:
+expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
+```
 <!-- codegen:end -->
+
+### Where is `.toExtend`?
+
+A few people have asked for a method like `toExtend` - this is essentially what `toMatchTypeOf` is. There are some cases where it doesn't _precisely_ match the `extends` operator in TypeScript, but for most practical use cases, you can think of this as the same thing.
+
+### Internal type helpers
+
+🚧 This library also exports some helper types for performing boolean operations on types, checking extension/equality in various ways, branding types, and checking for various special types like `never`, `any`, `unknown`. Use at your own risk! Nothing is stopping you using these beyond this warning:
+
+>All internal types that are not documented here are _not_ part of the supported API surface, and may be renamed, modified, or removed, without warning or documentation in release notes.
+
+For a dedicated internal type library, feel free to look at the [source code](./src/index.ts) for inspiration - or better, use a library like [type-fest](https://npmjs.com/package/type-fest).
+
+### Error messages
+
+When types don't match, `.toEqualTypeOf` and `.toMatchTypeOf` use a special helper type to produce error messages that are as actionable as possible. But there's a bit of an nuance to understanding them. Since the assertions are written "fluently", the failure should be on the "expected" type, not the "actual" type (`expect<Actual>().toEqualTypeOf<Expected>()`). This means that type errors can be a little confusing - so this library produces a `MismatchInfo` type to try to make explicit what the expectation is. For example:
+
+```ts
+expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
+```
+
+Is an assertion that will fail, since `{a: 1}` has type `{a: number}` and not `{a: string}`.  The error message in this case will read something like this:
+
+```
+test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: number\\"; }'.
+  Types of property 'a' are incompatible.
+    Type 'string' is not assignable to type '\\"Expected: string, Actual: number\\"'.
+
+999 expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
+```
+
+Note that the type constraint reported is a human-readable messaging specifying both the "expected" and "actual" types. Rather than taking the sentence `Types of property 'a' are incompatible // Type 'string' is not assignable to type "Expected: string, Actual: number"` literally - just look at the property name (`'a'`) and the message: `Expected: string, Actual: number`. This will tell you what's wrong, in most cases. Extremely complex types will of course be more effort to debug, and may require some experimentation. Please [raise an issue](https://github.com/mmkal/expect-type) if the error messages are actually misleading.
+
+The `toBe...` methods (like `toBeString`, `toBeNumber`, `toBeVoid` etc.) fail by resolving to a non-callable type when the `Actual` type under test doesn't match up. For example, the failure for an assertion like `expectTypeOf(1).toBeString()` will look something like this:
+
+```
+test/test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectString<number>' has no call signatures.
+
+999 expectTypeOf(1).toBeString()
+                    ~~~~~~~~~~
+```
+
+The `This expression is not callable` part isn't all that helpful - the meaningful error is the next line, `Type 'ExpectString<number> has no call signatures`. This essentially means you passed a number but asserted it should be a string.
+
+If TypeScript added support for ["throw" types](https://github.com/microsoft/TypeScript/pull/40468) these error messagess could be improved. Until then they will take a certain amount of squinting.
+
+#### Concrete "expected" objects vs typeargs
+
+Error messages for an assertion like this:
+
+```ts
+expectTypeOf({a: 1}).toEqualTypeOf({a: ''})
+```
+
+Will be less helpful than for an assertion like this:
+
+```ts
+expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
+```
+
+This is because the TypeScript compiler needs to infer the typearg for the `.toEqualTypeOf({a: ''})` style, and this library can only mark it as a failure by comparing it against a generic `Mismatch` type. So, where possible, use a typearg rather than a concrete type for `.toEqualTypeOf` and `toMatchTypeOf`. If it's much more convenient to compare two concrete types, you can use `typeof`:
+
+```ts
+const one = valueFromFunctionOne({some: {complex: inputs}})
+const two = valueFromFunctionTwo({some: {other: inputs}})
+
+expectTypeOf(one).toEqualTypeof<typeof two>()
+```
 
 ### Within test frameworks
 
 #### Jest & `eslint-plugin-jest`
-If you're using Jest along with `eslint-plugin-jest`, you will get warnings from the [`jest/expect-expect`](https://github.com/jest-community/eslint-plugin-jest/blob/master/docs/rules/expect-expect.md) rule, complaining that "Test has no assertions" for tests that only use `expectTypeOf()`.
+If you're using Jest along with `eslint-plugin-jest`, you may get warnings from the [`jest/expect-expect`](https://github.com/jest-community/eslint-plugin-jest/blob/master/docs/rules/expect-expect.md) rule, complaining that "Test has no assertions" for tests that only use `expectTypeOf()`.
 
 To remove this warning, configure the ESlint rule to consider `expectTypeOf` as an assertion:
 
@@ -495,7 +664,7 @@ The key differences in this project are:
   - nullable types
 - assertions on types "matching" rather than exact type equality, for "is-a" relationships e.g. `expectTypeOf(square).toMatchTypeOf<Shape>()`
 - built into existing tooling. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
-- small implementation with no dependencies. <200 lines of code - [take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of typescript).
+- small implementation with no dependencies. [Take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of typescript).
 
 ## Contributing
 

@@ -12,6 +12,46 @@ export type IsAny<T> = [T] extends [Secret] ? Not<IsNever<T>> : false
 export type IsUnknown<T> = [unknown] extends [T] ? Not<IsAny<T>> : false
 export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
 
+export type PrintType<T> = IsUnknown<T> extends true
+  ? 'unknown'
+  : IsNever<T> extends true
+  ? 'never'
+  : IsAny<T> extends true
+  ? never // special case, can't use `'any'` because that would match `any`
+  : boolean extends T
+  ? 'boolean'
+  : T extends boolean
+  ? `literal boolean: ${T}`
+  : string extends T
+  ? 'string'
+  : T extends string
+  ? `literal string: ${T}`
+  : number extends T
+  ? 'number'
+  : T extends number
+  ? `literal number: ${T}`
+  : T extends null
+  ? 'null'
+  : T extends undefined
+  ? 'undefined'
+  : T extends (...args: any[]) => any
+  ? 'function'
+  : '...'
+
+// Helper for showing end-user a hint why their type assertion is failing.
+// This swaps "leaf" types with a literal message about what the actual and expected types are.
+// Needs to check for Not<IsAny<Actual>> because otherwise LeafTypeOf<Actual> returns never, which extends everything 🤔
+export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
+  ? {
+      [K in keyof Actual | keyof Expected]: MismatchInfo<
+        K extends keyof Actual ? Actual[K] : never,
+        K extends keyof Expected ? Expected[K] : never
+      >
+    }
+  : StrictEqualUsingBranding<Actual, Expected> extends true
+  ? Actual
+  : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
+
 /**
  * Recursively walk a type and replace it with a branded type related to the original. This is useful for
  * equality-checking stricter than `A extends B ? B extends A ? true : false : false`, because it detects
@@ -19,6 +59,9 @@ export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
  * - `any` vs `unknown`
  * - `{ readonly a: string }` vs `{ a: string }`
  * - `{ a?: string }` vs `{ a: string | undefined }`
+ *
+ * Note: not very performant for complex types - this should only be used when you know you need it. If doing
+ * an equality check, it's almost always better to use `StrictEqualUsingTSInternalIdenticalToOperator`.
  */
 export type DeepBrand<T> = IsNever<T> extends true
   ? {type: 'never'}
@@ -43,6 +86,7 @@ export type DeepBrand<T> = IsNever<T> extends true
       params: DeepBrand<P>
       return: DeepBrand<R>
       this: DeepBrand<ThisParameterType<T>>
+      props: DeepBrand<Omit<T, keyof Function>>
     }
   : T extends any[]
   ? {
@@ -81,20 +125,30 @@ type ReadonlyEquivalent<X, Y> = Extends<
   (<T>() => T extends Y ? true : false)
 >
 
+/** Returns true if `L extends R`. Explicitly checks for `never` since that can give unexpected results. */
 export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : [L] extends [R] ? true : false
-export type StrictExtends<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
+export type ExtendsUsingBranding<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
+export type ExtendsExcludingAnyOrNever<L, R> = IsAny<L> extends true ? IsAny<R> : Extends<L, R>
 
-type StrictEqual<L, R> = (<T>() => T extends (L & T) | T ? true : false) extends <T>() => T extends (R & T) | T
-  ? true
-  : false
+// much history: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
+type StrictEqualUsingTSInternalIdenticalToOperator<L, R> = (<T>() => T extends (L & T) | T ? true : false) extends <
+  T,
+>() => T extends (R & T) | T ? true : false
   ? IsNever<L> extends IsNever<R>
     ? true
     : false
   : false
 
-export type Equal<Left, Right, Branded = true> = Branded extends true
-  ? And<[StrictExtends<Left, Right>, StrictExtends<Right, Left>]>
-  : StrictEqual<Left, Right>
+export type StrictEqualUsingBranding<Left, Right> = And<
+  [ExtendsUsingBranding<Left, Right>, ExtendsUsingBranding<Right, Left>]
+>
+
+export type HopefullyPerformantEqual<Left, Right> = StrictEqualUsingTSInternalIdenticalToOperator<
+  Left,
+  Right
+> extends true
+  ? true
+  : StrictEqualUsingBranding<Left, Right>
 
 export type Params<Actual> = Actual extends (...args: infer P) => any ? P : never
 export type ConstructorParams<Actual> = Actual extends new (...args: infer P) => any
@@ -103,51 +157,165 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     : P
   : never
 
+const mismatch = Symbol('mismatch')
+type Mismatch = {[mismatch]: 'mismatch'}
+/** A type which should match anything passed as a value but *doesn't* match `Mismatch` - helps TypeScript select the right overload for `toEqualTypeOf` and `toMatchTypeOf`. */
+const avalue = Symbol('avalue')
+type AValue = {[avalue]?: undefined} | string | number | boolean | symbol | bigint | null | undefined | void
 type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
   ActualResult,
   ExpectedResult
 > extends true
   ? []
-  : [never]
+  : [Mismatch]
 
-export interface ExpectTypeOfOptions {
+  export interface ExpectTypeOfOptions {
   positive: boolean
   branded: boolean
 }
-export interface ExpectTypeOf<Actual, Options extends ExpectTypeOfOptions> {
-  toBeAny: (...MISMATCH: MismatchArgs<IsAny<Actual>, Options['positive']>) => true
-  toBeUnknown: (...MISMATCH: MismatchArgs<IsUnknown<Actual>, Options['positive']>) => true
-  toBeNever: (...MISMATCH: MismatchArgs<IsNever<Actual>, Options['positive']>) => true
-  toBeFunction: (...MISMATCH: MismatchArgs<Extends<Actual, (...args: any[]) => any>, Options['positive']>) => true
-  toBeObject: (...MISMATCH: MismatchArgs<Extends<Actual, object>, Options['positive']>) => true
-  toBeArray: (...MISMATCH: MismatchArgs<Extends<Actual, any[]>, Options['positive']>) => true
-  toBeNumber: (...MISMATCH: MismatchArgs<Extends<Actual, number>, Options['positive']>) => true
-  toBeString: (...MISMATCH: MismatchArgs<Extends<Actual, string>, Options['positive']>) => true
-  toBeBoolean: (...MISMATCH: MismatchArgs<Extends<Actual, boolean>, Options['positive']>) => true
-  toBeVoid: (...MISMATCH: MismatchArgs<Extends<Actual, void>, Options['positive']>) => true
-  toBeSymbol: (...MISMATCH: MismatchArgs<Extends<Actual, symbol>, Options['positive']>) => true
-  toBeNull: (...MISMATCH: MismatchArgs<Extends<Actual, null>, Options['positive']>) => true
-  toBeUndefined: (...MISMATCH: MismatchArgs<Extends<Actual, undefined>, Options['positive']>) => true
-  toBeNullable: (
-    ...MISMATCH: MismatchArgs<Not<Equal<Actual, NonNullable<Actual>, Options['branded']>>, Options['positive']>
-  ) => true
-  toMatchTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
-    <Expected>(expected: Expected, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, Options['positive']>): true
-  }
+
+const inverted = Symbol('inverted')
+type Inverted<T> = {[inverted]: T}
+
+const expectNull = Symbol('expectNull')
+type ExpectNull<T> = {[expectNull]: T; result: ExtendsExcludingAnyOrNever<T, null>}
+const expectUndefined = Symbol('expectUndefined')
+type ExpectUndefined<T> = {[expectUndefined]: T; result: ExtendsExcludingAnyOrNever<T, undefined>}
+const expectNumber = Symbol('expectNumber')
+type ExpectNumber<T> = {[expectNumber]: T; result: ExtendsExcludingAnyOrNever<T, number>}
+const expectString = Symbol('expectString')
+type ExpectString<T> = {[expectString]: T; result: ExtendsExcludingAnyOrNever<T, string>}
+const expectBoolean = Symbol('expectBoolean')
+type ExpectBoolean<T> = {[expectBoolean]: T; result: ExtendsExcludingAnyOrNever<T, boolean>}
+const expectVoid = Symbol('expectVoid')
+type ExpectVoid<T> = {[expectVoid]: T; result: ExtendsExcludingAnyOrNever<T, void>}
+
+const expectFunction = Symbol('expectFunction')
+type ExpectFunction<T> = {[expectFunction]: T; result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>}
+const expectObject = Symbol('expectObject')
+type ExpectObject<T> = {[expectObject]: T; result: ExtendsExcludingAnyOrNever<T, object>}
+const expectArray = Symbol('expectArray')
+type ExpectArray<T> = {[expectArray]: T; result: ExtendsExcludingAnyOrNever<T, any[]>}
+const expectSymbol = Symbol('expectSymbol')
+type ExpectSymbol<T> = {[expectSymbol]: T; result: ExtendsExcludingAnyOrNever<T, symbol>}
+
+const expectAny = Symbol('expectAny')
+type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}
+const expectUnknown = Symbol('expectUnknown')
+type ExpectUnknown<T> = {[expectUnknown]: T; result: IsUnknown<T>}
+const expectNever = Symbol('expectNever')
+type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
+
+const expectNullable = Symbol('expectNullable')
+type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
+
+type Scolder<
+  Expecter extends {result: boolean},
+  Options extends {positive: boolean},
+> = Expecter['result'] extends Options['positive']
+  ? () => true
+  : Options['positive'] extends true
+  ? Expecter
+  : Inverted<Expecter>
+
+export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
   toEqualTypeOf: {
-    <Expected>(...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>): true
-    <Expected>(
-      expected: Expected,
-      ...MISMATCH: MismatchArgs<Equal<Actual, Expected, Options['branded']>, Options['positive']>
+    <
+      Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
+        ? unknown
+        : MismatchInfo<Actual, Expected>,
+    >(
+      value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+    ): true
+    <
+      Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
+        ? unknown
+        : MismatchInfo<Actual, Expected>,
+    >(
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
     ): true
   }
+
+  toMatchTypeOf: {
+    <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+      value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+    ): true
+    <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+    ): true
+  }
+
+  toHaveProperty: <K extends keyof Actual>(
+    key: K,
+    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, true>
+  ) => K extends keyof Actual ? PositiveExpectTypeOf<Actual[K]> : true
+
+  not: NegativeExpectTypeOf<Actual>
+
+  branded: {
+    toEqualTypeOf: <
+      Expected extends StrictEqualUsingBranding<Actual, Expected> extends true
+        ? unknown
+        : MismatchInfo<Actual, Expected>,
+    >(
+      ...MISMATCH: MismatchArgs<StrictEqualUsingBranding<Actual, Expected>, true>
+    ) => true
+  }
+}
+
+export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: false}> {
+  toEqualTypeOf: {
+    <Expected>(
+      value: Expected & AValue,
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
+    ): true
+    <Expected>(...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>): true
+  }
+
+  toMatchTypeOf: {
+    <Expected>(
+      value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>
+    ): true
+    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
+  }
+
+  toHaveProperty: <K extends string | number | symbol>(
+    key: K,
+    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, false>
+  ) => true
+
+  branded: {
+    toEqualTypeOf: <Expected>(
+      ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>
+    ) => true
+  }
+}
+
+export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options['positive'] extends true
+  ? PositiveExpectTypeOf<Actual>
+  : NegativeExpectTypeOf<Actual>
+
+export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
+  toBeAny: Scolder<ExpectAny<Actual>, Options>
+  toBeUnknown: Scolder<ExpectUnknown<Actual>, Options>
+  toBeNever: Scolder<ExpectNever<Actual>, Options>
+  toBeFunction: Scolder<ExpectFunction<Actual>, Options>
+  toBeObject: Scolder<ExpectObject<Actual>, Options>
+  toBeArray: Scolder<ExpectArray<Actual>, Options>
+  toBeNumber: Scolder<ExpectNumber<Actual>, Options>
+  toBeString: Scolder<ExpectString<Actual>, Options>
+  toBeBoolean: Scolder<ExpectBoolean<Actual>, Options>
+  toBeVoid: Scolder<ExpectVoid<Actual>, Options>
+  toBeSymbol: Scolder<ExpectSymbol<Actual>, Options>
+  toBeNull: Scolder<ExpectNull<Actual>, Options>
+  toBeUndefined: Scolder<ExpectUndefined<Actual>, Options>
+  toBeNullable: Scolder<ExpectNullable<Actual>, Options>
+
   toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
   toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
-  toHaveProperty: <K extends string>(
-    key: K,
-    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, Options['positive']>
-  ) => K extends keyof Actual ? ExpectTypeOf<Actual[K], Options> : true
   extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, Options>
   exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, Options>
   parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], Options>
@@ -167,8 +335,6 @@ export interface ExpectTypeOf<Actual, Options extends ExpectTypeOfOptions> {
       ? never
       : ExpectTypeOf<T, Options>
     : never
-  branded: Omit<ExpectTypeOf<Actual, {positive: Options['positive']; branded: true}>, 'branded'>
-  not: Omit<ExpectTypeOf<Actual, {positive: Not<Options['positive']>; branded: Options['branded']}>, 'not'>
 }
 const fn: any = () => true
 
@@ -215,7 +381,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     'asserts',
     'branded',
   ] as const
-  type Keys = keyof ExpectTypeOf<any, any>
+  type Keys = keyof PositiveExpectTypeOf<any> | keyof NegativeExpectTypeOf<any>
 
   type FunctionsDict = Record<Exclude<Keys, typeof nonFunctionProperties[number]>, any>
   const obj: FunctionsDict = {

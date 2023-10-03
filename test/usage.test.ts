@@ -8,7 +8,7 @@ test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('`.toEqualTypeOf` can check that two concrete objects have equivalent types', () => {
+test('`.toEqualTypeOf` can check that two concrete objects have equivalent types (note: when these assertions _fail_, the error messages can be less informative vs the generic typearg syntax above - see [error messages docs](#error-messages))', () => {
   expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
 })
 
@@ -21,8 +21,15 @@ test('`.toEqualTypeOf` fails on extra properties', () => {
   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('To allow for extra properties, use `.toMatchTypeOf`. This checks that an object "matches" a type. This is similar to jest\'s `.toMatchObject`', () => {
-  expectTypeOf({a: 1, b: 1}).toMatchTypeOf({a: 1})
+test('To allow for extra properties, use `.toMatchTypeOf`. This is roughly equivalent to an `extends` constraint in a function type argument.', () => {
+  expectTypeOf({a: 1, b: 1}).toMatchTypeOf<{a: number}>()
+})
+
+test('`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties', () => {
+  // @ts-expect-error
+  expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
+  // @ts-expect-error
+  expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
 })
 
 test('Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships', () => {
@@ -76,6 +83,29 @@ test('Test for basic javascript types', () => {
   expectTypeOf(() => {}).returns.toBeVoid()
   expectTypeOf(Promise.resolve(123)).resolves.toBeNumber()
   expectTypeOf(Symbol(1)).toBeSymbol()
+})
+
+test('`.toBe...` methods allow for types which extend the expected type', () => {
+  expectTypeOf<number>().toBeNumber()
+  expectTypeOf<1>().toBeNumber()
+
+  expectTypeOf<any[]>().toBeArray()
+  expectTypeOf<number[]>().toBeArray()
+
+  expectTypeOf<string>().toBeString()
+  expectTypeOf<'foo'>().toBeString()
+
+  expectTypeOf<boolean>().toBeBoolean()
+  expectTypeOf<true>().toBeBoolean()
+})
+
+test('`.toBe...` methods protect against `any`', () => {
+  const goodIntParser = (s: string) => Number.parseInt(s, 10)
+  const badIntParser = (s: string) => JSON.parse(s) // uh-oh - works at runtime if the input is a number, but return 'any'
+
+  expectTypeOf(goodIntParser).returns.toBeNumber()
+  // @ts-expect-error - if you write a test like this, `.toBeNumber()` will let you know your implementation returns `any`.
+  expectTypeOf(badIntParser).returns.toBeNumber()
 })
 
 test('Nullable types', () => {
@@ -187,6 +217,13 @@ test('More examples of ways to work with functions - parameters using `.paramete
   const twoArgFunc = (a: number, b: string) => ({a, b})
 
   expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
+})
+
+test("You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error:", () => {
+  const f = (a: number) => [a, a]
+
+  // @ts-expect-error
+  expectTypeOf(f).toBeCallableWith('foo')
 })
 
 test('You can also check type guards & type assertions', () => {
@@ -316,8 +353,51 @@ test('Known limitation: Intersection types can cause issues with `toEqualTypeOf`
   expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
 })
 
-test('To workaround, you can use a mapped type', () => {
+test('To workaround for simple cases, you can use a mapped type', () => {
   type Simplify<T> = {[K in keyof T]: T[K]}
 
   expectTypeOf<Simplify<{a: 1} & {b: 2}>>().toEqualTypeOf<{a: 1; b: 2}>()
+})
+
+test("But this won't work if the nesting is deeper in the type. For these situations, you can use the `.branded` helper. Note that this comes at a performance cost, and can cause the compiler to 'give up' if used with excessively deep types, so use sparingly. This helper is under `.branded` because it depply transforms the Actual and Expected types into a pseudo-AST", () => {
+  // @ts-expect-error
+  expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
+
+  expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
+})
+
+test('Be careful with `.branded` for very deep or complex types, though. If possible you should find a way to simplify your test to avoid needing to use it', () => {
+  // This *should* result in an error, but the "branding" mechanism produces too large a type and TypeScript just gives up! https://github.com/microsoft/TypeScript/issues/50670
+  expectTypeOf<() => () => () => () => 1>().branded.toEqualTypeOf<() => () => () => () => 2>()
+
+  // @ts-expect-error the non-branded implementation catches the error as expected.
+  expectTypeOf<() => () => () => () => 1>().toEqualTypeOf<() => () => () => () => 2>()
+})
+
+test("So, if you have an extremely deep type which ALSO has an intersection in it, you're out of luck and this library won't be able to test your type properly", () => {
+  // @ts-expect-error this fails, but it should succeed.
+  expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<
+    () => () => () => () => {a: 1; b: 2}
+  >()
+
+  // this succeeds, but it should fail.
+  expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().branded.toEqualTypeOf<
+    () => () => () => () => {a: 1; c: 2}
+  >()
+})
+
+test('Another limitation: passing `this` references to `expectTypeOf` results in errors.', () => {
+  class B {
+    b = 'b'
+
+    foo() {
+      // @ts-expect-error
+      expectTypeOf(this).toEqualTypeOf(this)
+      // @ts-expect-error
+      expectTypeOf(this).toMatchTypeOf(this)
+    }
+  }
+
+  // Instead of the above, try something like this:
+  expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
 })
