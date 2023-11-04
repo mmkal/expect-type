@@ -64,7 +64,10 @@ export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '..
       }
   : StrictEqualUsingBranding<Actual, Expected> extends true
   ? Actual
-  : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
+  : IsNever<Exclude<Actual, Expected>> extends true
+  // when the resolved-excluded "actual" is never, it might mean we're dealing with a union type, this just improves error messages from `'Expected: string, Actual: never' | 'Expected: number, Actual: never'` to `'Expected: string' | 'Expected: number'`
+    ? `Expected: ${PrintType<Expected>}` 
+    : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
 
 /**
  * Recursively walk a type and replace it with a branded type related to the original. This is useful for

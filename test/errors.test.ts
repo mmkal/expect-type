@@ -39,9 +39,9 @@ test('toEqualTypeOf special types', async () => {
 
     999 expectTypeOf<{a: any}>().toEqualTypeOf<{a: 1}>()
                                                ~~~~~~
-    test/test.ts:999:999 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 1, Actual: never\\"; }'.
+    test/test.ts:999:999 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: \\"Expected: literal number: 1\\"; }'.
       Types of property 'a' are incompatible.
-        Type '1' is not assignable to type '\\"Expected: literal number: 1, Actual: never\\"'.
+        Type '1' is not assignable to type '\\"Expected: literal number: 1\\"'.
 
     999 expectTypeOf<{a: never}>().toEqualTypeOf<{a: 1}>()
                                                  ~~~~~~
@@ -66,9 +66,9 @@ test('toEqualTypeOf special types', async () => {
         999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Arguments for the rest parameter 'MISMATCH' were not provided.
-    test/test.ts:999:999 - error TS2344: Type '{ a: unknown; }' does not satisfy the constraint '{ a: \\"Expected: unknown, Actual: never\\"; }'.
+    test/test.ts:999:999 - error TS2344: Type '{ a: unknown; }' does not satisfy the constraint '{ a: \\"Expected: unknown\\"; }'.
       Types of property 'a' are incompatible.
-        Type 'unknown' is not assignable to type '\\"Expected: unknown, Actual: never\\"'.
+        Type 'unknown' is not assignable to type '\\"Expected: unknown\\"'.
 
     999 expectTypeOf<{a: 1}>().toEqualTypeOf<{a: unknown}>()
                                              ~~~~~~~~~~~~"
@@ -95,9 +95,9 @@ test('toEqualTypeOf with literals', async () => {
 
     999 expectTypeOf<{a: string}>().toEqualTypeOf<{a: 'abc'}>()
                                                   ~~~~~~~~~~
-    test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string, Actual: never\\"; }'.
+    test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the constraint '{ a: \\"Expected: string\\"; }'.
       Types of property 'a' are incompatible.
-        Type 'string' is not assignable to type '\\"Expected: string, Actual: never\\"'.
+        Type 'string' is not assignable to type '\\"Expected: string\\"'.
 
     999 expectTypeOf<{a: 'abc'}>().toEqualTypeOf<{a: string}>()
                                                  ~~~~~~~~~~~
@@ -113,9 +113,9 @@ test('toEqualTypeOf with literals', async () => {
 
     999 expectTypeOf<{a: number}>().toEqualTypeOf<{a: 1}>()
                                                   ~~~~~~
-    test/test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number, Actual: never\\"; }'.
+    test/test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: \\"Expected: number\\"; }'.
       Types of property 'a' are incompatible.
-        Type 'number' is not assignable to type '\\"Expected: number, Actual: never\\"'.
+        Type 'number' is not assignable to type '\\"Expected: number\\"'.
 
     999 expectTypeOf<{a: 1}>().toEqualTypeOf<{a: number}>()
                                              ~~~~~~~~~~~
@@ -131,9 +131,9 @@ test('toEqualTypeOf with literals', async () => {
 
     999 expectTypeOf<{a: boolean}>().toEqualTypeOf<{a: true}>()
                                                    ~~~~~~~~~
-    test/test.ts:999:999 - error TS2344: Type '{ a: boolean; }' does not satisfy the constraint '{ a: \\"Expected: boolean, Actual: never\\"; }'.
+    test/test.ts:999:999 - error TS2344: Type '{ a: boolean; }' does not satisfy the constraint '{ a: \\"Expected: boolean\\"; }'.
       Types of property 'a' are incompatible.
-        Type 'boolean' is not assignable to type '\\"Expected: boolean, Actual: never\\"'.
+        Type 'boolean' is not assignable to type '\\"Expected: boolean\\"'.
 
     999 expectTypeOf<{a: true}>().toEqualTypeOf<{a: boolean}>()
                                                 ~~~~~~~~~~~~
@@ -197,6 +197,17 @@ test('toEqualTypeOf with tuples', () => {
 
     999 expectTypeOf<[[number], [1], []]>().toEqualTypeOf<[[number], [2], []]>()
                                                           ~~~~~~~~~~~~~~~~~~~"
+  `)
+})
+
+test('toEqualTypeOf with unions', () => {
+  const assertion = `expectTypeOf<number>().toEqualTypeOf<number | null>()`
+  expect(tsErrors(assertion)).toMatchInlineSnapshot(`
+    "test/test.ts:999:999 - error TS2344: Type 'number | null' does not satisfy the constraint '\\"Expected: number\\" | \\"Expected: null\\"'.
+      Type 'null' is not assignable to type '\\"Expected: number\\" | \\"Expected: null\\"'.
+
+    999 expectTypeOf<number>().toEqualTypeOf<number | null>()
+                                             ~~~~~~~~~~~~~"
   `)
 })
 

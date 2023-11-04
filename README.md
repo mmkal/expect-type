@@ -675,7 +675,7 @@ The key differences in this project are:
   - array item values
   - nullable types
 - assertions on types "matching" rather than exact type equality, for "is-a" relationships e.g. `expectTypeOf(square).toMatchTypeOf<Shape>()`
-- built into existing tooling. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
+- built into existing tooling. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`. `tsd`, for example, [behaves differently in a "normal" environment like your IDE](https://github.com/tsdjs/tsd/issues/200).
 - small implementation with no dependencies. [Take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of typescript).
 
 ## Contributing

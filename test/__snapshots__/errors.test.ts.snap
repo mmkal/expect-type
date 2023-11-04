@@ -6,26 +6,26 @@ exports[`usage.test.ts 1`] = `
 
 999   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
                                                ~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: \\"Expected: number, Actual: never\\"; }'.
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: \\"Expected: number\\"; }'.
   Types of property 'b' are incompatible.
-    Type 'number' is not assignable to type '\\"Expected: number, Actual: never\\"'.
+    Type 'number' is not assignable to type '\\"Expected: number\\"'.
 
 999   expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
                                          ~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: \\"Expected: number, Actual: never\\"; }'.
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: \\"Expected: number\\"; }'.
   Types of property 'b' are incompatible.
-    Type 'number' is not assignable to type '\\"Expected: number, Actual: never\\"'.
+    Type 'number' is not assignable to type '\\"Expected: number\\"'.
 
 999   expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
                                          ~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple, Actual: never\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\"; }'.
+test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\"; }'.
   Types of property 'name' are incompatible.
-    Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple, Actual: never\\"'.
+    Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple\\"'.
 
 999   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
                                           ~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
-  Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
+test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean\\"; }'.
+  Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean\\"; }'.
 
 999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
                                           ~~~~~
@@ -33,14 +33,14 @@ test/usage.test.ts:999:999 - error TS2554: Expected 0 arguments, but got 1.
 
 999   expectTypeOf({a: 1}).toMatchTypeOf({b: 1})
                                          ~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple, Actual: never\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\"; }'.
+test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: \\"Expected: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: literal boolean: true, Actual: literal boolean: false\\"; }'.
   Types of property 'name' are incompatible.
-    Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple, Actual: never\\"'.
+    Type '\\"Apple\\"' is not assignable to type '\\"Expected: literal string: Apple\\"'.
 
 999   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
                                           ~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
-  Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean, Actual: never\\"; }'.
+test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean\\"; }'.
+  Property 'name' is missing in type 'Fruit' but required in type '{ name: \\"Expected: never, Actual: literal string: Apple\\"; type: \\"Fruit\\"; edible: \\"Expected: boolean\\"; }'.
 
 999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
                                           ~~~~~
@@ -49,9 +49,9 @@ test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
 
 999   expectTypeOf<never>().toBeNumber()
                             ~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: \\"Expected: unknown, Actual: never\\"; }; }'.
+test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: \\"Expected: unknown\\"; }; }'.
   The types of 'deeply.nested' are incompatible between these types.
-    Type 'unknown' is not assignable to type '\\"Expected: unknown, Actual: never\\"'.
+    Type 'unknown' is not assignable to type '\\"Expected: unknown\\"'.
 
 999   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -117,7 +117,7 @@ test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
 
 999   expectTypeOf(obj).toHaveProperty('a').toBeString()
                                             ~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'HasParam' does not satisfy the constraint '\\"Expected: function, Actual: never\\"'.
+test/usage.test.ts:999:999 - error TS2344: Type 'HasParam' does not satisfy the constraint '\\"Expected: function\\"'.
 
 999   expectTypeOf<NoParam>().toEqualTypeOf<HasParam>()
                                             ~~~~~~~~
