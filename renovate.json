@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":semanticCommits"
+  ],
+  "prConcurrentLimit": 4,
+  "dependencyDashboard": true,
+  "dependencyDashboardAutoclose": true,
+  "packageRules": [
+    {
+      "groupName": "typescript",
+      "matchPackagePatterns": [
+        "typescript"
+      ]
+    },
+    {
+      "depTypeList": [
+        "devDependencies"
+      ],
+      "groupName": "devDependencies",
+      "excludePackagePatterns": [
+        "eslint",
+        "prettier",
+        "typescript"
+      ],
+      "automerge": true
+    },
+    {
+      "depTypeList": [
+        "devDependencies"
+      ],
+      "groupName": "lint",
+      "matchPackagePatterns": [
+        "eslint",
+        "prettier"
+      ],
+      "automerge": true
+    }
+  ]
+}
