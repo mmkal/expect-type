@@ -11,7 +11,9 @@
     {
       "groupName": "typescript",
       "matchPackagePatterns": [
-        "typescript"
+        "typescript",
+        "@types/node",
+        "ts-morph"
       ]
     },
     {
