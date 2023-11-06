@@ -36,7 +36,7 @@
     "cleanup": false
   },
   "devDependencies": {
-    "@types/jest": "29.0.0",
+    "@types/jest": "29.5.7",
     "@types/node": "^14.0.0",
     "eslint": "8.23.0",
     "eslint-plugin-mmkal": "0.0.1-2",
