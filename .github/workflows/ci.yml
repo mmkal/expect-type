@@ -1,16 +1,13 @@
 name: CI
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  push: {}
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: npm install --global pnpm@8.10.2
+      - run: corepack enable
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run lint
