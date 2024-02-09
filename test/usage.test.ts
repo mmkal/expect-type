@@ -148,9 +148,7 @@ test('Use `.extract` and `.exclude` to narrow down complex union types', () => {
     .exclude<{xs?: unknown}>()
     .toEqualTypeOf<CSSProperties>()
 
-  expectTypeOf(getResponsiveProp(cssProperties))
-    .extract<unknown[]>()
-    .toEqualTypeOf<CSSProperties[]>()
+  expectTypeOf(getResponsiveProp(cssProperties)).extract<unknown[]>().toEqualTypeOf<CSSProperties[]>()
 
   expectTypeOf(getResponsiveProp(cssProperties))
     .extract<{xs?: any}>()
@@ -376,14 +374,10 @@ test('Be careful with `.branded` for very deep or complex types, though. If poss
 
 test("So, if you have an extremely deep type which ALSO has an intersection in it, you're out of luck and this library won't be able to test your type properly", () => {
   // @ts-expect-error this fails, but it should succeed.
-  expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<
-    () => () => () => () => {a: 1; b: 2}
-  >()
+  expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<() => () => () => () => {a: 1; b: 2}>()
 
   // this succeeds, but it should fail.
-  expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().branded.toEqualTypeOf<
-    () => () => () => () => {a: 1; c: 2}
-  >()
+  expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().branded.toEqualTypeOf<() => () => () => () => {a: 1; c: 2}>()
 })
 
 test('Another limitation: passing `this` references to `expectTypeOf` results in errors.', () => {
@@ -400,4 +394,16 @@ test('Another limitation: passing `this` references to `expectTypeOf` results in
 
   // Instead of the above, try something like this:
   expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
+})
+
+test('Use `.pick` to pick a set of properties from an object', () => {
+  type Person = {name: string; age: number}
+
+  expectTypeOf<Person>().pick<'name'>().toEqualTypeOf<{name: string}>()
+})
+
+test('Use `.omit` to remove a set of properties from an object', () => {
+  type Person = {name: string; age: number}
+
+  expectTypeOf<Person>().omit<'name'>().toEqualTypeOf<{age: number}>()
 })
