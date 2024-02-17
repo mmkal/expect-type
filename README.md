@@ -263,6 +263,22 @@ expectTypeOf<Customer | Employee>().extract<{foo: string}>().toBeNever()
 expectTypeOf<Customer | Employee>().exclude<{name: string}>().toBeNever()
 ```
 
+Use `.pick` to pick a set of properties from an object:
+
+```typescript
+type Person = {name: string; age: number}
+
+expectTypeOf<Person>().pick<'name'>().toEqualTypeOf<{name: string}>()
+```
+
+Use `.omit` to remove a set of properties from an object:
+
+```typescript
+type Person = {name: string; age: number}
+
+expectTypeOf<Person>().omit<'name'>().toEqualTypeOf<{age: number}>()
+```
+
 Make assertions about object properties:
 
 ```typescript
