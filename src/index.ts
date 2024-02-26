@@ -326,6 +326,8 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
   extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, Options>
   exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, Options>
+  pick: <K extends keyof Actual>(v?: K) => ExpectTypeOf<Pick<Actual, K>, Options>
+  omit: <K extends keyof Actual>(v?: K) => ExpectTypeOf<Omit<Actual, K>, Options>
   parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], Options>
   parameters: ExpectTypeOf<Params<Actual>, Options>
   constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, Options>
@@ -415,6 +417,8 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     /* eslint-enable mmkal/@typescript-eslint/no-unsafe-assignment */
     extract: expectTypeOf,
     exclude: expectTypeOf,
+    pick: expectTypeOf,
+    omit: expectTypeOf,
     toHaveProperty: expectTypeOf,
     parameter: expectTypeOf,
   }

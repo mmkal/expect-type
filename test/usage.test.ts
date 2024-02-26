@@ -169,6 +169,18 @@ test('`.extract` and `.exclude` return never if no types remain after exclusion'
   expectTypeOf<Customer | Employee>().exclude<{name: string}>().toBeNever()
 })
 
+test('Use `.pick` to pick a set of properties from an object', () => {
+  type Person = {name: string; age: number}
+
+  expectTypeOf<Person>().pick<'name'>().toEqualTypeOf<{name: string}>()
+})
+
+test('Use `.omit` to remove a set of properties from an object', () => {
+  type Person = {name: string; age: number}
+
+  expectTypeOf<Person>().omit<'name'>().toEqualTypeOf<{age: number}>()
+})
+
 test('Make assertions about object properties', () => {
   const obj = {a: 1, b: ''}
 
