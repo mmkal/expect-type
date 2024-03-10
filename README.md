@@ -39,6 +39,7 @@ See below for lots more examples.
       - [Concrete "expected" objects vs typeargs](#concrete-expected-objects-vs-typeargs)
    - [Within test frameworks](#within-test-frameworks)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
+   - [Limitations](#limitations)
 - [Similar projects](#similar-projects)
    - [Comparison](#comparison)
 - [Contributing](#contributing)
@@ -644,7 +645,8 @@ expectTypeOf(one).toEqualTypeof<typeof two>()
 ### Within test frameworks
 
 #### Jest & `eslint-plugin-jest`
-If you're using Jest along with `eslint-plugin-jest`, you may get warnings from the [`jest/expect-expect`](https://github.com/jest-community/eslint-plugin-jest/blob/master/docs/rules/expect-expect.md) rule, complaining that "Test has no assertions" for tests that only use `expectTypeOf()`.
+
+If you're using Jest along with `eslint-plugin-jest`, and you put assertions inside `test(...)` definitions, you may get warnings from the [`jest/expect-expect`](https://github.com/jest-community/eslint-plugin-jest/blob/master/docs/rules/expect-expect.md) rule, complaining that "Test has no assertions" for tests that only use `expectTypeOf()`.
 
 To remove this warning, configure the ESlint rule to consider `expectTypeOf` as an assertion:
 
@@ -662,6 +664,15 @@ To remove this warning, configure the ESlint rule to consider `expectTypeOf` as 
   // ...
 }
 ```
+
+### Limitations
+
+A summary of some of the limitations of this library. Some of these is documented more fully elsewhere.
+
+1. Intersection types can result in failures when the expected and actual types are not identically defined, even when they are effectively identical. See [Why is my assertion failing](#why-is-my-assertion-failing) for details. TL;DR: use `.brand` in these cases - and accept the perf hit that it comes with.
+1. `toBeCallableWith` will likely fail if you try to use it with a generic function or an overload. See [this issue](https://github.com/mmkal/expect-type/issues/50) for an example and how to work around.
+1. (For now) overloaded functions might trip up the `.parameter` and `.parameters` helpers. This matches how the built-in typescript helper `Parameters<...>` works. This may be improved in the future though ([see related issue](https://github.com/mmkal/expect-type/issues/30)).
+1. `expectTypeOf(this).toEqualTypeOf(this)` inside class methods does not work.
 
 ## Similar projects
 

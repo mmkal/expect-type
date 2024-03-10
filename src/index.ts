@@ -234,6 +234,12 @@ type Scolder<
 
 export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
   toEqualTypeOf: {
+    /**
+     * Uses typescript's internal technique to check for type "identicalness".
+     * 
+     * **_Unexpected failure_**? For a more permissive but less performant check that accomodates
+     * for equivalent intersection types, use `.branded`. See [the documentation for details](https://github.com/mmkal/expect-type#why-is-my-assertion-failing).
+     */
     <
       Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
         ? unknown
@@ -242,6 +248,12 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
       value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
     ): true
+    /**
+     * Uses typescript's internal technique to check for type "identicalness".
+     * 
+     * **Unexpected failure**? For a more permissive but less performant check that accomodates
+     * for equivalent intersection types, use `.branded`. See [the documentation for details](https://github.com/mmkal/expect-type#why-is-my-assertion-failing).
+     */
     <
       Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
         ? unknown
