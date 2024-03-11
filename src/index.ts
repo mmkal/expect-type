@@ -236,9 +236,11 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
   toEqualTypeOf: {
     /**
      * Uses typescript's internal technique to check for type "identicalness".
-     * 
-     * **_Unexpected failure_**? For a more permissive but less performant check that accomodates
-     * for equivalent intersection types, use `.branded`. See [the documentation for details](https://github.com/mmkal/expect-type#why-is-my-assertion-failing).
+     *
+     * **_Unexpected failure_**? For a more permissive but less performant
+     * check that accommodates for equivalent intersection types,
+     * use {@linkcode branded `.branded`}.
+     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing The documentation for details}.
      */
     <
       Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
@@ -248,11 +250,14 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
       value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
     ): true
+
     /**
      * Uses typescript's internal technique to check for type "identicalness".
-     * 
-     * **Unexpected failure**? For a more permissive but less performant check that accomodates
-     * for equivalent intersection types, use `.branded`. See [the documentation for details](https://github.com/mmkal/expect-type#why-is-my-assertion-failing).
+     *
+     * **_Unexpected failure_**? For a more permissive but less performant
+     * check that accommodates for equivalent intersection types,
+     * use {@linkcode branded `.branded`}.
+     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing The documentation for details}.
      */
     <
       Expected extends StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected> extends true
@@ -264,22 +269,93 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
   }
 
   toMatchTypeOf: {
+    /**
+     * A less strict version of {@linkcode toEqualTypeOf `.toEqualTypeOf`}
+     * that allows for extra properties.
+     * This is roughly equivalent to an `extends` constraint
+     * in a function type argument.
+     *
+     * @example
+     * <caption>Using generic type argument syntax</caption>
+     * ```ts
+     * expectTypeOf({ a: 1, b: 1 }).toMatchTypeOf<{ a: number }>()
+     * ```
+     *
+     * @example
+     * <caption>Passing a value</caption>
+     * ```ts
+     * expectTypeOf({ a: 1, b: 1 }).toMatchTypeOf({ a: 2 })
+     * ```
+     */
     <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
       value: Expected & AValue, // reason for `& AValue`: make sure this is only the selected overload when the end-user passes a value for an inferred typearg. The `Mismatch` type does match `AValue`.
       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
     ): true
+    /**
+     * A less strict version of {@linkcode toEqualTypeOf}
+     * that allows for extra properties.
+     * This is roughly equivalent to an `extends` constraint
+     * in a function type argument.
+     *
+     * @example
+     * <caption>Using generic type argument syntax</caption>
+     * ```ts
+     * expectTypeOf({ a: 1, b: 1 }).toMatchTypeOf<{ a: number }>()
+     * ```
+     *
+     * @example
+     * <caption>Passing a value</caption>
+     * ```ts
+     * expectTypeOf({ a: 1, b: 1 }).toMatchTypeOf({ a: 2 })
+     * ```
+     *
+     */
     <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
       ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
     ): true
   }
+  /**
+   * Checks whether an object has a given property.
+   *
+   * @example
+   * <caption>check that properties exist</caption>
+   * ```ts
+   * const obj = {a: 1, b: ''}
+   *
+   * expectTypeOf(obj).toHaveProperty('a')
+   *
+   * expectTypeOf(obj).not.toHaveProperty('c')
+   * ```
+   */
+  toHaveProperty: <KeyType extends keyof Actual>(
+    key: KeyType,
+    ...MISMATCH: MismatchArgs<Extends<KeyType, keyof Actual>, true>
+  ) => KeyType extends keyof Actual ? PositiveExpectTypeOf<Actual[KeyType]> : true
 
-  toHaveProperty: <K extends keyof Actual>(
-    key: K,
-    ...MISMATCH: MismatchArgs<Extends<K, keyof Actual>, true>
-  ) => K extends keyof Actual ? PositiveExpectTypeOf<Actual[K]> : true
-
+  /**
+   * Inverts the result of the following assertions.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1 }).not.toMatchTypeOf({ b: 1 })
+   * ```
+   */
   not: NegativeExpectTypeOf<Actual>
 
+  /**
+   * Intersection types can cause issues with {@linkcode toEqualTypeOf}:
+   * ```ts
+   * // ❌ The following line doesn't compile, even though the types are arguably the same.
+   * expectTypeOf<{ a: 1 } & { b: 2 }>().toEqualTypeOf<{ a: 1; b: 2 }>()
+   * ```
+   * This helper works around this problem by using
+   * a more permissive but less performant check.
+   *
+   * __Note__: This comes at a performance cost, and can cause the compiler
+   * to 'give up' if used with excessively deep types, so use sparingly.
+   *
+   * @see {@link https://github.com/mmkal/expect-type/pull/21 Reference}
+   */
   branded: {
     toEqualTypeOf: <
       Expected extends StrictEqualUsingBranding<Actual, Expected> extends true
@@ -334,21 +410,287 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   toBeUndefined: Scolder<ExpectUndefined<Actual>, Options>
   toBeNullable: Scolder<ExpectNullable<Actual>, Options>
 
+  /**
+   * Checks whether a function is callable with the given parameters.
+   *
+   * @example
+   * ```ts
+   * const f = (a: number) => [a, a]
+   *
+   * expectTypeOf(f).toBeCallableWith(1)
+   * ```
+   *
+   * __Note__: You cannot negate this assertion with
+   * {@linkcode PositiveExpectTypeOf.not `.not`}, you need to use
+   * `ts-expect-error` instead.
+   *
+   * __Known Limitation__: This assertion will likely fail if you try to use it
+   * with a generic function or an overload.
+   * @see {@link https://github.com/mmkal/expect-type/issues/50 This issue} for an example and a workaround.
+   */
   toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
+
+  /**
+   * Checks whether a class is constructible with the given parameters.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf(Date).toBeConstructibleWith('1970')
+   * expectTypeOf(Date).toBeConstructibleWith(0)
+   * expectTypeOf(Date).toBeConstructibleWith(new Date())
+   * expectTypeOf(Date).toBeConstructibleWith()
+   *
+   * expectTypeOf(Date).constructorParameters.toEqualTypeOf<[] | [string | number | Date]>()
+   * ```
+   */
   toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
+
+  /**
+   * Equivalent to the {@linkcode Extract} utility type.
+   * Helps narrow down complex union types.
+   *
+   * @example
+   * ```ts
+   * type ResponsiveProp<T> = T | T[] | { xs?: T; sm?: T; md?: T }
+   *
+   * interface CSSProperties {
+   *   margin?: string
+   *   padding?: string
+   * }
+   *
+   * function getResponsiveProp<T>(_props: T): ResponsiveProp<T> {
+   *   return {}
+   * }
+   *
+   * const cssProperties: CSSProperties = { margin: '1px', padding: '2px' }
+   *
+   * expectTypeOf(getResponsiveProp(cssProperties))
+   *   .extract<{ xs?: any }>() // extracts the last type from a union
+   *   .toEqualTypeOf<{ xs?: CSSProperties; sm?: CSSProperties; md?: CSSProperties }>()
+   *
+   * expectTypeOf(getResponsiveProp(cssProperties))
+   *   .extract<unknown[]>() // extracts an array from a union
+   *   .toEqualTypeOf<CSSProperties[]>()
+   * ```
+   *
+   * __NOte__: If no type is found in the union, it will return `never`.
+   */
   extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, Options>
+
+  /**
+   * Equivalent to the {@linkcode Exclude} utility type.
+   * Removes types from a union.
+   *
+   * @example
+   * ```ts
+   * type ResponsiveProp<T> = T | T[] | { xs?: T; sm?: T; md?: T }
+   *
+   * interface CSSProperties {
+   *   margin?: string
+   *   padding?: string
+   * }
+   *
+   * function getResponsiveProp<T>(_props: T): ResponsiveProp<T> {
+   *   return {}
+   * }
+   *
+   * const cssProperties: CSSProperties = { margin: '1px', padding: '2px' }
+   *
+   * expectTypeOf(getResponsiveProp(cssProperties))
+   *   .exclude<unknown[]>()
+   *   .exclude<{ xs?: unknown }>() // or just `.exclude<unknown[] | { xs?: unknown }>()`
+   *   .toEqualTypeOf<CSSProperties>()
+   * ```
+   */
   exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, Options>
+
+  /**
+   * Equivalent to the {@linkcode Pick} utility type.
+   * Helps select a subset of properties from an object type.
+   *
+   * @example
+   * ```ts
+   * interface Person {
+   *   name: string
+   *   age: number
+   * }
+   *
+   * expectTypeOf<Person>()
+   *   .pick<'name'>()
+   *   .toEqualTypeOf<{ name: string }>()
+   * ```
+   */
   pick: <K extends keyof Actual>(v?: K) => ExpectTypeOf<Pick<Actual, K>, Options>
+
+  /**
+   * Equivalent to the {@linkcode Omit} utility type.
+   * Helps remove a subset of properties from an object type.
+   *
+   * @example
+   * ```ts
+   * interface Person {
+   *   name: string
+   *   age: number
+   * }
+   *
+   * expectTypeOf<Person>().omit<'name'>().toEqualTypeOf<{ age: number }>()
+   * ```
+   */
   omit: <K extends keyof Actual>(v?: K) => ExpectTypeOf<Omit<Actual, K>, Options>
+
+  /**
+   * Extracts a certain function argument with `.parameter(number)` call to
+   * perform other assertions on it.
+   *
+   * @example
+   * ```ts
+   * function foo(a: number, b: string) {
+   *   return [a, b]
+   * }
+   *
+   * expectTypeOf(foo).parameter(0).toBeNumber()
+   * expectTypeOf(foo).parameter(1).toBeString()
+   * ```
+   */
   parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], Options>
+
+  /**
+   *
+   * Equivalent to the {@linkcode Parameters} utility type.
+   * Extracts function parameters to perform assertions on its value.
+   * Parameters are returned as an array.
+   *
+   * @example
+   * ```ts
+   * function noParam() {}
+   * function hasParam(s: string) {}
+   *
+   * expectTypeOf(noParam).parameters.toEqualTypeOf<[]>()
+   * expectTypeOf(hasParam).parameters.toEqualTypeOf<[string]>()
+   * ```
+   */
   parameters: ExpectTypeOf<Params<Actual>, Options>
+
+  /**
+   * Equivalent to the {@linkcode ConstructorParameters} utility type.
+   * Extracts constructor parameters as an array of values and
+   * perform assertions on them with this method.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf(Date).constructorParameters.toEqualTypeOf<
+   *   [] | [string | number | Date]
+   * >()
+   * ```
+   */
   constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, Options>
+
+  /**
+   * Equivalent to the {@linkcode ThisParameterType} utility type.
+   * Extracts the `this` parameter of a function to
+   * perform assertions on its value.
+   *
+   * @example
+   * ```ts
+   * function greet(this: { name: string }, message: string) {
+   *   return `Hello ${this.name}, here's your message: ${message}`
+   * }
+   *
+   * expectTypeOf(greet).thisParameter.toEqualTypeOf<{ name: string }>()
+   * ```
+   */
   thisParameter: ExpectTypeOf<ThisParameterType<Actual>, Options>
+
+  /**
+   * Extracts the instance type of a class to perform assertions on.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf(Date).instance.toHaveProperty('toISOString')
+   * ```
+   */
   instance: Actual extends new (...args: any[]) => infer I ? ExpectTypeOf<I, Options> : never
+
+  /**
+   * Equivalent to the {@linkcode ReturnType} utility type.
+   * Extracts the return type of a function.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf(() => {}).returns.toBeVoid()
+   * expectTypeOf((a: number) => [a, a]).returns.toEqualTypeOf([1, 2])
+   * ```
+   */
   returns: Actual extends (...args: any[]) => infer R ? ExpectTypeOf<R, Options> : never
+
+  /**
+   * Extracts resolved value of a Promise,
+   * so you can perform other assertions on it.
+   *
+   * @example
+   * ```ts
+   * async function asyncFunc() {
+   *   return 123
+   * }
+   *
+   * expectTypeOf(asyncFunc).returns.resolves.toBeNumber()
+   * expectTypeOf(Promise.resolve('string')).resolves.toBeString()
+   * ```
+   *
+   * Type Equivalent:
+   * ```ts
+   * type Resolves<PromiseType> = PromiseType extends PromiseLike<infer ResolvedType>
+   *   ? ResolvedType
+   *   : never
+   * ```
+   */
   resolves: Actual extends PromiseLike<infer R> ? ExpectTypeOf<R, Options> : never
+
+  /**
+   * Extracts array item type to perform assertions on.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf([1, 2, 3]).items.toEqualTypeOf<number>()
+   * expectTypeOf([1, 2, 3]).items.not.toEqualTypeOf<string>()
+   * ```
+   *
+   * __Type Equivalent__:
+   * ```ts
+   * type Items<ArrayType> = ArrayType extends ArrayLike<infer ItemType>
+   *   ? ItemType
+   *   : never
+   * ```
+   */
   items: Actual extends ArrayLike<infer R> ? ExpectTypeOf<R, Options> : never
+
+  /**
+   * Extracts the type guarded by a function to perform assertions on.
+   *
+   * @example
+   * ```ts
+   * function isString(v: any): v is string {
+   *   return typeof v === 'string'
+   * }
+   *
+   * expectTypeOf(isString).guards.toBeString()
+   * ```
+   */
   guards: Actual extends (v: any, ...args: any[]) => v is infer T ? ExpectTypeOf<T, Options> : never
+
+  /**
+   * Extracts the type asserted by a function to perform assertions on.
+   *
+   * @example
+   * ```ts
+   * function assertNumber(v: any): asserts v is number {
+   *   if (typeof v !== 'number')
+   *     throw new TypeError('Nope !')
+   * }
+   *
+   * expectTypeOf(assertNumber).asserts.toBeNumber()
+   * ```
+   */
   asserts: Actual extends (v: any, ...args: any[]) => asserts v is infer T
     ? // Guard methods `(v: any) => asserts v is T` does not actually defines a return type. Thus, any function taking 1 argument matches the signature before.
       // In case the inferred assertion type `R` could not be determined (so, `unknown`), consider the function as a non-guard, and return a `never` type.
