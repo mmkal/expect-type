@@ -236,7 +236,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
   toEqualTypeOf: {
     /**
      * Uses typescript's internal technique to check for type "identicalness".
-     * 
+     *
      * **_Unexpected failure_**? For a more permissive but less performant check that accomodates
      * for equivalent intersection types, use `.branded`. See [the documentation for details](https://github.com/mmkal/expect-type#why-is-my-assertion-failing).
      */
@@ -250,7 +250,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
     /**
      * Uses typescript's internal technique to check for type "identicalness".
-     * 
+     *
      * **Unexpected failure**? For a more permissive but less performant check that accomodates
      * for equivalent intersection types, use `.branded`. See [the documentation for details](https://github.com/mmkal/expect-type#why-is-my-assertion-failing).
      */
@@ -339,7 +339,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, Options>
   exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, Options>
   pick: <K extends keyof Actual>(v?: K) => ExpectTypeOf<Pick<Actual, K>, Options>
-  omit: <K extends keyof Actual>(v?: K) => ExpectTypeOf<Omit<Actual, K>, Options>
+  omit: <K extends keyof Actual | (PropertyKey & Record<never, never>)>(v?: K) => ExpectTypeOf<Omit<Actual, K>, Options>
   parameter: <K extends keyof Params<Actual>>(number: K) => ExpectTypeOf<Params<Actual>[K], Options>
   parameters: ExpectTypeOf<Params<Actual>, Options>
   constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, Options>
