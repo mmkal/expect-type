@@ -714,3 +714,20 @@ test('PrintType', () => {
   expectTypeOf<a.PrintType<() => {}>>().toEqualTypeOf<'function'>()
   expectTypeOf<a.PrintType<any>>().toBeNever()
 })
+
+test('Issue #53: `.omit()` should work similarly to `Omit`', () => {
+  // https://github.com/mmkal/expect-type/issues/53
+
+  type Loading = {
+    state: 'loading'
+  }
+
+  type Failed = {
+    state: 'failed'
+    code: number
+  }
+
+  expectTypeOf<Omit<Loading | Failed, 'code'>>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
+
+  expectTypeOf<Loading | Failed>().omit<'code'>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
+})

@@ -1200,7 +1200,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param v - The property key to omit.
    * @returns The type after omitting the property.
    */
-  omit: <KeyType extends keyof Actual>(v?: KeyType) => ExpectTypeOf<Omit<Actual, KeyType>, Options>
+  omit: <KeyType extends keyof Actual | (PropertyKey & Record<never, never>)>(v?: KeyType) => ExpectTypeOf<Omit<Actual, KeyType>, Options>
 
   /**
    * Extracts a certain function argument with `.parameter(number)` call to
