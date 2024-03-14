@@ -318,6 +318,38 @@ export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options[
   ? PositiveExpectTypeOf<Actual>
   : NegativeExpectTypeOf<Actual>
 
+export type Overloads<T> = T extends {
+  (...args: infer A1): infer R1
+  (...args: infer A2): infer R2
+  (...args: infer A3): infer R3
+  (...args: infer A4): infer R4
+}
+  ? [(...args: A1) => R1, (...args: A2) => R2, (...args: A3) => R3, (...args: A4) => R4]
+  : T extends {
+      (...args: infer A1): infer R1
+      (...args: infer A2): infer R2
+      (...args: infer A3): infer R3
+    }
+  ? [(...args: A1) => R1, (...args: A2) => R2, (...args: A3) => R3]
+  : T extends {
+      (...args: infer A1): infer R1
+      (...args: infer A2): infer R2
+    }
+  ? [(...args: A1) => R1, (...args: A2) => R2]
+  : T extends {
+      (...args: infer A1): infer R1
+    }
+  ? [(...args: A1) => R1]
+  : any
+
+export type OverloadedParameters<T> = Overloads<T> extends infer O
+  ? {[K in keyof O]: Parameters<Extract<O[K], (...args: any) => any>>}
+  : Params<T>
+
+export type OverloadedReturnType<T> = Overloads<T> extends infer O
+  ? {[K in keyof O]: ReturnType<Extract<O[K], (...args: any) => any>>}
+  : never
+
 export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   toBeAny: Scolder<ExpectAny<Actual>, Options>
   toBeUnknown: Scolder<ExpectUnknown<Actual>, Options>
@@ -334,7 +366,13 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   toBeUndefined: Scolder<ExpectUndefined<Actual>, Options>
   toBeNullable: Scolder<ExpectNullable<Actual>, Options>
 
-  toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
+  toBeCallableWith: Options['positive'] extends true
+    ? (
+        ...args: OverloadedParameters<Actual> extends readonly any[]
+          ? OverloadedParameters<Actual>[number]
+          : Params<Actual>
+      ) => true
+    : never
   toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
   extract: <V>(v?: V) => ExpectTypeOf<Extract<Actual, V>, Options>
   exclude: <V>(v?: V) => ExpectTypeOf<Exclude<Actual, V>, Options>
