@@ -731,3 +731,26 @@ test('Issue #53: `.omit()` should work similarly to `Omit`', () => {
 
   expectTypeOf<Loading | Failed>().omit<'code'>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
 })
+
+test('`toBeCallableWith()` can handle overloads', () => {
+  type Action<T extends string = string> = {
+    type: T
+  }
+
+  interface UnknownAction extends Action {
+    // Allows any extra properties to be defined in an action.
+    [extraProps: string]: unknown
+  }
+
+  type PromiseDispatch = <T extends Action>(promise: Promise<T>) => Promise<T>
+
+  interface Dispatch<A extends Action = UnknownAction> {
+    <T extends A>(action: T, ...extraArgs: any[]): T
+  }
+
+  const dispatch = ((e: Action) => e) as unknown as Dispatch & PromiseDispatch
+
+  dispatch({type: 'INCREMENT'})
+
+  expectTypeOf(dispatch).toBeCallableWith({type: 'INCREMENT'})
+})
