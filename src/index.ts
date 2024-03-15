@@ -1,22 +1,16 @@
 /**
  * Negates a boolean type.
- *
- * @template T - The boolean type to negate.
  */
 export type Not<T extends boolean> = T extends true ? false : true
 
 /**
  * Returns `true` if at least one of the types in the
  * {@linkcode Types} array is `true`, otherwise returns `false`.
- *
- * @template Types - An array of boolean types.
  */
 export type Or<Types extends boolean[]> = Types[number] extends false ? false : true
 
 /**
  * Checks if all the boolean types in the {@linkcode Types} array are `true`.
- *
- * @template Types - An array of boolean types.
  */
 export type And<Types extends boolean[]> = Types[number] extends true ? true : false
 
@@ -24,9 +18,6 @@ export type And<Types extends boolean[]> = Types[number] extends true ? true : f
  * Represents an equality type that returns {@linkcode Right} if
  * {@linkcode Left} is `true`,
  * otherwise returns the negation of {@linkcode Right}.
- *
- * @template Left - The left boolean value.
- * @template Right - The right boolean value.
  */
 export type Eq<Left extends boolean, Right extends boolean> = Left extends true ? Right : Not<Right>
 
@@ -34,8 +25,6 @@ export type Eq<Left extends boolean, Right extends boolean> = Left extends true 
  * Represents the exclusive OR operation on a tuple of boolean types.
  * Returns `true` if exactly one of the boolean types is `true`,
  * otherwise returns `false`.
- *
- * @template Types - A tuple of two boolean types.
  */
 export type Xor<Types extends [boolean, boolean]> = Not<Eq<Types[0], Types[1]>>
 
@@ -49,34 +38,25 @@ const secret = Symbol('secret')
 type Secret = typeof secret
 
 /**
- * Checks if the given type {@linkcode T} is `never`.
+ * Checks if the given type is `never`.
  *
- * @template T - The type to check.
  */
 export type IsNever<T> = [T] extends [never] ? true : false
 /**
- * Checks if the given type {@linkcode T} is `any`.
- *
- * @template T - The type to check.
+ * Checks if the given type is `any`.
  */
 export type IsAny<T> = [T] extends [Secret] ? Not<IsNever<T>> : false
 /**
- * Determines if the given type {@linkcode T} is `unknown`.
- *
- * @template T - The type to check.
+ * Determines if the given type is `unknown`.
  */
 export type IsUnknown<T> = [unknown] extends [T] ? Not<IsAny<T>> : false
 /**
  * Determines if a type is either `never` or `any`.
- *
- * @template T - The type to check.
  */
 export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
 
 /**
- * Determines the printable type representation for a given type {@linkcode T}.
- *
- * @template T - The type to determine the printable representation for.
+ * Determines the printable type representation for a given type.
  */
 export type PrintType<T> = IsUnknown<T> extends true
   ? 'unknown'
@@ -154,8 +134,6 @@ export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '..
  * __Note__: not very performant for complex types - this should only be used
  * when you know you need it. If doing an equality check, it's almost always
  * better to use {@linkcode StrictEqualUsingTSInternalIdenticalToOperator}.
- *
- * @template T - The underlying type to be branded.
  */
 export type DeepBrand<T> = IsNever<T> extends true
   ? {type: 'never'}
@@ -197,9 +175,7 @@ export type DeepBrand<T> = IsNever<T> extends true
     }
 
 /**
- * Extracts the keys from a type {@linkcode T} that are required (not optional).
- *
- * @template T - The type from which to extract the required keys.
+ * Extracts the keys from a type that are required (not optional).
  */
 export type RequiredKeys<T> = Extract<
   {
@@ -209,17 +185,13 @@ export type RequiredKeys<T> = Extract<
 >
 /**
  * Gets the keys of an object type that are optional.
- *
- * @template T - The object type.
  */
 export type OptionalKeys<T> = Exclude<keyof T, RequiredKeys<T>>
 
 // adapted from some answers to https://github.com/type-challenges/type-challenges/issues?q=label%3A5+label%3Aanswer
 // prettier-ignore
 /**
- * Extracts the keys from a type {@linkcode T} that are not readonly.
- *
- * @template T - The type from which to extract the keys.
+ * Extracts the keys from a type that are not readonly.
  */
 export type ReadonlyKeys<T> = Extract<{
   [K in keyof T]-?: ReadonlyEquivalent<
@@ -230,11 +202,7 @@ export type ReadonlyKeys<T> = Extract<{
 
 // prettier-ignore
 /**
- * Determines if two types, {@linkcode X} and {@linkcode Y},
- * are equivalent in a `readonly` manner.
- *
- * @template X - The first type to be compared for readonly equivalence.
- * @template Y - The second type to be compared for readonly equivalence.
+ * Determines if two types, are equivalent in a `readonly` manner.
  */
 type ReadonlyEquivalent<X, Y> = Extends<
   (<T>() => T extends X ? true : false),
@@ -243,12 +211,6 @@ type ReadonlyEquivalent<X, Y> = Extends<
 
 /**
  * Checks if one type extends another.
- *
- * Returns `true` if `L extends R`. Explicitly checks for `never` since that
- * can give unexpected results.
- *
- * @template L - The left type.
- * @template R - The right type.
  */
 export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : [L] extends [R] ? true : false
 export type ExtendsUsingBranding<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
@@ -257,9 +219,6 @@ export type ExtendsExcludingAnyOrNever<L, R> = IsAny<L> extends true ? IsAny<R> 
 /**
  * Checks if two types are strictly equal using
  * the TypeScript internal identical-to operator.
- *
- * @template L - The left type.
- * @template R - The right type.
  *
  * @see {@link https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122 much history}
  */
@@ -273,9 +232,6 @@ type StrictEqualUsingTSInternalIdenticalToOperator<L, R> = (<T>() => T extends (
 
 /**
  * Checks if two types are strictly equal using branding.
- *
- * @template Left - The left type.
- * @template Right - The right type.
  */
 export type StrictEqualUsingBranding<Left, Right> = And<
   [ExtendsUsingBranding<Left, Right>, ExtendsUsingBranding<Right, Left>]
@@ -288,9 +244,6 @@ export type StrictEqualUsingBranding<Left, Right> = And<
  * {@linkcode StrictEqualUsingTSInternalIdenticalToOperator}.
  * If they are not strictly equal, it falls back to using the
  * {@linkcode StrictEqualUsingBranding} type.
- *
- * @template Left - The left type to compare.
- * @template Right - The right type to compare.
  */
 export type HopefullyPerformantEqual<Left, Right> = StrictEqualUsingTSInternalIdenticalToOperator<
   Left,
@@ -301,15 +254,11 @@ export type HopefullyPerformantEqual<Left, Right> = StrictEqualUsingTSInternalId
 
 /**
  * Extracts the parameter types from a function type.
- *
- * @template Actual - The function type from which to extract the parameter types.
  */
 export type Params<Actual> = Actual extends (...args: infer ParameterTypes) => any ? ParameterTypes : never
 /**
  * Represents the constructor parameters of a class or constructor function.
  * If the constructor takes no arguments, an empty array is returned.
- *
- * @template Actual - The class or constructor function.
  */
 export type ConstructorParams<Actual> = Actual extends new (...args: infer P) => any
   ? Actual extends new () => any
@@ -347,9 +296,6 @@ type AValue = {[avalue]?: undefined} | string | number | boolean | symbol | bigi
  * If they are not equivalent, it resolves to a tuple containing the element
  * {@linkcode Mismatch}, signifying a discrepancy between
  * the expected and actual results.
- *
- * @template ActualResult - The actual `boolean` result to be compared.
- * @template ExpectedResult - The expected `boolean` result to compare against.
  */
 type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
   ActualResult,
@@ -372,8 +318,6 @@ export interface ExpectTypeOfOptions {
 const inverted = Symbol('inverted')
 /**
  * Represents a type that maps values to their inverted form.
- *
- * @template T - The type of the value to be inverted.
  */
 type Inverted<T> = {[inverted]: T}
 
@@ -383,8 +327,6 @@ type Inverted<T> = {[inverted]: T}
 const expectNull = Symbol('expectNull')
 /**
  * Represents a type that expects a value to be `null`.
- *
- * @template T - The type to check for null.
  */
 type ExpectNull<T> = {[expectNull]: T; result: ExtendsExcludingAnyOrNever<T, null>}
 
@@ -394,8 +336,6 @@ type ExpectNull<T> = {[expectNull]: T; result: ExtendsExcludingAnyOrNever<T, nul
 const expectUndefined = Symbol('expectUndefined')
 /**
  * Represents a type that expects a value to be `undefined`.
- *
- * @template T - The type to check against `undefined`.
  */
 type ExpectUndefined<T> = {[expectUndefined]: T; result: ExtendsExcludingAnyOrNever<T, undefined>}
 
@@ -405,8 +345,6 @@ type ExpectUndefined<T> = {[expectUndefined]: T; result: ExtendsExcludingAnyOrNe
 const expectNumber = Symbol('expectNumber')
 /**
  * Represents a type that expects a `number`.
- *
- * @template T - The type to be checked.
  */
 type ExpectNumber<T> = {[expectNumber]: T; result: ExtendsExcludingAnyOrNever<T, number>}
 
@@ -416,8 +354,6 @@ type ExpectNumber<T> = {[expectNumber]: T; result: ExtendsExcludingAnyOrNever<T,
 const expectString = Symbol('expectString')
 /**
  * Represents a type that expects a `string` value.
- *
- * @template T - The type to be checked.
  */
 type ExpectString<T> = {[expectString]: T; result: ExtendsExcludingAnyOrNever<T, string>}
 
@@ -427,8 +363,6 @@ type ExpectString<T> = {[expectString]: T; result: ExtendsExcludingAnyOrNever<T,
 const expectBoolean = Symbol('expectBoolean')
 /**
  * Represents an expectation for a `boolean` type.
- *
- * @template T - The type to be expected.
  */
 type ExpectBoolean<T> = {[expectBoolean]: T; result: ExtendsExcludingAnyOrNever<T, boolean>}
 
@@ -438,8 +372,6 @@ type ExpectBoolean<T> = {[expectBoolean]: T; result: ExtendsExcludingAnyOrNever<
 const expectVoid = Symbol('expectVoid')
 /**
  * Represents a type that expects a `void` value.
- *
- * @template T - The type to be checked.
  */
 type ExpectVoid<T> = {[expectVoid]: T; result: ExtendsExcludingAnyOrNever<T, void>}
 
@@ -449,8 +381,6 @@ type ExpectVoid<T> = {[expectVoid]: T; result: ExtendsExcludingAnyOrNever<T, voi
 const expectFunction = Symbol('expectFunction')
 /**
  * Represents an expectation function.
- *
- * @template T - The type of the expectation function.
  */
 type ExpectFunction<T> = {[expectFunction]: T; result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>}
 
@@ -462,8 +392,6 @@ const expectObject = Symbol('expectObject')
  * Represents an expectation object that includes a value of type {@linkcode T}
  * and a result indicating if {@linkcode T} extends any object type excluding
  * `any` or `never`.
- *
- * @template T - The type of the value to be expected.
  */
 type ExpectObject<T> = {[expectObject]: T; result: ExtendsExcludingAnyOrNever<T, object>}
 
@@ -473,8 +401,6 @@ type ExpectObject<T> = {[expectObject]: T; result: ExtendsExcludingAnyOrNever<T,
 const expectArray = Symbol('expectArray')
 /**
  * Represents an expectation of an array type.
- *
- * @template T - The type to be expected as an array.
  */
 type ExpectArray<T> = {[expectArray]: T; result: ExtendsExcludingAnyOrNever<T, any[]>}
 
@@ -484,8 +410,6 @@ type ExpectArray<T> = {[expectArray]: T; result: ExtendsExcludingAnyOrNever<T, a
 const expectSymbol = Symbol('expectSymbol')
 /**
  * Represents a type that expects a `symbol`.
- *
- * @template T - The type to expect.
  */
 type ExpectSymbol<T> = {[expectSymbol]: T; result: ExtendsExcludingAnyOrNever<T, symbol>}
 
@@ -495,8 +419,6 @@ type ExpectSymbol<T> = {[expectSymbol]: T; result: ExtendsExcludingAnyOrNever<T,
 const expectAny = Symbol('expectAny')
 /**
  * Represents a type that expects `any` value.
- *
- * @template T - The type to expect.
  */
 type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}
 
@@ -506,8 +428,6 @@ type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}
 const expectUnknown = Symbol('expectUnknown')
 /**
  * Represents a type that expects an `unknown` value.
- *
- * @template T - The type to expect unknown value for.
  */
 type ExpectUnknown<T> = {[expectUnknown]: T; result: IsUnknown<T>}
 
@@ -517,8 +437,6 @@ type ExpectUnknown<T> = {[expectUnknown]: T; result: IsUnknown<T>}
 const expectNever = Symbol('expectNever')
 /**
  * Represents a type that checks if the provided type {@linkcode T} is `never`.
- *
- * @template T - The type to check.
  */
 type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
 
@@ -528,17 +446,12 @@ type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
 const expectNullable = Symbol('expectNullable')
 /**
  * Represents a type that expects a nullable value.
- *
- * @template T - The type of the value.
  */
 type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
 
 /**
  * Represents a scolder function that checks if the result of an expecter
  * matches the specified options.
- *
- * @template Expecter - The type of the expecter object.
- * @template Options - The type of the options object.
  */
 type Scolder<
   Expecter extends {result: boolean},
@@ -552,8 +465,6 @@ type Scolder<
 /**
  * Represents the positive assertion methods available for type checking in the
  * {@linkcode expectTypeOf()} utility.
- *
- * @template Actual - The type to perform the assertion on.
  */
 export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
   toEqualTypeOf: {
@@ -584,8 +495,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      *
      * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 2 })
      * ```
-     *
-     * @template Expected - The expected type to compare against.
      *
      * @param value - The value to compare against the expected type.
      * @param MISMATCH - The mismatch arguments.
@@ -627,8 +536,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      *
      * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 2 })
      * ```
-     *
-     * @template Expected - The expected type to compare against.
      *
      * @param MISMATCH - The mismatch arguments.
      * @returns `true`.
@@ -661,8 +568,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      * expectTypeOf({ a: 1, b: 1 }).toMatchTypeOf({ a: 2 })
      * ```
      *
-     * @template Expected - The expected type to compare against.
-     *
      * @param value - The value to compare against the expected type.
      * @param MISMATCH - The mismatch arguments.
      * @returns `true`.
@@ -690,8 +595,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      * expectTypeOf({ a: 1, b: 1 }).toMatchTypeOf({ a: 2 })
      * ```
      *
-     * @template Expected - The expected type to compare against.
-     *
      * @param MISMATCH - The mismatch arguments.
      * @returns `true`.
      */
@@ -712,8 +615,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    *
    * expectTypeOf(obj).not.toHaveProperty('c')
    * ```
-   *
-   * @template KeyType - The type of the property key.
    *
    * @param key - The property key to check for.
    * @param MISMATCH - The mismatch arguments.
@@ -778,8 +679,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 2 })
      * ```
      *
-     * @template Expected - The expected type to compare against.
-     *
      * @param MISMATCH - The mismatch arguments.
      * @returns `true`.
      */
@@ -795,8 +694,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
 
 /**
  * Represents the negative expectation type for the {@linkcode Actual} type.
- *
- * @template Actual - The type to perform the assertion on.
  */
 export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: false}> {
   toEqualTypeOf: {
@@ -827,8 +724,6 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      *
      * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 2 })
      * ```
-     *
-     * @template Expected - The expected type to compare against.
      *
      * @param value - The value to compare against the expected type.
      * @param MISMATCH - The mismatch arguments.
@@ -867,8 +762,6 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 2 })
      * ```
      *
-     * @template Expected - The expected type to compare against.
-     *
      * @param MISMATCH - The mismatch arguments.
      * @returns `true`.
      */
@@ -894,8 +787,6 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      * ```ts
      * expectTypeOf({ a: 1, b: 1 }).toMatchTypeOf({ a: 2 })
      * ```
-     *
-     * @template Expected - The expected type to compare against.
      *
      * @param value - The value to compare against the expected type.
      * @param MISMATCH - The mismatch arguments.
@@ -925,8 +816,6 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      * expectTypeOf({ a: 1, b: 1 }).toMatchTypeOf({ a: 2 })
      * ```
      *
-     * @template Expected - The expected type to compare against.
-     *
      * @param MISMATCH - The mismatch arguments.
      * @returns `true`.
      */
@@ -946,8 +835,6 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * expectTypeOf(obj).not.toHaveProperty('c')
    * ```
    *
-   * @template KeyType - The type of the property key.
-   *
    * @param key - The property key to check for.
    * @param MISMATCH - The mismatch arguments.
    * @returns `true`.
@@ -962,9 +849,6 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
  * Represents a conditional type that selects either
  * {@linkcode PositiveExpectTypeOf} or {@linkcode NegativeExpectTypeOf} based
  * on the value of the `positive` property in the {@linkcode Options} type.
- *
- * @template Actual - The type to perform the assertion on.
- * @template Options - An object type that contains a `positive` property indicating whether the expectation is positive or negative.
  */
 export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options['positive'] extends true
   ? PositiveExpectTypeOf<Actual>
@@ -974,9 +858,6 @@ export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options[
  * Represents the base interface for the
  * {@linkcode expectTypeOf()} function.
  * Provides a set of assertion methods to perform type checks on a value.
- *
- * @template Actual - The type of the value being checked.
- * @template Options - The options for the assertion methods.
  */
 export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   /**
@@ -1085,6 +966,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    *
    * expectTypeOf(Date).toBeConstructibleWith()
    * ```
+   *
    * @param args - The arguments to check for constructibility.
    * @returns `true`.
    */
@@ -1123,8 +1005,6 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * ```
    *
    * __Note__: If no type is found in the union, it will return `never`.
-   *
-   * @template V - The type to extract from the union.
    *
    * @param v - The type to extract from the union.
    * @returns The type after extracting the type from the union.
@@ -1174,12 +1054,10 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    *   .toEqualTypeOf<{ name: string }>()
    * ```
    *
-   * @template KeyType - The type of the property key to pick.
-   *
-   * @param v - The property key to pick.
+   * @param keyToPick - The property key to pick.
    * @returns The type after picking the property.
    */
-  pick: <KeyType extends keyof Actual>(v?: KeyType) => ExpectTypeOf<Pick<Actual, KeyType>, Options>
+  pick: <KeyToPick extends keyof Actual>(keyToPick?: KeyToPick) => ExpectTypeOf<Pick<Actual, KeyToPick>, Options>
 
   /**
    * Equivalent to the {@linkcode Omit} utility type.
@@ -1195,12 +1073,12 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * expectTypeOf<Person>().omit<'name'>().toEqualTypeOf<{ age: number }>()
    * ```
    *
-   * @template KeyType - The type of the property key to omit.
-   *
-   * @param v - The property key to omit.
+   * @param keyToOmit - The property key to omit.
    * @returns The type after omitting the property.
    */
-  omit: <KeyType extends keyof Actual | (PropertyKey & Record<never, never>)>(v?: KeyType) => ExpectTypeOf<Omit<Actual, KeyType>, Options>
+  omit: <KeyToOmit extends keyof Actual | (PropertyKey & Record<never, never>)>(
+    keyToOmit?: KeyToOmit,
+  ) => ExpectTypeOf<Omit<Actual, KeyToOmit>, Options>
 
   /**
    * Extracts a certain function argument with `.parameter(number)` call to
@@ -1216,8 +1094,6 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    *
    * expectTypeOf(foo).parameter(1).toBeString()
    * ```
-   *
-   * @template Index - The index of the parameter to extract.
    *
    * @param index - The index of the parameter to extract.
    * @returns The extracted parameter type.
@@ -1318,7 +1194,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    *   : never
    * ```
    */
-  resolves: Actual extends PromiseLike<infer R> ? ExpectTypeOf<R, Options> : never
+  resolves: Actual extends PromiseLike<infer ResolvedType> ? ExpectTypeOf<ResolvedType, Options> : never
 
   /**
    * Extracts array item type to perform assertions on.
@@ -1384,8 +1260,6 @@ export type _ExpectTypeOf = {
   /**
    * Asserts the expected type of a value.
    *
-   * @template Actual - The actual value being asserted.
-   *
    * @param actual - The actual value being asserted.
    * @returns An object representing the expected type assertion.
    */
@@ -1393,8 +1267,6 @@ export type _ExpectTypeOf = {
 
   /**
    * Asserts the expected type of a value without providing an actual value.
-   *
-   * @template Actual - The actual value being asserted.
    *
    * @returns An object representing the expected type assertion.
    */
