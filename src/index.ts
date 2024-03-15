@@ -28,18 +28,11 @@ export type Eq<Left extends boolean, Right extends boolean> = Left extends true 
  */
 export type Xor<Types extends [boolean, boolean]> = Not<Eq<Types[0], Types[1]>>
 
-/**
- * A symbol representing a secret value.
- */
 const secret = Symbol('secret')
-/**
- * Represents the type of the {@linkcode secret} variable.
- */
 type Secret = typeof secret
 
 /**
  * Checks if the given type is `never`.
- *
  */
 export type IsNever<T> = [T] extends [never] ? true : false
 /**
@@ -312,141 +305,49 @@ export interface ExpectTypeOfOptions {
   branded: boolean
 }
 
-/**
- * A `symbol` representing the inverted state.
- */
 const inverted = Symbol('inverted')
-/**
- * Represents a type that maps values to their inverted form.
- */
 type Inverted<T> = {[inverted]: T}
 
-/**
- * A `symbol` representing the expectation of a `null` value.
- */
 const expectNull = Symbol('expectNull')
-/**
- * Represents a type that expects a value to be `null`.
- */
 type ExpectNull<T> = {[expectNull]: T; result: ExtendsExcludingAnyOrNever<T, null>}
 
-/**
- * `Symbol` representing the expectation of an `undefined` value.
- */
 const expectUndefined = Symbol('expectUndefined')
-/**
- * Represents a type that expects a value to be `undefined`.
- */
 type ExpectUndefined<T> = {[expectUndefined]: T; result: ExtendsExcludingAnyOrNever<T, undefined>}
 
-/**
- * Symbol representing the expectation of a `number`.
- */
 const expectNumber = Symbol('expectNumber')
-/**
- * Represents a type that expects a `number`.
- */
 type ExpectNumber<T> = {[expectNumber]: T; result: ExtendsExcludingAnyOrNever<T, number>}
 
-/**
- * `Symbol` representing the expectation of a `string`.
- */
 const expectString = Symbol('expectString')
-/**
- * Represents a type that expects a `string` value.
- */
 type ExpectString<T> = {[expectString]: T; result: ExtendsExcludingAnyOrNever<T, string>}
 
-/**
- * Symbol used for expecting a `boolean` value.
- */
 const expectBoolean = Symbol('expectBoolean')
-/**
- * Represents an expectation for a `boolean` type.
- */
 type ExpectBoolean<T> = {[expectBoolean]: T; result: ExtendsExcludingAnyOrNever<T, boolean>}
 
-/**
- * `Symbol` representing the expectation of a void value.
- */
 const expectVoid = Symbol('expectVoid')
-/**
- * Represents a type that expects a `void` value.
- */
 type ExpectVoid<T> = {[expectVoid]: T; result: ExtendsExcludingAnyOrNever<T, void>}
 
-/**
- * `Symbol` representing the expect function.
- */
 const expectFunction = Symbol('expectFunction')
-/**
- * Represents an expectation function.
- */
 type ExpectFunction<T> = {[expectFunction]: T; result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>}
 
-/**
- * `Symbol` representing the expectation of an object.
- */
 const expectObject = Symbol('expectObject')
-/**
- * Represents an expectation object that includes a value of type {@linkcode T}
- * and a result indicating if {@linkcode T} extends any object type excluding
- * `any` or `never`.
- */
 type ExpectObject<T> = {[expectObject]: T; result: ExtendsExcludingAnyOrNever<T, object>}
 
-/**
- * `Symbol` representing an expectation for an array.
- */
 const expectArray = Symbol('expectArray')
-/**
- * Represents an expectation of an array type.
- */
 type ExpectArray<T> = {[expectArray]: T; result: ExtendsExcludingAnyOrNever<T, any[]>}
 
-/**
- * A `symbol` used for expectation handling.
- */
 const expectSymbol = Symbol('expectSymbol')
-/**
- * Represents a type that expects a `symbol`.
- */
 type ExpectSymbol<T> = {[expectSymbol]: T; result: ExtendsExcludingAnyOrNever<T, symbol>}
 
-/**
- * A `symbol` representing an expectation of any type.
- */
 const expectAny = Symbol('expectAny')
-/**
- * Represents a type that expects `any` value.
- */
 type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}
 
-/**
- * Symbol representing an `unknown` expectation.
- */
 const expectUnknown = Symbol('expectUnknown')
-/**
- * Represents a type that expects an `unknown` value.
- */
 type ExpectUnknown<T> = {[expectUnknown]: T; result: IsUnknown<T>}
 
-/**
- * A `symbol` representing an expectation of never reaching a certain code path.
- */
 const expectNever = Symbol('expectNever')
-/**
- * Represents a type that checks if the provided type {@linkcode T} is `never`.
- */
 type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
 
-/**
- * `Symbol` used to indicate that a value is expected to be nullable.
- */
 const expectNullable = Symbol('expectNullable')
-/**
- * Represents a type that expects a nullable value.
- */
 type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
 
 /**
