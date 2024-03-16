@@ -259,13 +259,7 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     : P
   : never
 
-/**
- * A symbol representing a mismatch.
- */
 const mismatch = Symbol('mismatch')
-/**
- * Represents a mismatch between expected and actual values.
- */
 type Mismatch = {[mismatch]: 'mismatch'}
 
 /**
