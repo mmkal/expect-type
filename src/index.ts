@@ -344,7 +344,7 @@ export type Overloads<T> = T extends {
 
 export type OverloadedParameters<T> = Overloads<T> extends infer O
   ? {[K in keyof O]: Parameters<Extract<O[K], (...args: any) => any>>}
-  : Params<T>
+  : never
 
 export type OverloadedReturnType<T> = Overloads<T> extends infer O
   ? {[K in keyof O]: ReturnType<Extract<O[K], (...args: any) => any>>}
