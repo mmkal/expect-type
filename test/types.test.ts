@@ -737,16 +737,11 @@ test('`toBeCallableWith()` can handle overloads', () => {
     type: T
   }
 
-  interface UnknownAction extends Action {
-    // Allows any extra properties to be defined in an action.
-    [extraProps: string]: unknown
-  }
+  type UnknownAction = Action & Record<string, unknown>
 
   type PromiseDispatch = <T extends Action>(promise: Promise<T>) => Promise<T>
 
-  interface Dispatch<A extends Action = UnknownAction> {
-    <T extends A>(action: T, ...extraArgs: any[]): T
-  }
+  type Dispatch<A extends Action = UnknownAction> = <T extends A>(action: T, ...extraArgs: any[]) => T
 
   const dispatch = ((e: Action) => e) as unknown as Dispatch & PromiseDispatch
 
