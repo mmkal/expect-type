@@ -156,7 +156,7 @@ expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unkn
 
 for basic javascript types:
 
-eslint-disable-next-line jest/valid-title
+eslint-disable-next-line vitest/valid-title
 
 ```typescript
 expectTypeOf(() => 1).toBeFunction()

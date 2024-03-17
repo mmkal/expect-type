@@ -72,7 +72,7 @@ test('`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` p
   expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 })
 
-// eslint-disable-next-line jest/valid-title
+// eslint-disable-next-line vitest/valid-title
 test('for basic javascript types', () => {
   expectTypeOf(() => 1).toBeFunction()
   expectTypeOf({}).toBeObject()
