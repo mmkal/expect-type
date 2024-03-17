@@ -64,6 +64,8 @@ The `expectTypeOf` method takes a single argument, or a generic parameter. Neith
 <!-- codegen:start {preset: markdownFromTests, source: test/usage.test.ts} -->
 Check an object's type with `.toEqualTypeOf`:
 
+eslint prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }]
+
 ```typescript
 expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 ```
@@ -152,7 +154,9 @@ expectTypeOf<never>().toBeNumber()
 expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 ```
 
-Test for basic javascript types:
+for basic javascript types:
+
+eslint-disable-next-line jest/valid-title
 
 ```typescript
 expectTypeOf(() => 1).toBeFunction()
