@@ -1,4 +1,4 @@
-/* eslint-disable mmkal/@typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as a from '../src'
 
 const {expectTypeOf} = a
@@ -138,7 +138,7 @@ test('guarded & asserted types', () => {
 test('parity with IsExact from conditional-type-checks', () => {
   // lifted from https://github.com/dsherret/conditional-type-checks/blob/01215056e8b97a28c5b0311b42ed48c70c8723fe/tests.ts#L18-L63
   // there are some redundant type constituents, but dont' fix them because they came from above and it'll make updating harder
-  /* eslint-disable mmkal/@typescript-eslint/no-redundant-type-constituents */
+  /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 
   /** shim conditional-type-check's `assert` */
   const assert = <T extends boolean>(_result: T) => true
@@ -279,19 +279,19 @@ test('Distinguish between functions whose return types differ by readonly prop',
 
   // not and branded can't be combined
   // @ts-expect-error
-  expectTypeOf<{}>().not.branded // eslint-disable-line mmkal/@typescript-eslint/no-unused-expressions, no-unused-expressions
+  expectTypeOf<{}>().not.branded // eslint-disable-line @typescript-eslint/no-unused-expressions, no-unused-expressions
   // @ts-expect-error
-  expectTypeOf<{}>().branded.not // eslint-disable-line mmkal/@typescript-eslint/no-unused-expressions, no-unused-expressions
+  expectTypeOf<{}>().branded.not // eslint-disable-line @typescript-eslint/no-unused-expressions, no-unused-expressions
 })
 
 test('Distinguish between classes with only private properties', () => {
   class Original {
-    // eslint-disable-next-line mmkal/@typescript-eslint/class-literal-property-style
+    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
     private readonly prop = 1
   }
 
   class Different {
-    // eslint-disable-next-line mmkal/@typescript-eslint/class-literal-property-style
+    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
     private readonly prop = 1
   }
 
@@ -320,7 +320,7 @@ test('Distinguish between classes with only private properties', () => {
 
 test('Distinguish between types with generics used in type assertion', () => {
   interface Guard<T> {
-    // eslint-disable-next-line mmkal/@typescript-eslint/prefer-function-type
+    // eslint-disable-next-line @typescript-eslint/prefer-function-type
     (arg: unknown): arg is T
   }
 
@@ -368,7 +368,7 @@ test('Distinguish between functions with generics vs unknown', () => {
 })
 
 interface BaseFunc {
-  // eslint-disable-next-line mmkal/@typescript-eslint/prefer-function-type
+  // eslint-disable-next-line @typescript-eslint/prefer-function-type
   (str: string): number
 }
 
@@ -469,7 +469,7 @@ test('Distinguish between functions with properties of different types', () => {
 })
 
 interface BaseConstructor {
-  // eslint-disable-next-line mmkal/@typescript-eslint/prefer-function-type
+  // eslint-disable-next-line @typescript-eslint/prefer-function-type
   new (str: string): {someProp: number}
 }
 
@@ -628,13 +628,13 @@ test('Distinguish between different types that are OR`d together', () => {
 })
 
 test('Distinguish between identical types that are OR`d together', () => {
-  expectTypeOf<{foo: number} | {foo: number}>().toEqualTypeOf<{foo: number} | {foo: number}>()
+  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
   // Note: The `| T` in `Equal` in index.ts makes this work.
-  expectTypeOf<{foo: number} | {foo: number}>().toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
   // @ts-expect-error
-  expectTypeOf<{foo: number} | {foo: number}>().not.toEqualTypeOf<{foo: number} | {foo: number}>()
+  expectTypeOf<{foo: number}>().not.toEqualTypeOf<{foo: number}>()
   // @ts-expect-error
-  expectTypeOf<{foo: number} | {foo: number}>().not.toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number}>().not.toEqualTypeOf<{foo: number}>()
 })
 
 test('Distinguish between different types that are AND`d together', () => {
@@ -672,18 +672,18 @@ test('Works arounds tsc bug not handling intersected types for this form of equi
 })
 
 test('Distinguish between identical types that are AND`d together', () => {
-  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
+  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
   // Note: The `& T` in `Equal` in index.ts makes this work.
-  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
   // @ts-expect-error
-  expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number} & {foo: number}>()
+  expectTypeOf<{foo: number}>().not.toEqualTypeOf<{foo: number}>()
   // @ts-expect-error
-  expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number}>().not.toEqualTypeOf<{foo: number}>()
 
   expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
   expectTypeOf<() => () => () => {a: 1} & {b: 1}>().not.toEqualTypeOf<() => () => () => {a: 1; c: 1}>()
 
-  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
+  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })

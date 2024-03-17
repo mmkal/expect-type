@@ -1,8 +1,8 @@
-/* eslint-disable mmkal/@typescript-eslint/no-empty-function */
-/* eslint-disable mmkal/@typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {expectTypeOf} from '../src'
 
-/* eslint mmkal/prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
+/* eslint prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
 
 test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
@@ -72,8 +72,8 @@ test('`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` p
   expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 })
 
-// eslint-disable-next-line mmkal/jest/valid-title
-test('Test for basic javascript types', () => {
+// eslint-disable-next-line jest/valid-title
+test('for basic javascript types', () => {
   expectTypeOf(() => 1).toBeFunction()
   expectTypeOf({}).toBeObject()
   expectTypeOf([]).toBeArray()
