@@ -654,7 +654,7 @@ If you're using Jest along with `eslint-plugin-jest`, and you put assertions ins
 
 To remove this warning, configure the ESlint rule to consider `expectTypeOf` as an assertion:
 
-```js
+```json
 "rules": {
   // ...
   "jest/expect-expect": [
