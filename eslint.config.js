@@ -11,4 +11,10 @@ module.exports = [
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
+  {
+    files: ['**/*.md/*.ts'],
+    rules: {
+      'no-undef': 'off', // mmkal - babel eslint parser doesn't handle generics properly, might need to figure out how to get typescript-eslint working
+    },
+  },
 ]

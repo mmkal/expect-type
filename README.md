@@ -8,9 +8,9 @@ Compile-time tests for types. Useful to make sure types don't regress into being
 
 Similar to Jest's `expect`, but with type-awareness. Gives you access to a number of type-matchers that let you make assertions about the form of a reference or generic type parameter.
 
-```typescript
-import {foo, bar} from '../foo'
+```ts
 import {expectTypeOf} from 'expect-type'
+import {foo, bar} from '../foo'
 
 test('foo types', () => {
   // make sure `foo` has type {a: number}
