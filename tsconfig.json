@@ -3,6 +3,7 @@
         "lib": ["es2021", "DOM"],
         "target": "es2021",
         "module": "commonjs",
+        "skipLibCheck": true,
         "strict": true,
         "noEmit": true,
         "noErrorTruncation": true,
