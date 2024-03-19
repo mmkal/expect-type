@@ -55,8 +55,7 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; };
 
 999   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNumber<any>' has no call signatures.
+test/usage.test.ts:999:999 - error TS2339: Property 'toBeNumber' does not exist on type 'Pick<Pick<PositiveAssertions<any>, "toBeAny">, "toBeAny">'.
 
 999   expectTypeOf(badIntParser).returns.toBeNumber()
                                          ~~~~~~~~~~
@@ -258,33 +257,12 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
-  Overload 1 of 2, '(value: ((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & AValue, ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<this, (IsNever<...> extends IsNever<...> ? true : false) extends true ? unknown : MismatchInfo<...>>, true>): true', gave the following error.
-    Argument of type 'this' is not assignable to parameter of type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & AValue'.
-      Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & AValue'.
-        Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-          Type 'this' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-            Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-              Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
-                Type 'this' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
-                  Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
-  Argument of type '[this]' is not assignable to parameter of type 'MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<this, StrictEqualUsingTSInternalIdenticalToOperator<this, unknown> extends true ? unknown : MismatchInfo<this, unknown>>, true>'.
+test/usage.test.ts:999:999 - error TS2339: Property 'toEqualTypeOf' does not exist on type 'IsAny<this> extends true ? Pick<PositiveExpectTypeOf<this>, "toBeAny"> : PositiveExpectTypeOf<this>'.
 
 999       expectTypeOf(this).toEqualTypeOf(this)
-                                           ~~~~
-
-test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
-  Overload 1 of 2, '(value: (Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue, ...MISMATCH: MismatchArgs<Extends<this, Extends<this, this> extends true ? unknown : MismatchInfo<...>>, true>): true', gave the following error.
-    Argument of type 'this' is not assignable to parameter of type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue'.
-      Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue'.
-        Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-          Type 'this' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-            Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-              Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
-                Type 'this' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
-                  Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
-  Argument of type '[this]' is not assignable to parameter of type 'MismatchArgs<Extends<this, Extends<this, unknown> extends true ? unknown : MismatchInfo<this, unknown>>, true>'.
+                             ~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2339: Property 'toMatchTypeOf' does not exist on type 'IsAny<this> extends true ? Pick<PositiveExpectTypeOf<this>, "toBeAny"> : PositiveExpectTypeOf<this>'.
 
 999       expectTypeOf(this).toMatchTypeOf(this)
-                                           ~~~~"
+                             ~~~~~~~~~~~~~"
 `;
