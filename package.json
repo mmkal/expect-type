@@ -28,6 +28,7 @@
   ],
   "scripts": {
     "lint": "tsc && eslint .",
+    "type-check": "tsc",
     "build": "tsc -p tsconfig.lib.json",
     "test": "jest"
   },
