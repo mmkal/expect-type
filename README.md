@@ -34,7 +34,7 @@ See below for lots more examples.
    - [Why is my assertion failing?](#why-is-my-assertion-failing)
    - [Special cases](#special-cases)
       - [`any`](#any)
-   - [`never`](#never)
+      - [`never`](#never)
    - [Where is `.toExtend`?](#where-is-toextend)
    - [Internal type helpers](#internal-type-helpers)
    - [Error messages](#error-messages)
@@ -585,13 +585,13 @@ expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
 
 While technically if you have a value with type `any`, you could pass it to a function which accepts a more specific type, in practice if you're using this library, it's assumed you're trying to avoid accidental `any`s creeping into your code. So, the only assertion available for the `any` type is `toBeAny()`.
 
-### `never`
+#### `never`
 
-Similarly, `never` can have some unusual behaviour, so an assertion like `expectTypeOf<never>().toExtend<{a: 1}>()` fails, even though technically, `never` does extend `{a: 1}`.
+Similarly, `never` can have some unusual behaviour, so an assertion like `expectTypeOf<never>().toMatchTypeOf<{a: 1}>()` fails, even though technically, `never` does extend `{a: 1}`.
 
 ### Where is `.toExtend`?
 
-A few people have asked for a method like `toExtend` - this is essentially what `toMatchTypeOf` is. There are some cases where it doesn't _precisely_ match the `extends` operator in TypeScript, but for most practical use cases, you can think of this as the same thing.
+A few people have asked for a method like `toExtend` - this is essentially what `toMatchTypeOf` is. There are some cases like the above where it doesn't _precisely_ match the `extends` operator in TypeScript, but for most practical use cases, you can think of this as the same thing.
 
 ### Internal type helpers
 
