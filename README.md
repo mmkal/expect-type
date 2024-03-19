@@ -10,6 +10,7 @@ Similar to Jest's `expect`, but with type-awareness. Gives you access to a numbe
 ```ts
 import {expectTypeOf} from 'expect-type'
 import {foo, bar} from '../foo'
+import {test} from 'vitest'
 
 test('foo types', () => {
   // make sure `foo` has type {a: number}
