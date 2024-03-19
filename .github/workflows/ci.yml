@@ -34,3 +34,16 @@ jobs:
           STATUS: '${{ fromJson(steps.coveragejson.outputs.result).pct }}%'
           COLOR: ${{ fromJson(steps.coveragejson.outputs.result).color }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test-types:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ts: ['4.7', '4.8', '4.9', '5.0', '5.1', '5.2', '5.3', '5.4']
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: pnpm install
+      - run: pnpm install typescript@${{ matrix.ts }}
+      - run: pnpm type-check
+
