@@ -55,7 +55,7 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; };
 
 999   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2339: Property 'toBeNumber' does not exist on type 'Pick<Pick<PositiveAssertions<any>, "toBeAny">, "toBeAny">'.
+test/usage.test.ts:999:999 - error TS2339: Property 'toBeNumber' does not exist on type 'Pick<PositiveAssertions<any>, "toBeAny">'.
 
 999   expectTypeOf(badIntParser).returns.toBeNumber()
                                          ~~~~~~~~~~
@@ -257,11 +257,11 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2339: Property 'toEqualTypeOf' does not exist on type 'IsAny<this> extends true ? Pick<PositiveExpectTypeOf<this>, "toBeAny"> : PositiveExpectTypeOf<this>'.
+test/usage.test.ts:999:999 - error TS2339: Property 'toEqualTypeOf' does not exist on type 'PositiveExpectTypeOf<this>'.
 
 999       expectTypeOf(this).toEqualTypeOf(this)
                              ~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2339: Property 'toMatchTypeOf' does not exist on type 'IsAny<this> extends true ? Pick<PositiveExpectTypeOf<this>, "toBeAny"> : PositiveExpectTypeOf<this>'.
+test/usage.test.ts:999:999 - error TS2339: Property 'toMatchTypeOf' does not exist on type 'PositiveExpectTypeOf<this>'.
 
 999       expectTypeOf(this).toMatchTypeOf(this)
                              ~~~~~~~~~~~~~"
