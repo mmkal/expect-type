@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import {test, expect} from 'vitest'
 import {tsErrors, tsFileErrors} from './ts-output'
 
 test('toEqualTypeOf<...>() error message', async () => {
