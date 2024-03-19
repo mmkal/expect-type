@@ -747,9 +747,7 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
  * on the value of the `positive` property in the {@linkcode Options} type.
  */
 export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options['positive'] extends true
-  ? IsAny<Actual> extends true
-    ? Pick<PositiveExpectTypeOf<Actual>, 'toBeAny'>
-    : PositiveExpectTypeOf<Actual>
+  ? PositiveExpectTypeOf<Actual>
   : NegativeExpectTypeOf<Actual>
 
 /**
