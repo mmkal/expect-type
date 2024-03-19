@@ -154,7 +154,7 @@ expectTypeOf<never>().toBeNumber()
 expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 ```
 
-for basic javascript types:
+Test for basic javascript types:
 
 eslint-disable-next-line vitest/valid-title
 
