@@ -733,3 +733,13 @@ test('Issue #53: `.omit()` should work similarly to `Omit`', () => {
 
   expectTypeOf<Loading | Failed>().omit<'code'>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
 })
+
+test('Only `toBeAny` is available for `any`', () => {
+  expectTypeOf<any>().toBeAny()
+
+  // @ts-expect-error
+  expectTypeOf<any>().toMatchTypeOf<{a: 1}>()
+
+  const anyAssertions = expectTypeOf<any>()
+  expectTypeOf<keyof typeof anyAssertions>().toEqualTypeOf<'toBeAny'>()
+})
