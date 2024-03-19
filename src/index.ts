@@ -1207,7 +1207,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     'asserts',
     'branded',
   ] as const
-  type Keys = keyof PositiveExpectTypeOf<{}>
+  type Keys = keyof PositiveExpectTypeOf<{}> | keyof NegativeExpectTypeOf<{}>
 
   type FunctionsDict = Record<Exclude<Keys, (typeof nonFunctionProperties)[number]>, any>
   const obj: FunctionsDict = {
