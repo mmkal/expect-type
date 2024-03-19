@@ -1,4 +1,5 @@
-/* eslint-disable mmkal/@typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as a from '../src'
 
 const {expectTypeOf} = a
@@ -138,7 +139,7 @@ test('guarded & asserted types', () => {
 test('parity with IsExact from conditional-type-checks', () => {
   // lifted from https://github.com/dsherret/conditional-type-checks/blob/01215056e8b97a28c5b0311b42ed48c70c8723fe/tests.ts#L18-L63
   // there are some redundant type constituents, but dont' fix them because they came from above and it'll make updating harder
-  /* eslint-disable mmkal/@typescript-eslint/no-redundant-type-constituents */
+  /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 
   /** shim conditional-type-check's `assert` */
   const assert = <T extends boolean>(_result: T) => true
@@ -279,19 +280,19 @@ test('Distinguish between functions whose return types differ by readonly prop',
 
   // not and branded can't be combined
   // @ts-expect-error
-  expectTypeOf<{}>().not.branded // eslint-disable-line mmkal/@typescript-eslint/no-unused-expressions, no-unused-expressions
+  expectTypeOf<{}>().not.branded // eslint-disable-line @typescript-eslint/no-unused-expressions, no-unused-expressions
   // @ts-expect-error
-  expectTypeOf<{}>().branded.not // eslint-disable-line mmkal/@typescript-eslint/no-unused-expressions, no-unused-expressions
+  expectTypeOf<{}>().branded.not // eslint-disable-line @typescript-eslint/no-unused-expressions, no-unused-expressions
 })
 
 test('Distinguish between classes with only private properties', () => {
   class Original {
-    // eslint-disable-next-line mmkal/@typescript-eslint/class-literal-property-style
+    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
     private readonly prop = 1
   }
 
   class Different {
-    // eslint-disable-next-line mmkal/@typescript-eslint/class-literal-property-style
+    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
     private readonly prop = 1
   }
 
@@ -320,7 +321,7 @@ test('Distinguish between classes with only private properties', () => {
 
 test('Distinguish between types with generics used in type assertion', () => {
   interface Guard<T> {
-    // eslint-disable-next-line mmkal/@typescript-eslint/prefer-function-type
+    // eslint-disable-next-line @typescript-eslint/prefer-function-type
     (arg: unknown): arg is T
   }
 
@@ -368,7 +369,7 @@ test('Distinguish between functions with generics vs unknown', () => {
 })
 
 interface BaseFunc {
-  // eslint-disable-next-line mmkal/@typescript-eslint/prefer-function-type
+  // eslint-disable-next-line @typescript-eslint/prefer-function-type
   (str: string): number
 }
 
@@ -469,7 +470,7 @@ test('Distinguish between functions with properties of different types', () => {
 })
 
 interface BaseConstructor {
-  // eslint-disable-next-line mmkal/@typescript-eslint/prefer-function-type
+  // eslint-disable-next-line @typescript-eslint/prefer-function-type
   new (str: string): {someProp: number}
 }
 
@@ -690,7 +691,7 @@ test('Distinguish between identical types that are AND`d together', () => {
 
 test('limitations', () => {
   // these *shouldn't* fail, but kept here to document missing behaviours. Once fixed, remove the expect-error comments to make sure they can't regress
-  // @ts-expect-error typescript can't handle the truth: https://github.com/mmkal/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
+  // @ts-expect-error typescript can't handle the truth: https://github.com/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
   expectTypeOf<a.StrictEqualUsingBranding<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
 
   // @ts-expect-error toEqualTypeOf relies on TypeScript's internal `toBeIdentical` function which falls down with intersection types, but is otherwise accurate and performant: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
