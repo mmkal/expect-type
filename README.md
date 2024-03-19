@@ -1,7 +1,6 @@
 # expect-type
 
 [![CI](https://github.com/mmkal/expect-type/actions/workflows/ci.yml/badge.svg)](https://github.com/mmkal/expect-type/actions/workflows/ci.yml)
-[![](https://byob.yarr.is/mmkal/expect-type/coverage)](https://github.com/mmkal/expect-type/actions/workflows/ci.yml)
 ![npm](https://img.shields.io/npm/dt/expect-type)
 
 Compile-time tests for types. Useful to make sure types don't regress into being overly-permissive as changes go in over time.
