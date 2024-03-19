@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as a from '../src'
 
@@ -628,13 +629,13 @@ test('Distinguish between different types that are OR`d together', () => {
 })
 
 test('Distinguish between identical types that are OR`d together', () => {
-  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number} | {foo: number}>().toEqualTypeOf<{foo: number} | {foo: number}>()
   // Note: The `| T` in `Equal` in index.ts makes this work.
-  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number} | {foo: number}>().toEqualTypeOf<{foo: number}>()
   // @ts-expect-error
-  expectTypeOf<{foo: number}>().not.toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number} | {foo: number}>().not.toEqualTypeOf<{foo: number} | {foo: number}>()
   // @ts-expect-error
-  expectTypeOf<{foo: number}>().not.toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number} | {foo: number}>().not.toEqualTypeOf<{foo: number}>()
 })
 
 test('Distinguish between different types that are AND`d together', () => {
@@ -672,25 +673,25 @@ test('Works arounds tsc bug not handling intersected types for this form of equi
 })
 
 test('Distinguish between identical types that are AND`d together', () => {
-  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
   // Note: The `& T` in `Equal` in index.ts makes this work.
-  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number}>()
   // @ts-expect-error
-  expectTypeOf<{foo: number}>().not.toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number} & {foo: number}>()
   // @ts-expect-error
-  expectTypeOf<{foo: number}>().not.toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number} & {foo: number}>().not.toEqualTypeOf<{foo: number}>()
 
   expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
   expectTypeOf<() => () => () => {a: 1} & {b: 1}>().not.toEqualTypeOf<() => () => () => {a: 1; c: 1}>()
 
-  expectTypeOf<{foo: number}>().toEqualTypeOf<{foo: number}>()
+  expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })
 
 test('limitations', () => {
   // these *shouldn't* fail, but kept here to document missing behaviours. Once fixed, remove the expect-error comments to make sure they can't regress
-  // @ts-expect-error typescript can't handle the truth: https://github.com/mmkal/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
+  // @ts-expect-error typescript can't handle the truth: https://github.com/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
   expectTypeOf<a.StrictEqualUsingBranding<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
 
   // @ts-expect-error toEqualTypeOf relies on TypeScript's internal `toBeIdentical` function which falls down with intersection types, but is otherwise accurate and performant: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
