@@ -8,5 +8,5 @@
         "noErrorTruncation": true,
         "esModuleInterop": true
     },
-    "include": ["src", "test", "*.js", ".*.*js", "*.md", "*.md/*.ts"]
+    "include": ["**/*.ts"],
 }
