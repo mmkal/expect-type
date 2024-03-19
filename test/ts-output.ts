@@ -24,6 +24,6 @@ export const tsFileErrors = (params: {filepath: string; content: string}) => {
 export const simplifyTsOutput = (output: string) =>
   stripAnsi(output)
     // replace digits in line numbers with 9s so snapshots don't change all the time
-    .replace(/:\d+:\d+/g, s => s.replace(/\d+/g, '999'))
-    .replace(/^\s*\d+/gm, s => s.replace(/\d+/g, '999'))
+    .replaceAll(/:\d+:\d+/g, s => s.replaceAll(/\d+/g, '999'))
+    .replaceAll(/^\s*\d+/gm, s => s.replaceAll(/\d+/g, '999'))
     .trim()

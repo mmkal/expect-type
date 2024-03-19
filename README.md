@@ -8,9 +8,9 @@ Compile-time tests for types. Useful to make sure types don't regress into being
 
 Similar to Jest's `expect`, but with type-awareness. Gives you access to a number of type-matchers that let you make assertions about the form of a reference or generic type parameter.
 
-```typescript
-import {foo, bar} from '../foo'
+```ts
 import {expectTypeOf} from 'expect-type'
+import {foo, bar} from '../foo'
 
 test('foo types', () => {
   // make sure `foo` has type {a: number}
@@ -63,6 +63,8 @@ The `expectTypeOf` method takes a single argument, or a generic parameter. Neith
 
 <!-- codegen:start {preset: markdownFromTests, source: test/usage.test.ts} -->
 Check an object's type with `.toEqualTypeOf`:
+
+eslint prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }]
 
 ```typescript
 expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
@@ -153,6 +155,8 @@ expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unkn
 ```
 
 Test for basic javascript types:
+
+eslint-disable-next-line vitest/valid-title
 
 ```typescript
 expectTypeOf(() => 1).toBeFunction()
@@ -650,7 +654,7 @@ If you're using Jest along with `eslint-plugin-jest`, and you put assertions ins
 
 To remove this warning, configure the ESlint rule to consider `expectTypeOf` as an assertion:
 
-```js
+```json
 "rules": {
   // ...
   "jest/expect-expect": [

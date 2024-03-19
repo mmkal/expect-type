@@ -51,31 +51,32 @@ export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
 /**
  * Determines the printable type representation for a given type.
  */
-export type PrintType<T> = IsUnknown<T> extends true
-  ? 'unknown'
-  : IsNever<T> extends true
-  ? 'never'
-  : IsAny<T> extends true
-  ? never // special case, can't use `'any'` because that would match `any`
-  : boolean extends T
-  ? 'boolean'
-  : T extends boolean
-  ? `literal boolean: ${T}`
-  : string extends T
-  ? 'string'
-  : T extends string
-  ? `literal string: ${T}`
-  : number extends T
-  ? 'number'
-  : T extends number
-  ? `literal number: ${T}`
-  : T extends null
-  ? 'null'
-  : T extends undefined
-  ? 'undefined'
-  : T extends (...args: any[]) => any
-  ? 'function'
-  : '...'
+export type PrintType<T> =
+  IsUnknown<T> extends true
+    ? 'unknown'
+    : IsNever<T> extends true
+      ? 'never'
+      : IsAny<T> extends true
+        ? never // special case, can't use `'any'` because that would match `any`
+        : boolean extends T
+          ? 'boolean'
+          : T extends boolean
+            ? `literal boolean: ${T}`
+            : string extends T
+              ? 'string'
+              : T extends string
+                ? `literal string: ${T}`
+                : number extends T
+                  ? 'number'
+                  : T extends number
+                    ? `literal number: ${T}`
+                    : T extends null
+                      ? 'null'
+                      : T extends undefined
+                        ? 'undefined'
+                        : T extends (...args: any[]) => any
+                          ? 'function'
+                          : '...'
 
 /**
  * Subjective "useful" keys from a type. For objects it's just `keyof` but for
@@ -99,18 +100,19 @@ export type UsefulKeys<T> = T extends any[]
 // Helper for showing end-user a hint why their type assertion is failing.
 // This swaps "leaf" types with a literal message about what the actual and expected types are.
 // Needs to check for Not<IsAny<Actual>> because otherwise LeafTypeOf<Actual> returns never, which extends everything 🤔
-export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
-  ? And<[Extends<any[], Actual>, Extends<any[], Expected>]> extends true
-    ? Array<MismatchInfo<Extract<Actual, any[]>[number], Extract<Expected, any[]>[number]>>
-    : {
-        [K in UsefulKeys<Actual> | UsefulKeys<Expected>]: MismatchInfo<
-          K extends keyof Actual ? Actual[K] : never,
-          K extends keyof Expected ? Expected[K] : never
-        >
-      }
-  : StrictEqualUsingBranding<Actual, Expected> extends true
-  ? Actual
-  : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
+export type MismatchInfo<Actual, Expected> =
+  And<[Extends<PrintType<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
+    ? And<[Extends<any[], Actual>, Extends<any[], Expected>]> extends true
+      ? Array<MismatchInfo<Extract<Actual, any[]>[number], Extract<Expected, any[]>[number]>>
+      : {
+          [K in UsefulKeys<Actual> | UsefulKeys<Expected>]: MismatchInfo<
+            K extends keyof Actual ? Actual[K] : never,
+            K extends keyof Expected ? Expected[K] : never
+          >
+        }
+    : StrictEqualUsingBranding<Actual, Expected> extends true
+      ? Actual
+      : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
 
 /**
  * Represents a deeply branded type.
@@ -128,44 +130,45 @@ export type MismatchInfo<Actual, Expected> = And<[Extends<PrintType<Actual>, '..
  * when you know you need it. If doing an equality check, it's almost always
  * better to use {@linkcode StrictEqualUsingTSInternalIdenticalToOperator}.
  */
-export type DeepBrand<T> = IsNever<T> extends true
-  ? {type: 'never'}
-  : IsAny<T> extends true
-  ? {type: 'any'}
-  : IsUnknown<T> extends true
-  ? {type: 'unknown'}
-  : T extends string | number | boolean | symbol | bigint | null | undefined | void
-  ? {
-      type: 'primitive'
-      value: T
-    }
-  : T extends new (...args: any[]) => any
-  ? {
-      type: 'constructor'
-      params: ConstructorParams<T>
-      instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>>
-    }
-  : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
-  ? {
-      type: 'function'
-      params: DeepBrand<P>
-      return: DeepBrand<R>
-      this: DeepBrand<ThisParameterType<T>>
-      props: DeepBrand<Omit<T, keyof Function>>
-    }
-  : T extends any[]
-  ? {
-      type: 'array'
-      items: {[K in keyof T]: T[K]}
-    }
-  : {
-      type: 'object'
-      properties: {[K in keyof T]: DeepBrand<T[K]>}
-      readonly: ReadonlyKeys<T>
-      required: RequiredKeys<T>
-      optional: OptionalKeys<T>
-      constructorParams: DeepBrand<ConstructorParams<T>>
-    }
+export type DeepBrand<T> =
+  IsNever<T> extends true
+    ? {type: 'never'}
+    : IsAny<T> extends true
+      ? {type: 'any'}
+      : IsUnknown<T> extends true
+        ? {type: 'unknown'}
+        : T extends string | number | boolean | symbol | bigint | null | undefined | void
+          ? {
+              type: 'primitive'
+              value: T
+            }
+          : T extends new (...args: any[]) => any
+            ? {
+                type: 'constructor'
+                params: ConstructorParams<T>
+                instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>>
+              }
+            : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
+              ? {
+                  type: 'function'
+                  params: DeepBrand<P>
+                  return: DeepBrand<R>
+                  this: DeepBrand<ThisParameterType<T>>
+                  props: DeepBrand<Omit<T, keyof Function>>
+                }
+              : T extends any[]
+                ? {
+                    type: 'array'
+                    items: {[K in keyof T]: T[K]}
+                  }
+                : {
+                    type: 'object'
+                    properties: {[K in keyof T]: DeepBrand<T[K]>}
+                    readonly: ReadonlyKeys<T>
+                    required: RequiredKeys<T>
+                    optional: OptionalKeys<T>
+                    constructorParams: DeepBrand<ConstructorParams<T>>
+                  }
 
 /**
  * Extracts the keys from a type that are required (not optional).
@@ -215,13 +218,12 @@ export type ExtendsExcludingAnyOrNever<L, R> = IsAny<L> extends true ? IsAny<R> 
  *
  * @see {@link https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122 much history}
  */
-type StrictEqualUsingTSInternalIdenticalToOperator<L, R> = (<T>() => T extends (L & T) | T ? true : false) extends <
-  T,
->() => T extends (R & T) | T ? true : false
-  ? IsNever<L> extends IsNever<R>
-    ? true
+type StrictEqualUsingTSInternalIdenticalToOperator<L, R> =
+  (<T>() => T extends (L & T) | T ? true : false) extends <T>() => T extends (R & T) | T ? true : false
+    ? IsNever<L> extends IsNever<R>
+      ? true
+      : false
     : false
-  : false
 
 /**
  * Checks if two types are strictly equal using branding.
@@ -238,12 +240,8 @@ export type StrictEqualUsingBranding<Left, Right> = And<
  * If they are not strictly equal, it falls back to using the
  * {@linkcode StrictEqualUsingBranding} type.
  */
-export type HopefullyPerformantEqual<Left, Right> = StrictEqualUsingTSInternalIdenticalToOperator<
-  Left,
-  Right
-> extends true
-  ? true
-  : StrictEqualUsingBranding<Left, Right>
+export type HopefullyPerformantEqual<Left, Right> =
+  StrictEqualUsingTSInternalIdenticalToOperator<Left, Right> extends true ? true : StrictEqualUsingBranding<Left, Right>
 
 /**
  * Extracts the parameter types from a function type.
@@ -284,12 +282,8 @@ type AValue = {[avalue]?: undefined} | string | number | boolean | symbol | bigi
  * {@linkcode Mismatch}, signifying a discrepancy between
  * the expected and actual results.
  */
-type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> = Eq<
-  ActualResult,
-  ExpectedResult
-> extends true
-  ? []
-  : [Mismatch]
+type MismatchArgs<ActualResult extends boolean, ExpectedResult extends boolean> =
+  Eq<ActualResult, ExpectedResult> extends true ? [] : [Mismatch]
 
 /**
  * Represents the options for the {@linkcode ExpectTypeOf} function.
@@ -354,8 +348,8 @@ type Scolder<
 > = Expecter['result'] extends Options['positive']
   ? () => true
   : Options['positive'] extends true
-  ? Expecter
-  : Inverted<Expecter>
+    ? Expecter
+    : Inverted<Expecter>
 
 /**
  * Represents the positive assertion methods available for type checking in the
@@ -1246,9 +1240,9 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
   ] as const
   type Keys = keyof PositiveExpectTypeOf<any> | keyof NegativeExpectTypeOf<any>
 
-  type FunctionsDict = Record<Exclude<Keys, typeof nonFunctionProperties[number]>, any>
+  type FunctionsDict = Record<Exclude<Keys, (typeof nonFunctionProperties)[number]>, any>
   const obj: FunctionsDict = {
-    /* eslint-disable mmkal/@typescript-eslint/no-unsafe-assignment */
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     toBeAny: fn,
     toBeUnknown: fn,
     toBeNever: fn,
@@ -1267,7 +1261,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toEqualTypeOf: fn,
     toBeCallableWith: fn,
     toBeConstructibleWith: fn,
-    /* eslint-enable mmkal/@typescript-eslint/no-unsafe-assignment */
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
     extract: expectTypeOf,
     exclude: expectTypeOf,
     pick: expectTypeOf,
