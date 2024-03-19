@@ -30,7 +30,7 @@
     "eslint": "eslint --max-warnings 0",
     "lint": "tsc && pnpm eslint .",
     "build": "tsc -p tsconfig.lib.json",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "devDependencies": {
     "@types/node": "^14.0.0",
