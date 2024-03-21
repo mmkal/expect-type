@@ -11,14 +11,12 @@ Similar to Jest's `expect`, but with type-awareness. Gives you access to a numbe
 import {expectTypeOf} from 'expect-type'
 import {foo, bar} from '../foo'
 
-test('foo types', () => {
-  // make sure `foo` has type {a: number}
-  expectTypeOf(foo).toMatchTypeOf<{a: number}>()
+// make sure `foo` has type {a: number}
+expectTypeOf(foo).toMatchTypeOf<{a: number}>()
 
-  // make sure `bar` is a function taking a string:
-  expectTypeOf(bar).parameter(0).toBeString()
-  expectTypeOf(bar).returns.not.toBeAny()
-})
+// make sure `bar` is a function taking a string:
+expectTypeOf(bar).parameter(0).toBeString()
+expectTypeOf(bar).returns.not.toBeAny()
 ```
 
 It can be used in your existing test files - or any other type-checked file you'd like - it's built into existing tooling with no dependencies. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
