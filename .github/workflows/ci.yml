@@ -14,30 +14,13 @@ jobs:
 
   test-types:
     runs-on: ubuntu-latest
-    name: Test TypeScript Types with Node.js ${{ matrix.node }} and TypeScript ${{ matrix.ts }}
+    name: Test Types with TypeScript ${{ matrix.ts }}
     strategy:
       matrix:
-        node: [20.x]
         ts: [4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4]
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install
-
-      - name: Install TypeScript Version ${{ matrix.ts }}
-        run: pnpm install typescript@${{ matrix.ts }}
-
-      - name: Test Types
-        run: pnpm type-check
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: pnpm install
+      - run: pnpm install typescript@${{ matrix.ts }}
+      - run: pnpm type-check
