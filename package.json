@@ -29,6 +29,7 @@
   "scripts": {
     "eslint": "eslint --max-warnings 0",
     "lint": "tsc && pnpm eslint .",
+    "type-check": "tsc",
     "build": "tsc -p tsconfig.lib.json",
     "test": "vitest run"
   },

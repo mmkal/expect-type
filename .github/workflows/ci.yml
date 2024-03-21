@@ -1,15 +1,26 @@
 name: CI
-on:
-  push: {}
-  pull_request: {}
+on: [push, pull_request]
 
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: corepack enable
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run lint
       - run: pnpm test
+
+  test-types:
+    runs-on: ubuntu-latest
+    name: Test Types with TypeScript ${{ matrix.ts }}
+    strategy:
+      matrix:
+        ts: [4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4]
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: pnpm install
+      - run: pnpm install typescript@${{ matrix.ts }}
+      - run: pnpm type-check
