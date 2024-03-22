@@ -751,3 +751,38 @@ test('`toBeCallableWith()` can handle overloads', () => {
 
   expectTypeOf(dispatch).toBeCallableWith({type: 'INCREMENT'})
 })
+
+test('`toBeCallableWith()` can handle up to 5 overloads', () => {
+  function performAction(): void
+  // eslint-disable-next-line no-redeclare, @typescript-eslint/no-shadow
+  function performAction(a: string): number
+  // eslint-disable-next-line no-redeclare, @typescript-eslint/no-shadow
+  function performAction(a: number): boolean
+  // eslint-disable-next-line no-redeclare, @typescript-eslint/no-shadow
+  function performAction(a: boolean): string
+  // eslint-disable-next-line no-redeclare, @typescript-eslint/no-shadow
+  function performAction(a: string, b: string, c: string): {a: string; b: string; c: string}
+  // Implementation signature, not exposed as part of the overloads
+  // eslint-disable-next-line no-redeclare, @typescript-eslint/no-shadow
+  function performAction(a?: string | number | boolean, b?: string | number | boolean, _c?: string): any {
+    // Dummy implementation that just demonstrates the concept
+    if (typeof a === 'string' && b === undefined) {
+      return a.length // Example operation for single string argument
+    } else if (typeof a === 'number' && b === undefined) {
+      return !!(a % 2) // Example for single number argument
+    } else if (typeof a === 'boolean' && b === undefined) {
+      return a ? 'true' : 'false' // Example for single boolean argument
+    } else if (typeof a === 'string' && typeof b === 'string') {
+      return [a, b] // Example for two string arguments
+    }
+    // Additional logic to handle other overloads
+    // For simplicity, not all cases are fully implemented here
+    return null
+  }
+
+  expectTypeOf(performAction).toBeCallableWith()
+  expectTypeOf(performAction).toBeCallableWith('')
+  expectTypeOf(performAction).toBeCallableWith(0)
+  expectTypeOf(performAction).toBeCallableWith(true)
+  expectTypeOf(performAction).toBeCallableWith('', '', '')
+})
