@@ -743,6 +743,13 @@ export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options[
   ? PositiveExpectTypeOf<Actual>
   : NegativeExpectTypeOf<Actual>
 
+/**
+ * Any function with any arguments.
+ *
+ * @internal
+ */
+export type AnyFunction = (...args: any[]) => any
+
 export type Overloads<T> = T extends {
   (...args: infer A1): infer R1
   (...args: infer A2): infer R2
