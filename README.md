@@ -107,7 +107,7 @@ expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
 expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 ```
 
-`.toMatchTypeOf` is meant to be a loose check and it allows `any`:
+In contrary `.toMatchTypeOf` is meant to be a loose check and it allows `any`:
 
 ```typescript
 expectTypeOf<any>().not.toEqualTypeOf<{a: number}>()
@@ -123,11 +123,12 @@ expectTypeOf<any[]>().toMatchTypeOf<number[]>()
 Because of the same reason, `.toMatchTypeOf` also does not take into account readonly properties:
 
 ```typescript
-expectTypeOf<{ readonly a: string; b: number }>().not.toEqualTypeOf<{ a: string; b: number }>();
+expectTypeOf<{readonly a: string}>().not.toEqualTypeOf<{a: string; }>()
+expectTypeOf<{readonly a: string; }>().toEqualTypeOf<{ readonly a: string; }>()
 
 // both checks are passing
-expectTypeOf<{ readonly a: string; b: number }>().toMatchTypeOf<{ a: string }>();
-expectTypeOf<{ readonly a: string; b: number }>().toMatchTypeOf<{ readonly a: string }>();
+expectTypeOf<{readonly a: string; b: number}>().toMatchTypeOf<{a: string}>()
+expectTypeOf<{readonly a: string; b: number}>().toMatchTypeOf<{readonly a: string}>()
 ```
 
 Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships:

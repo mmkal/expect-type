@@ -49,7 +49,8 @@ test('In contrary `.toMatchTypeOf` is meant to be a loose check and it allows `a
 })
 
 test('Because of the same reason, `.toMatchTypeOf` also does not take into account readonly properties', () => {
-  expectTypeOf<{readonly a: string; b: number}>().not.toEqualTypeOf<{a: string; b: number}>()
+  expectTypeOf<{readonly a: string}>().not.toEqualTypeOf<{a: string}>()
+  expectTypeOf<{readonly a: string}>().toEqualTypeOf<{readonly a: string}>()
 
   // both checks are passing
   expectTypeOf<{readonly a: string; b: number}>().toMatchTypeOf<{a: string}>()
