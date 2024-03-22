@@ -18,6 +18,36 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does
 
 999   expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
                                          ~~~~~~~~~~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: "Expected: unknown, Actual: never"; }; }'.
+  The types of 'deeply.nested' are incompatible between these types.
+    Type 'unknown' is not assignable to type '"Expected: unknown, Actual: never"'.
+
+999   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
+                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint 'never'.
+
+999   expectTypeOf<any>().toEqualTypeOf<{a: number}>()
+                                        ~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: never; }'.
+  Types of property 'a' are incompatible.
+    Type 'number' is not assignable to type 'never'.
+
+999   expectTypeOf<{a: any}>().toEqualTypeOf<{a: number}>()
+                                             ~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'number[]' does not satisfy the constraint 'never[]'.
+  Type 'number' is not assignable to type 'never'.
+
+999   expectTypeOf<any[]>().toEqualTypeOf<number[]>()
+                                          ~~~~~~~~
+test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
+
+999   expectTypeOf<{readonly a: string; b: number}>().toEqualTypeOf<{a: string; b: number}>()
+                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  src/index.ts:999:999
+    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided.
 test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
   Types of property 'name' are incompatible.
     Type '"Apple"' is not assignable to type '"Expected: literal string: Apple, Actual: never"'.
@@ -49,12 +79,6 @@ test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
 
 999   expectTypeOf<never>().toBeNumber()
                             ~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: "Expected: unknown, Actual: never"; }; }'.
-  The types of 'deeply.nested' are incompatible between these types.
-    Type 'unknown' is not assignable to type '"Expected: unknown, Actual: never"'.
-
-999   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
-                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
   Type 'ExpectNumber<any>' has no call signatures.
 
@@ -149,7 +173,6 @@ test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
 999   expectTypeOf([1, 2, 3]).items.toBeString()
                                     ~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'number[]' does not satisfy the constraint 'never[]'.
-  Type 'number' is not assignable to type 'never'.
 
 999   expectTypeOf<any[]>().toEqualTypeOf<number[]>()
                                           ~~~~~~~~

@@ -12,7 +12,7 @@ import {expectTypeOf} from 'expect-type'
 import {foo, bar} from '../foo'
 
 // make sure `foo` has type {a: number}
-expectTypeOf(foo).toMatchTypeOf<{a: number}>()
+expectTypeOf(foo).toEqualTypeOf<{a: number}>()
 
 // make sure `bar` is a function taking a string:
 expectTypeOf(bar).parameter(0).toBeString()
@@ -101,6 +101,35 @@ expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
 expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
 ```
 
+`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` properties:
+
+```typescript
+expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
+```
+
+`.toMatchTypeOf` is meant to be a loose check and it allows `any`:
+
+```typescript
+expectTypeOf<any>().not.toEqualTypeOf<{a: number}>()
+expectTypeOf<any>().toMatchTypeOf<{a: number}>()
+
+expectTypeOf<{a: any}>().not.toEqualTypeOf<{a: number}>()
+expectTypeOf<{a: any}>().toMatchTypeOf<{a: number}>()
+
+expectTypeOf<any[]>().not.toEqualTypeOf<number[]>()
+expectTypeOf<any[]>().toMatchTypeOf<number[]>()
+```
+
+Because of the same reason, `.toMatchTypeOf` also does not take into account readonly properties:
+
+```typescript
+expectTypeOf<{ readonly a: string; b: number }>().not.toEqualTypeOf<{ a: string; b: number }>();
+
+// both checks are passing
+expectTypeOf<{ readonly a: string; b: number }>().toMatchTypeOf<{ a: string }>();
+expectTypeOf<{ readonly a: string; b: number }>().toMatchTypeOf<{ readonly a: string }>();
+```
+
 Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships:
 
 ```typescript
@@ -143,12 +172,6 @@ expectTypeOf<never>().toBeNever()
 
 // @ts-expect-error
 expectTypeOf<never>().toBeNumber()
-```
-
-`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` properties:
-
-```typescript
-expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 ```
 
 Test for basic javascript types:
@@ -714,4 +737,4 @@ Once you're ready to make a pull request: clone the repo, and install pnpm if yo
 
 If you're adding a feature, you should write a self-contained usage example in the form of a test, in [test/usage.test.ts](./test/usage.test.ts). This file is used to populate the bulk of this readme using [eslint-plugin-codegen](https://npmjs.com/package/eslint-plugin-codegen), and to generate an ["errors" test file](./test/errors.test.ts), which captures the error messages that are emitted for failing assertions by the typescript compiler. So, the test name should be written as a human-readable sentence explaining the usage example. Have a look at the existing tests for an idea of the style.
 
-After adding the tests, run `npm run lint -- --fix` to update the readme, and `npm test -- --updateSnapshot` to update the errors test. The generated documentation and tests should be pushed to the same branch as the source code, and submitted as a pull request. CI will test that the docs and tests are up to date if you forget to run these commands.
+After adding the tests, run `npm run lint -- --fix` to update the readme, and `npm test -- --update` to update the errors test. The generated documentation and tests should be pushed to the same branch as the source code, and submitted as a pull request. CI will test that the docs and tests are up to date if you forget to run these commands.

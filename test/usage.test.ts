@@ -33,6 +33,29 @@ test('`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties', ()
   expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
 })
 
+test('`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` properties', () => {
+  expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
+})
+
+test('In contrary `.toMatchTypeOf` is meant to be a loose check and it allows `any`', () => {
+  expectTypeOf<any>().not.toEqualTypeOf<{a: number}>()
+  expectTypeOf<any>().toMatchTypeOf<{a: number}>()
+
+  expectTypeOf<{a: any}>().not.toEqualTypeOf<{a: number}>()
+  expectTypeOf<{a: any}>().toMatchTypeOf<{a: number}>()
+
+  expectTypeOf<any[]>().not.toEqualTypeOf<number[]>()
+  expectTypeOf<any[]>().toMatchTypeOf<number[]>()
+})
+
+test('Because of the same reason, `.toMatchTypeOf` also does not take into account readonly properties', () => {
+  expectTypeOf<{readonly a: string; b: number}>().not.toEqualTypeOf<{a: string; b: number}>()
+
+  // both checks are passing
+  expectTypeOf<{readonly a: string; b: number}>().toMatchTypeOf<{a: string}>()
+  expectTypeOf<{readonly a: string; b: number}>().toMatchTypeOf<{readonly a: string}>()
+})
+
 test('Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships', () => {
   type Fruit = {type: 'Fruit'; edible: boolean}
   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
@@ -67,10 +90,6 @@ test('Catch any/unknown/never types', () => {
 
   // @ts-expect-error
   expectTypeOf<never>().toBeNumber()
-})
-
-test('`.toEqualTypeOf` distinguishes between deeply-nested `any` and `unknown` properties', () => {
-  expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 })
 
 // eslint-disable-next-line vitest/valid-title
