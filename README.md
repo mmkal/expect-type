@@ -123,8 +123,8 @@ expectTypeOf<any[]>().toMatchTypeOf<number[]>()
 Because of the same reason, `.toMatchTypeOf` also does not take into account readonly properties:
 
 ```typescript
-expectTypeOf<{readonly a: string}>().not.toEqualTypeOf<{a: string; }>()
-expectTypeOf<{readonly a: string; }>().toEqualTypeOf<{ readonly a: string; }>()
+expectTypeOf<{readonly a: string}>().not.toEqualTypeOf<{a: string}>()
+expectTypeOf<{readonly a: string}>().toEqualTypeOf<{readonly a: string}>()
 
 // both checks are passing
 expectTypeOf<{readonly a: string; b: number}>().toMatchTypeOf<{a: string}>()
