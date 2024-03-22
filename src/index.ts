@@ -297,34 +297,64 @@ const inverted = Symbol('inverted')
 type Inverted<T> = {[inverted]: T}
 
 const expectNull = Symbol('expectNull')
-type ExpectNull<T> = {[expectNull]: T; result: ExtendsExcludingAnyOrNever<T, null>}
+type ExpectNull<T> = {
+  [expectNull]: T
+  result: ExtendsExcludingAnyOrNever<T, null>
+}
 
 const expectUndefined = Symbol('expectUndefined')
-type ExpectUndefined<T> = {[expectUndefined]: T; result: ExtendsExcludingAnyOrNever<T, undefined>}
+type ExpectUndefined<T> = {
+  [expectUndefined]: T
+  result: ExtendsExcludingAnyOrNever<T, undefined>
+}
 
 const expectNumber = Symbol('expectNumber')
-type ExpectNumber<T> = {[expectNumber]: T; result: ExtendsExcludingAnyOrNever<T, number>}
+type ExpectNumber<T> = {
+  [expectNumber]: T
+  result: ExtendsExcludingAnyOrNever<T, number>
+}
 
 const expectString = Symbol('expectString')
-type ExpectString<T> = {[expectString]: T; result: ExtendsExcludingAnyOrNever<T, string>}
+type ExpectString<T> = {
+  [expectString]: T
+  result: ExtendsExcludingAnyOrNever<T, string>
+}
 
 const expectBoolean = Symbol('expectBoolean')
-type ExpectBoolean<T> = {[expectBoolean]: T; result: ExtendsExcludingAnyOrNever<T, boolean>}
+type ExpectBoolean<T> = {
+  [expectBoolean]: T
+  result: ExtendsExcludingAnyOrNever<T, boolean>
+}
 
 const expectVoid = Symbol('expectVoid')
-type ExpectVoid<T> = {[expectVoid]: T; result: ExtendsExcludingAnyOrNever<T, void>}
+type ExpectVoid<T> = {
+  [expectVoid]: T
+  result: ExtendsExcludingAnyOrNever<T, void>
+}
 
 const expectFunction = Symbol('expectFunction')
-type ExpectFunction<T> = {[expectFunction]: T; result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>}
+type ExpectFunction<T> = {
+  [expectFunction]: T
+  result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>
+}
 
 const expectObject = Symbol('expectObject')
-type ExpectObject<T> = {[expectObject]: T; result: ExtendsExcludingAnyOrNever<T, object>}
+type ExpectObject<T> = {
+  [expectObject]: T
+  result: ExtendsExcludingAnyOrNever<T, object>
+}
 
 const expectArray = Symbol('expectArray')
-type ExpectArray<T> = {[expectArray]: T; result: ExtendsExcludingAnyOrNever<T, any[]>}
+type ExpectArray<T> = {
+  [expectArray]: T
+  result: ExtendsExcludingAnyOrNever<T, any[]>
+}
 
 const expectSymbol = Symbol('expectSymbol')
-type ExpectSymbol<T> = {[expectSymbol]: T; result: ExtendsExcludingAnyOrNever<T, symbol>}
+type ExpectSymbol<T> = {
+  [expectSymbol]: T
+  result: ExtendsExcludingAnyOrNever<T, symbol>
+}
 
 const expectAny = Symbol('expectAny')
 type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}
@@ -336,7 +366,10 @@ const expectNever = Symbol('expectNever')
 type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
 
 const expectNullable = Symbol('expectNullable')
-type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
+type ExpectNullable<T> = {
+  [expectNullable]: T
+  result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>
+}
 
 /**
  * Represents a scolder function that checks if the result of an expecter
