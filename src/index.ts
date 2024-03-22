@@ -353,9 +353,16 @@ type Scolder<
 
 /**
  * Represents the positive assertion methods available for type checking in the
+ * {@linkcode expectTypeOf()} utility. Is the `Actual` type is `any`, only the `toBeAny` assertion is available.
+ */
+export type PositiveExpectTypeOf<Actual> =
+  IsAny<Actual> extends true ? Pick<PositiveAssertions<Actual>, 'toBeAny'> : PositiveAssertions<Actual>
+
+/**
+ * Represents the positive assertion methods available for type checking in the
  * {@linkcode expectTypeOf()} utility.
  */
-export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
+export interface PositiveAssertions<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
   toEqualTypeOf: {
     /**
      * Uses TypeScript's internal technique to check for type "identicalness".
@@ -1200,7 +1207,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     'asserts',
     'branded',
   ] as const
-  type Keys = keyof PositiveExpectTypeOf<any> | keyof NegativeExpectTypeOf<any>
+  type Keys = keyof PositiveExpectTypeOf<{}> | keyof NegativeExpectTypeOf<{}>
 
   type FunctionsDict = Record<Exclude<Keys, (typeof nonFunctionProperties)[number]>, any>
   const obj: FunctionsDict = {
