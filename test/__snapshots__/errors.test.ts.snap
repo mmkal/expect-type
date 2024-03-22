@@ -41,8 +41,8 @@ test/usage.test.ts:999:999 - error TS2344: Type 'number[]' does not satisfy the 
                                           ~~~~~~~~
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
-999   expectTypeOf<{readonly a: string; b: number}>().toEqualTypeOf<{a: string; b: number}>()
-                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+999   expectTypeOf<{readonly a: string}>().toEqualTypeOf<{a: string}>()
+                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   src/index.ts:999:999
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
