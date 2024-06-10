@@ -917,7 +917,7 @@ export type Overloads<FunctionType> = FunctionType extends {
                   ? [(...args: A1) => R1, (...args: A2) => R2]
                   : FunctionType extends (...args: infer A1) => infer R1
                     ? [(...args: A1) => R1]
-                    : any
+                    : never
 
 /**
  * Extracts a tuple of parameter types from each overload
