@@ -297,34 +297,64 @@ const inverted = Symbol('inverted')
 type Inverted<T> = {[inverted]: T}
 
 const expectNull = Symbol('expectNull')
-type ExpectNull<T> = {[expectNull]: T; result: ExtendsExcludingAnyOrNever<T, null>}
+type ExpectNull<T> = {
+  [expectNull]: T
+  result: ExtendsExcludingAnyOrNever<T, null>
+}
 
 const expectUndefined = Symbol('expectUndefined')
-type ExpectUndefined<T> = {[expectUndefined]: T; result: ExtendsExcludingAnyOrNever<T, undefined>}
+type ExpectUndefined<T> = {
+  [expectUndefined]: T
+  result: ExtendsExcludingAnyOrNever<T, undefined>
+}
 
 const expectNumber = Symbol('expectNumber')
-type ExpectNumber<T> = {[expectNumber]: T; result: ExtendsExcludingAnyOrNever<T, number>}
+type ExpectNumber<T> = {
+  [expectNumber]: T
+  result: ExtendsExcludingAnyOrNever<T, number>
+}
 
 const expectString = Symbol('expectString')
-type ExpectString<T> = {[expectString]: T; result: ExtendsExcludingAnyOrNever<T, string>}
+type ExpectString<T> = {
+  [expectString]: T
+  result: ExtendsExcludingAnyOrNever<T, string>
+}
 
 const expectBoolean = Symbol('expectBoolean')
-type ExpectBoolean<T> = {[expectBoolean]: T; result: ExtendsExcludingAnyOrNever<T, boolean>}
+type ExpectBoolean<T> = {
+  [expectBoolean]: T
+  result: ExtendsExcludingAnyOrNever<T, boolean>
+}
 
 const expectVoid = Symbol('expectVoid')
-type ExpectVoid<T> = {[expectVoid]: T; result: ExtendsExcludingAnyOrNever<T, void>}
+type ExpectVoid<T> = {
+  [expectVoid]: T
+  result: ExtendsExcludingAnyOrNever<T, void>
+}
 
 const expectFunction = Symbol('expectFunction')
-type ExpectFunction<T> = {[expectFunction]: T; result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>}
+type ExpectFunction<T> = {
+  [expectFunction]: T
+  result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>
+}
 
 const expectObject = Symbol('expectObject')
-type ExpectObject<T> = {[expectObject]: T; result: ExtendsExcludingAnyOrNever<T, object>}
+type ExpectObject<T> = {
+  [expectObject]: T
+  result: ExtendsExcludingAnyOrNever<T, object>
+}
 
 const expectArray = Symbol('expectArray')
-type ExpectArray<T> = {[expectArray]: T; result: ExtendsExcludingAnyOrNever<T, any[]>}
+type ExpectArray<T> = {
+  [expectArray]: T
+  result: ExtendsExcludingAnyOrNever<T, any[]>
+}
 
 const expectSymbol = Symbol('expectSymbol')
-type ExpectSymbol<T> = {[expectSymbol]: T; result: ExtendsExcludingAnyOrNever<T, symbol>}
+type ExpectSymbol<T> = {
+  [expectSymbol]: T
+  result: ExtendsExcludingAnyOrNever<T, symbol>
+}
 
 const expectAny = Symbol('expectAny')
 type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}
@@ -336,7 +366,10 @@ const expectNever = Symbol('expectNever')
 type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
 
 const expectNullable = Symbol('expectNullable')
-type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
+type ExpectNullable<T> = {
+  [expectNullable]: T
+  result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>
+}
 
 /**
  * Represents a scolder function that checks if the result of an expecter
@@ -744,6 +777,166 @@ export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options[
   : NegativeExpectTypeOf<Actual>
 
 /**
+ * Any function with any arguments.
+ *
+ * @internal
+ */
+export type AnyFunction = (...args: any[]) => any
+
+/**
+ * Extracts a tuple of function types from a given
+ * function type with up to 10 overloads.
+ *
+ * @template FunctionType - The function type to extract overloads from.
+ */
+export type Overloads<FunctionType> = FunctionType extends {
+  (...args: infer A1): infer R1
+  (...args: infer A2): infer R2
+  (...args: infer A3): infer R3
+  (...args: infer A4): infer R4
+  (...args: infer A5): infer R5
+  (...args: infer A6): infer R6
+  (...args: infer A7): infer R7
+  (...args: infer A8): infer R8
+  (...args: infer A9): infer R9
+  (...args: infer A10): infer R10
+}
+  ? [
+      (...args: A1) => R1,
+      (...args: A2) => R2,
+      (...args: A3) => R3,
+      (...args: A4) => R4,
+      (...args: A5) => R5,
+      (...args: A6) => R6,
+      (...args: A7) => R7,
+      (...args: A8) => R8,
+      (...args: A9) => R9,
+      (...args: A10) => R10,
+    ]
+  : FunctionType extends {
+        (...args: infer A1): infer R1
+        (...args: infer A2): infer R2
+        (...args: infer A3): infer R3
+        (...args: infer A4): infer R4
+        (...args: infer A5): infer R5
+        (...args: infer A6): infer R6
+        (...args: infer A7): infer R7
+        (...args: infer A8): infer R8
+        (...args: infer A9): infer R9
+      }
+    ? [
+        (...args: A1) => R1,
+        (...args: A2) => R2,
+        (...args: A3) => R3,
+        (...args: A4) => R4,
+        (...args: A5) => R5,
+        (...args: A6) => R6,
+        (...args: A7) => R7,
+        (...args: A8) => R8,
+        (...args: A9) => R9,
+      ]
+    : FunctionType extends {
+          (...args: infer A1): infer R1
+          (...args: infer A2): infer R2
+          (...args: infer A3): infer R3
+          (...args: infer A4): infer R4
+          (...args: infer A5): infer R5
+          (...args: infer A6): infer R6
+          (...args: infer A7): infer R7
+          (...args: infer A8): infer R8
+        }
+      ? [
+          (...args: A1) => R1,
+          (...args: A2) => R2,
+          (...args: A3) => R3,
+          (...args: A4) => R4,
+          (...args: A5) => R5,
+          (...args: A6) => R6,
+          (...args: A7) => R7,
+          (...args: A8) => R8,
+        ]
+      : FunctionType extends {
+            (...args: infer A1): infer R1
+            (...args: infer A2): infer R2
+            (...args: infer A3): infer R3
+            (...args: infer A4): infer R4
+            (...args: infer A5): infer R5
+            (...args: infer A6): infer R6
+            (...args: infer A7): infer R7
+          }
+        ? [
+            (...args: A1) => R1,
+            (...args: A2) => R2,
+            (...args: A3) => R3,
+            (...args: A4) => R4,
+            (...args: A5) => R5,
+            (...args: A6) => R6,
+            (...args: A7) => R7,
+          ]
+        : FunctionType extends {
+              (...args: infer A1): infer R1
+              (...args: infer A2): infer R2
+              (...args: infer A3): infer R3
+              (...args: infer A4): infer R4
+              (...args: infer A5): infer R5
+              (...args: infer A6): infer R6
+            }
+          ? [
+              (...args: A1) => R1,
+              (...args: A2) => R2,
+              (...args: A3) => R3,
+              (...args: A4) => R4,
+              (...args: A5) => R5,
+              (...args: A6) => R6,
+            ]
+          : FunctionType extends {
+                (...args: infer A1): infer R1
+                (...args: infer A2): infer R2
+                (...args: infer A3): infer R3
+                (...args: infer A4): infer R4
+                (...args: infer A5): infer R5
+              }
+            ? [(...args: A1) => R1, (...args: A2) => R2, (...args: A3) => R3, (...args: A4) => R4, (...args: A5) => R5]
+            : FunctionType extends {
+                  (...args: infer A1): infer R1
+                  (...args: infer A2): infer R2
+                  (...args: infer A3): infer R3
+                  (...args: infer A4): infer R4
+                }
+              ? [(...args: A1) => R1, (...args: A2) => R2, (...args: A3) => R3, (...args: A4) => R4]
+              : FunctionType extends {
+                    (...args: infer A1): infer R1
+                    (...args: infer A2): infer R2
+                    (...args: infer A3): infer R3
+                  }
+                ? [(...args: A1) => R1, (...args: A2) => R2, (...args: A3) => R3]
+                : FunctionType extends {
+                      (...args: infer A1): infer R1
+                      (...args: infer A2): infer R2
+                    }
+                  ? [(...args: A1) => R1, (...args: A2) => R2]
+                  : FunctionType extends (...args: infer A1) => infer R1
+                    ? [(...args: A1) => R1]
+                    : never
+
+/**
+ * Extracts a tuple of parameter types from each overload
+ * of a given function type.
+ *
+ * @template FunctionType - The function type to extract parameter types from.
+ */
+export type OverloadedParameters<FunctionType> =
+  Overloads<FunctionType> extends infer O ? {[K in keyof O]: Parameters<Extract<O[K], (...args: any) => any>>} : never
+
+/**
+ * Extracts a tuple of return types from each overload of a given function type.
+ *
+ * @template FunctionType - The function type to extract return types from.
+ */
+export type OverloadedReturnType<FunctionType> =
+  Overloads<FunctionType> extends infer O ? {[K in keyof O]: ReturnType<Extract<O[K], (...args: any) => any>>} : never
+
+/**
  * Represents the base interface for the
  * {@linkcode expectTypeOf()} function.
  * Provides a set of assertion methods to perform type checks on a value.
@@ -840,7 +1033,13 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param args - The arguments to check for callability.
    * @returns `true`.
    */
-  toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
+  toBeCallableWith: Options['positive'] extends true
+    ? (
+        ...args: OverloadedParameters<Actual> extends readonly any[]
+          ? OverloadedParameters<Actual>[number]
+          : Params<Actual>
+      ) => true
+    : never
 
   /**
    * Checks whether a class is constructible with the given parameters.
