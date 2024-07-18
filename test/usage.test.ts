@@ -17,7 +17,7 @@ test('`.toEqualTypeOf` succeeds for objects with different values, but the same 
   expectTypeOf({a: 1}).toEqualTypeOf({a: 2})
 })
 
-test('`.toEqualTypeOf` fails on extra properties', () => {
+test('`.toEqualTypeOf` fails on excess properties', () => {
   // @ts-expect-error
   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
 })
