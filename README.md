@@ -77,7 +77,7 @@ expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
 expectTypeOf({a: 1}).toEqualTypeOf({a: 2})
 ```
 
-`.toEqualTypeOf` fails on extra properties:
+`.toEqualTypeOf` fails on excess properties:
 
 ```typescript
 // @ts-expect-error
