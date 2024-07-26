@@ -316,6 +316,32 @@ expectTypeOf<HasParam>().parameters.toEqualTypeOf<[string]>()
 expectTypeOf<HasParam>().returns.toBeVoid()
 ```
 
+Up to ten overloads will produce union types for `.parameters` and `.returns`.:
+
+```typescript
+type Factorize = {
+  (input: number): number[]
+  (input: bigint): bigint[]
+}
+
+expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
+expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
+
+expectTypeOf<Factorize>().parameter(0).toEqualTypeOf<number | bigint>()
+```
+
+Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>, which simply choose a single overload (the last, for some reason). In the context of testing types, though, a union is more useful. To test the TypeScript behaviour, you can always just use the built-in types directly.:
+
+```typescript
+type Factorize = {
+  (input: number): number[]
+  (input: bigint): bigint[]
+}
+
+expectTypeOf<Parameters<Factorize>>().toEqualTypeOf<[bigint]>()
+expectTypeOf<ReturnType<Factorize>>().toEqualTypeOf<bigint[]>()
+```
+
 More examples of ways to work with functions - parameters using `.parameter(n)` or `.parameters`, and return values using `.returns`:
 
 ```typescript
@@ -335,6 +361,18 @@ expectTypeOf(1).parameter(0).toBeNever()
 const twoArgFunc = (a: number, b: string) => ({a, b})
 
 expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
+```
+
+`.toBeCallableWith` allows for overloads:
+
+```typescript
+type Factorize = {
+  (input: number): number[]
+  (input: bigint): bigint[]
+}
+
+expectTypeOf<Factorize>().toBeCallableWith(6)
+expectTypeOf<Factorize>().toBeCallableWith(6n)
 ```
 
 You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error::
