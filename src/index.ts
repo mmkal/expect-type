@@ -743,6 +743,35 @@ export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options[
   ? PositiveExpectTypeOf<Actual>
   : NegativeExpectTypeOf<Actual>
 
+export type OverloadsInfoTuple<F> = F extends {
+  (...args: infer A1): infer R1
+  (...args: infer A2): infer R2
+  (...args: infer A3): infer R3
+  (...args: infer A4): infer R4
+  (...args: infer A5): infer R5
+  (...args: infer A6): infer R6
+  (...args: infer A7): infer R7
+  (...args: infer A8): infer R8
+  (...args: infer A9): infer R9
+  (...args: infer A10): infer R10
+}
+  ? [
+      {parameters: A1; return: R1},
+      {parameters: A2; return: R2},
+      {parameters: A3; return: R3},
+      {parameters: A4; return: R4},
+      {parameters: A5; return: R5},
+      {parameters: A6; return: R6},
+      {parameters: A7; return: R7},
+      {parameters: A8; return: R8},
+      {parameters: A9; return: R9},
+      {parameters: A10; return: R10},
+    ]
+  : never
+
+export type OverloadParameters<F> = OverloadsInfoTuple<F>[number]['parameters']
+export type OverloadReturnTypes<F> = OverloadsInfoTuple<F>[number]['return']
+
 /**
  * Represents the base interface for the
  * {@linkcode expectTypeOf()} function.
@@ -840,7 +869,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param args - The arguments to check for callability.
    * @returns `true`.
    */
-  toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
+  toBeCallableWith: Options['positive'] extends true ? (...args: OverloadParameters<Actual>) => true : never
 
   /**
    * Checks whether a class is constructible with the given parameters.
@@ -987,7 +1016,9 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param index - The index of the parameter to extract.
    * @returns The extracted parameter type.
    */
-  parameter: <Index extends keyof Params<Actual>>(index: Index) => ExpectTypeOf<Params<Actual>[Index], Options>
+  parameter: <Index extends keyof OverloadParameters<Actual>>(
+    index: Index,
+  ) => ExpectTypeOf<OverloadParameters<Actual>[Index], Options>
 
   /**
    * Equivalent to the {@linkcode Parameters} utility type.
@@ -1005,7 +1036,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * expectTypeOf(hasParam).parameters.toEqualTypeOf<[string]>()
    * ```
    */
-  parameters: ExpectTypeOf<Params<Actual>, Options>
+  parameters: ExpectTypeOf<OverloadParameters<Actual>, Options>
 
   /**
    * Equivalent to the {@linkcode ConstructorParameters} utility type.
@@ -1059,7 +1090,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * expectTypeOf((a: number) => [a, a]).returns.toEqualTypeOf([1, 2])
    * ```
    */
-  returns: Actual extends (...args: any[]) => infer R ? ExpectTypeOf<R, Options> : never
+  returns: Actual extends Function ? ExpectTypeOf<OverloadReturnTypes<Actual>, Options> : never
 
   /**
    * Extracts resolved value of a Promise,

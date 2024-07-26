@@ -213,6 +213,28 @@ test("But often it's preferable to use `.parameters` or `.returns` for more spec
   expectTypeOf<HasParam>().returns.toBeVoid()
 })
 
+test('Up to ten overloads will produce union types for `.parameters` and `.returns`.', () => {
+  type Factorize = {
+    (input: number): number[]
+    (input: bigint): bigint[]
+  }
+
+  expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
+  expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
+
+  expectTypeOf<Factorize>().parameter(0).toEqualTypeOf<number | bigint>()
+})
+
+test("Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>, which simply choose a single overload (the last, for some reason). In the context of testing types, though, a union is more useful. To test the TypeScript behaviour, you can always just use the built-in types directly.", () => {
+  type Factorize = {
+    (input: number): number[]
+    (input: bigint): bigint[]
+  }
+
+  expectTypeOf<Parameters<Factorize>>().toEqualTypeOf<[bigint]>()
+  expectTypeOf<ReturnType<Factorize>>().toEqualTypeOf<bigint[]>()
+})
+
 test('More examples of ways to work with functions - parameters using `.parameter(n)` or `.parameters`, and return values using `.returns`', () => {
   const f = (a: number) => [a, a]
 
@@ -230,6 +252,16 @@ test('More examples of ways to work with functions - parameters using `.paramete
   const twoArgFunc = (a: number, b: string) => ({a, b})
 
   expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
+})
+
+test('`.toBeCallableWith` allows for overloads', () => {
+  type Factorize = {
+    (input: number): number[]
+    (input: bigint): bigint[]
+  }
+
+  expectTypeOf<Factorize>().toBeCallableWith(6)
+  expectTypeOf<Factorize>().toBeCallableWith(6n)
 })
 
 test("You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error:", () => {
