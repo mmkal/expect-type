@@ -17,7 +17,7 @@ jobs:
     name: Test Types with TypeScript ${{ matrix.ts }}
     strategy:
       matrix:
-        ts: [4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4]
+        ts: [4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5]
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
