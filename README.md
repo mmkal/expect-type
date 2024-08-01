@@ -779,4 +779,4 @@ After adding the tests, run `npm run lint -- --fix` to update the readme, and `n
 
 ### Documentation of limitations through tests
 
-Limitations of the library are documented via tests in usage.test.ts. This means that if a future TypeScript version (or library version) fixes the limitation, the test will start failing, so it will be automatically removed from the docs once it no longer applies.
+Limitations of the library are documented through tests in `usage.test.ts`. This means that if a future TypeScript version (or library version) fixes the limitation, the test will start failing, and it will be automatically removed from the documentation once it no longer applies.
