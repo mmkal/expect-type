@@ -365,7 +365,7 @@ const twoArgFunc = (a: number, b: string) => ({a, b})
 expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
 ```
 
-`.toBeCallableWith` allows for overloads:
+`.toBeCallableWith` allows for overloads. You can also use it to narrow down the return type for given input parameters.:
 
 ```typescript
 type Factorize = {
@@ -375,6 +375,9 @@ type Factorize = {
 
 expectTypeOf<Factorize>().toBeCallableWith(6)
 expectTypeOf<Factorize>().toBeCallableWith(6n)
+
+expectTypeOf<Factorize>().toBeCallableWith(6).returns.toEqualTypeOf<number[]>()
+expectTypeOf<Factorize>().toBeCallableWith(6n).returns.toEqualTypeOf<bigint[]>()
 ```
 
 You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error::

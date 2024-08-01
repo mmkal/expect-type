@@ -254,7 +254,7 @@ test('More examples of ways to work with functions - parameters using `.paramete
   expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
 })
 
-test('`.toBeCallableWith` allows for overloads', () => {
+test('`.toBeCallableWith` allows for overloads. You can also use it to narrow down the return type for given input parameters.', () => {
   type Factorize = {
     (input: number): number[]
     (input: bigint): bigint[]
@@ -262,6 +262,9 @@ test('`.toBeCallableWith` allows for overloads', () => {
 
   expectTypeOf<Factorize>().toBeCallableWith(6)
   expectTypeOf<Factorize>().toBeCallableWith(6n)
+
+  expectTypeOf<Factorize>().toBeCallableWith(6).returns.toEqualTypeOf<number[]>()
+  expectTypeOf<Factorize>().toBeCallableWith(6n).returns.toEqualTypeOf<bigint[]>()
 })
 
 test("You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error:", () => {

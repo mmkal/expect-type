@@ -1,4 +1,4 @@
-import {OverloadParameters, OverloadReturnTypes} from './overloads'
+import {OverloadParameters, OverloadReturnTypeForParameters, OverloadReturnTypes} from './overloads'
 import {
   StrictEqualUsingTSInternalIdenticalToOperator,
   MismatchInfo,
@@ -516,7 +516,14 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param args - The arguments to check for callability.
    * @returns `true`.
    */
-  toBeCallableWith: Options['positive'] extends true ? (...args: OverloadParameters<Actual>) => true : never
+  toBeCallableWith: Options['positive'] extends true
+    ? <A extends OverloadParameters<Actual>>(
+        ...args: A
+      ) => {
+        returns: ExpectTypeOf<OverloadReturnTypeForParameters<Actual, A>, Options>
+      }
+    : //ExpectTypeOf<SelectOverloadsInfo<OverloadsInfoTuple<Actual>, A>, Options>
+      never
 
   /**
    * Checks whether a class is constructible with the given parameters.
@@ -899,8 +906,12 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toBeNullable: fn,
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
-    toBeCallableWith: fn,
     toBeConstructibleWith: fn,
+    toBeCallableWith: () => ({
+      get returns() {
+        return expectTypeOf({})
+      },
+    }),
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
     extract: expectTypeOf,
     exclude: expectTypeOf,

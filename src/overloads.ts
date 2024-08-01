@@ -12,14 +12,13 @@ export type TSPost53OverloadsInfoTuple<F> =
   ? [{parameters: A1; return: R1}, {parameters: A2; return: R2}, {parameters: A3; return: R3}, {parameters: A4; return: R4}, {parameters: A5; return: R5}, {parameters: A6; return: R6}, {parameters: A7; return: R7}, {parameters: A8; return: R8}, {parameters: A9; return: R9}, {parameters: A10; return: R10}, ]
   : never
 
+export type BaseOverloadInfo = {parameters: unknown[]; return: unknown}
+
 /**
  * `true` iff `T` is equivalent to `{parameters: unknown[]; return: unknown}`, which is what an overload info object looks like for a non-existent overload
  * This is useful because older versions of typescript end up with 9 "useless" overloads and one real one for parameterless/generic functions
  */
-export type IsUselessOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOperator<
-  T,
-  {parameters: unknown[]; return: unknown}
->
+export type IsUselessOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOperator<T, BaseOverloadInfo>
 
 // prettier-ignore
 /**
@@ -80,3 +79,13 @@ export type OverloadsInfoTuple<F> =
 export type OverloadParameters<F> = OverloadsInfoTuple<F>[number]['parameters']
 /** A union type of the return types for any overload of function `F` */
 export type OverloadReturnTypes<F> = OverloadsInfoTuple<F>[number]['return']
+
+/** Takes an overloads info `Tuple`, produced from {@linkcode OverloadsInfoTuple} and rejects the ones incompatible with `A` */
+export type SelectOverloadsInfo<Tuple extends BaseOverloadInfo[], A extends unknown[]> = {
+  [K in keyof Tuple]: A extends Tuple[K]['parameters'] ? Tuple[K] : never
+}
+
+// prettier-ignore
+/** Gets the matching return type from a parameters-type (usually a tuple) */
+export type OverloadReturnTypeForParameters<F, A extends unknown[]> =
+  SelectOverloadsInfo<OverloadsInfoTuple<F>, A>[number]['return']
