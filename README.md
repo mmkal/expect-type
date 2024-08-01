@@ -606,7 +606,7 @@ expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
 
 ```
 
-Overloads limitation for typescript <5.3: overloaded functions which include an overload looking like `(...args: unknown[]) => unknown` will excluded `unknown[]` from `.parameters` and exclude `unknown` from `.returns`:
+Overloads limitation for typescript <5.3: Overloaded functions which include an overload resembling `(...args: unknown[]) => unknown` will exclude `unknown[]` from `.parameters` and exclude `unknown` from `.returns`:
 
 ```typescript
 type Factorize = {
@@ -618,7 +618,7 @@ type Factorize = {
 expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
 expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
 
-This overload just allows any input and returns unknown output anyway though. If you are worried about this for some reason, you'll have to update TypeScript to 5.3+.
+This overload, however, allows any input and returns an unknown output anyway, so it's not very useful. If you are worried about this for some reason, you'll have to update TypeScript to 5.3+.
 
 ### Why is my assertion failing?
 
