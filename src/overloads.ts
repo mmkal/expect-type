@@ -1,8 +1,8 @@
-import {StrictEqualUsingTSInternalIdenticalToOperator, IsNever} from '.'
+import {StrictEqualUsingTSInternalIdenticalToOperator, IsNever} from './utils'
 
 // prettier-ignore
 /**
- * The preferred way to get overload info from a function `F`. Recent versions of typescript will match any function against a generic 10-overload type, filling in slots with duplicates of the function.
+ * The simple(ish) way to get overload info from a function `F`. Recent versions of typescript will match any function against a generic 10-overload type, filling in slots with duplicates of the function.
  * So, we can just match against a single type and get all the overloads.
  *
  * For older versions of typescript, we'll need to painstakingly do ten separate matches.
@@ -14,7 +14,7 @@ export type TSPost53OverloadsInfoTuple<F> =
 
 /**
  * `true` iff `T` is equivalent to `{parameters: unknown[]; return: unknown}`, which is what an overload info object looks like for a non-existent overload
- * This is useful because older versions of typescript end up with 9 "useless" overloads and one real one for parameterless functions
+ * This is useful because older versions of typescript end up with 9 "useless" overloads and one real one for parameterless/generic functions
  */
 export type IsUselessOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOperator<
   T,
@@ -24,17 +24,17 @@ export type IsUselessOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOper
 // prettier-ignore
 /**
  * For older versions of typescript, we need two separate workarounds to get overload info.
- * First, we need need to use `DecreasingOverloadsInfoTuple` to get the overload info for functions with 1-10 overloads.
+ * First, we need need to use {@linkcode DecreasingOverloadsInfoTuple} to get the overload info for functions with 1-10 overloads.
  * Then, we need to filter out the "useless" overloads that are present in older versions of typescript, for parameterless functions.
- * To do this we check if `F` is parameterless, then use `IsUselessOverloadInfo` to replace useless overloads with the parameterless overload.
+ * To do this we check if `F` is parameterless, then use {@linkcode IsUselessOverloadInfo} to replace useless overloads with the parameterless overload.
  */
-export type TSPre53OverloadsInfoTuple<F> = F extends () => infer R
+export type TSPre53OverloadsInfoTuple<F> = F extends (...args: infer A) => infer R
   ? DecreasingOverloadsInfoTuple<F> extends infer T
     ? Extract<
         {
           [K in keyof T]:
             IsUselessOverloadInfo<T[K]> extends true
-              ? {parameters: []; return: R}
+              ? {parameters: A; return: R}
               : T[K]
         },
         Array<{parameters: unknown[]; return: unknown}>
