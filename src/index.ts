@@ -1,3 +1,5 @@
+import {OverloadParameters, OverloadReturnTypes} from './overloads'
+
 /**
  * Negates a boolean type.
  */
@@ -218,7 +220,7 @@ export type ExtendsExcludingAnyOrNever<L, R> = IsAny<L> extends true ? IsAny<R> 
  *
  * @see {@link https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122 much history}
  */
-type StrictEqualUsingTSInternalIdenticalToOperator<L, R> =
+export type StrictEqualUsingTSInternalIdenticalToOperator<L, R> =
   (<T>() => T extends (L & T) | T ? true : false) extends <T>() => T extends (R & T) | T ? true : false
     ? IsNever<L> extends IsNever<R>
       ? true
@@ -742,35 +744,6 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
 export type ExpectTypeOf<Actual, Options extends {positive: boolean}> = Options['positive'] extends true
   ? PositiveExpectTypeOf<Actual>
   : NegativeExpectTypeOf<Actual>
-
-export type OverloadsInfoTuple<F> = F extends {
-  (...args: infer A1): infer R1
-  (...args: infer A2): infer R2
-  (...args: infer A3): infer R3
-  (...args: infer A4): infer R4
-  (...args: infer A5): infer R5
-  (...args: infer A6): infer R6
-  (...args: infer A7): infer R7
-  (...args: infer A8): infer R8
-  (...args: infer A9): infer R9
-  (...args: infer A10): infer R10
-}
-  ? [
-      {parameters: A1; return: R1},
-      {parameters: A2; return: R2},
-      {parameters: A3; return: R3},
-      {parameters: A4; return: R4},
-      {parameters: A5; return: R5},
-      {parameters: A6; return: R6},
-      {parameters: A7; return: R7},
-      {parameters: A8; return: R8},
-      {parameters: A9; return: R9},
-      {parameters: A10; return: R10},
-    ]
-  : never
-
-export type OverloadParameters<F> = OverloadsInfoTuple<F>[number]['parameters']
-export type OverloadReturnTypes<F> = OverloadsInfoTuple<F>[number]['return']
 
 /**
  * Represents the base interface for the
