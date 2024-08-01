@@ -599,8 +599,11 @@ class B {
 // Instead of the above, try something like this:
 expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
 ```
+<!-- codegen:end -->
 
-Overloads limitation: overloaded functions which include an overload looking like `(...args: unknown[]) => unknown` will excluded `unknown[]` from `.parameters` and exclude `unknown` from `.returns`. This overload just allows any input and returns unknown output anyway though.:
+```
+
+Overloads limitation for typescript <5.3: overloaded functions which include an overload looking like `(...args: unknown[]) => unknown` will excluded `unknown[]` from `.parameters` and exclude `unknown` from `.returns`:
 
 ```typescript
 type Factorize = {
@@ -611,8 +614,8 @@ type Factorize = {
 
 expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
 expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
-```
-<!-- codegen:end -->
+
+This overload just allows any input and returns unknown output anyway though. If you are worried about this for some reason, you'll have to update TypeScript to 5.3+.
 
 ### Why is my assertion failing?
 

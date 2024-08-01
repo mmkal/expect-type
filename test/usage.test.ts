@@ -446,14 +446,3 @@ test('Another limitation: passing `this` references to `expectTypeOf` results in
   // Instead of the above, try something like this:
   expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
 })
-
-test('Overloads limitation: overloaded functions which include an overload looking like `(...args: unknown[]) => unknown` will excluded `unknown[]` from `.parameters` and exclude `unknown` from `.returns`. This overload just allows any input and returns unknown output anyway though.', () => {
-  type Factorize = {
-    (...args: unknown[]): unknown
-    (input: number): number[]
-    (input: bigint): bigint[]
-  }
-
-  expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
-  expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
-})

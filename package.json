@@ -29,6 +29,7 @@
   "scripts": {
     "eslint": "eslint --max-warnings 0",
     "lint": "tsc && pnpm eslint .",
+    "ts52": "./node_modules/ts52/bin/tsc",
     "type-check": "tsc",
     "build": "tsc -p tsconfig.lib.json",
     "test": "vitest run"
@@ -40,7 +41,8 @@
     "np": "^10.0.0",
     "strip-ansi": "6.0.1",
     "ts-morph": "16.0.0",
-    "typescript": "5.2.2",
+    "ts52": "npm:typescript@5.2.2",
+    "typescript": "5.4.5",
     "vitest": "^1.4.0"
   }
 }
