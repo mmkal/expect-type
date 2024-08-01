@@ -213,7 +213,7 @@ test("But often it's preferable to use `.parameters` or `.returns` for more spec
   expectTypeOf<HasParam>().returns.toBeVoid()
 })
 
-test('Up to ten overloads will produce union types for `.parameters` and `.returns`.', () => {
+test('Up to ten overloads will produce union types for `.parameters` and `.returns`', () => {
   type Factorize = {
     (input: number): number[]
     (input: bigint): bigint[]
@@ -225,7 +225,7 @@ test('Up to ten overloads will produce union types for `.parameters` and `.retur
   expectTypeOf<Factorize>().parameter(0).toEqualTypeOf<number | bigint>()
 })
 
-test("Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>, which simply choose a single overload (the last, for some reason). In the context of testing types, though, a union is more useful. To test the TypeScript behaviour, you can always just use the built-in types directly.", () => {
+test("Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>, which simply choose a single overload (the last, for some reason). In the context of testing types, though, a union is more useful. To test the TypeScript behaviour, you can always just use the built-in types directly", () => {
   type Factorize = {
     (input: number): number[]
     (input: bigint): bigint[]
