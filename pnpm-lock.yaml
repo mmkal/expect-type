@@ -26,9 +26,6 @@ importers:
       ts-morph:
         specifier: 16.0.0
         version: 16.0.0
-      ts52:
-        specifier: npm:typescript@5.2.2
-        version: typescript@5.2.2
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -3177,11 +3174,6 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
-
-  typescript@5.2.2:
-    resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
-    engines: {node: '>=14.17'}
-    hasBin: true
 
   typescript@5.5.4:
     resolution: {integrity: sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==}
@@ -6900,8 +6892,6 @@ snapshots:
       typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
-
-  typescript@5.2.2: {}
 
   typescript@5.5.4: {}
 
