@@ -604,8 +604,6 @@ expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
 ```
 <!-- codegen:end -->
 
-```
-
 Overloads limitation for typescript <5.3: Overloaded functions which include an overload resembling `(...args: unknown[]) => unknown` will exclude `unknown[]` from `.parameters` and exclude `unknown` from `.returns`:
 
 ```typescript
@@ -617,6 +615,7 @@ type Factorize = {
 
 expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
 expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
+```
 
 This overload, however, allows any input and returns an unknown output anyway, so it's not very useful. If you are worried about this for some reason, you'll have to update TypeScript to 5.3+.
 
