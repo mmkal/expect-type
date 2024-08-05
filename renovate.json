@@ -1,43 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "baseBranches": ["deps"],
+  "automerge": true,
+  "automergeType": "branch",
   "extends": [
-    "config:base",
-    ":semanticCommits"
+    "config:recommended"
   ],
-  "prConcurrentLimit": 4,
-  "dependencyDashboard": true,
-  "dependencyDashboardAutoclose": true,
-  "packageRules": [
-    {
-      "groupName": "typescript",
-      "matchPackagePatterns": [
-        "typescript",
-        "@types/node",
-        "ts-morph"
-      ]
-    },
-    {
-      "depTypeList": [
-        "devDependencies"
-      ],
-      "groupName": "devDependencies",
-      "excludePackagePatterns": [
-        "eslint",
-        "prettier",
-        "typescript"
-      ],
-      "automerge": true
-    },
-    {
-      "depTypeList": [
-        "devDependencies"
-      ],
-      "groupName": "lint",
-      "matchPackagePatterns": [
-        "eslint",
-        "prettier"
-      ],
-      "automerge": true
-    }
-  ]
+  "commitBody": "{{releases}}"
 }
