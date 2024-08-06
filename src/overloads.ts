@@ -26,6 +26,8 @@ export type IsUselessOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOper
  * First, we need need to use {@linkcode DecreasingOverloadsInfoTuple} to get the overload info for functions with 1-10 overloads.
  * Then, we need to filter out the "useless" overloads that are present in older versions of TypeScript, for parameterless functions.
  * To do this we check if `F` is parameterless, then use {@linkcode IsUselessOverloadInfo} to replace useless overloads with the parameterless overload.
+ *
+ * Related: https://github.com/microsoft/TypeScript/issues/28867
  */
 export type TSPre53OverloadsInfoTuple<F> = F extends (...args: infer A) => infer R
   ? DecreasingOverloadsInfoTuple<F> extends infer T

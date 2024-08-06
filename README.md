@@ -34,6 +34,7 @@ See below for lots more examples.
    - [Internal type helpers](#internal-type-helpers)
    - [Error messages](#error-messages)
       - [Concrete "expected" objects vs type arguments](#concrete-expected-objects-vs-type-arguments)
+   - [Overloaded functions](#overloaded-functions)
    - [Within test frameworks](#within-test-frameworks)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
    - [Limitations](#limitations)
@@ -330,7 +331,7 @@ expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
 expectTypeOf<Factorize>().parameter(0).toEqualTypeOf<number | bigint>()
 ```
 
-Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>, which simply choose a single overload (the last, for some reason). In the context of testing types, though, a union is more useful. To test the TypeScript behaviour, you can always just use the built-in types directly:
+Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>, which simply choose a single overload (see the [Overloaded functions](#overloaded-functions) section for more information):
 
 ```typescript
 type Factorize = {
@@ -373,9 +374,43 @@ type Factorize = {
 
 expectTypeOf<Factorize>().toBeCallableWith(6)
 expectTypeOf<Factorize>().toBeCallableWith(6n)
+```
 
+`.toBeCallableWith` returns a type that can be used to narrow down the return type for given input parameters.:
+
+```typescript
+type Factorize = {
+  (input: number): number[]
+  (input: bigint, options: {force: boolean}): bigint[]
+}
 expectTypeOf<Factorize>().toBeCallableWith(6).returns.toEqualTypeOf<number[]>()
-expectTypeOf<Factorize>().toBeCallableWith(6n).returns.toEqualTypeOf<bigint[]>()
+```
+
+`.toBeCallableWith` can be used to narrow down the parameters of a function:
+
+```typescript
+type Delete = {
+  (path: string): void
+  (paths: string[], options?: {force: boolean}): void
+}
+
+expectTypeOf<Delete>().toBeCallableWith('abc').parameters.toEqualTypeOf<[string]>()
+expectTypeOf<Delete>()
+  .toBeCallableWith(['abc', 'def'], {force: true})
+  .parameters.toEqualTypeOf<[string[], options?: {force: boolean}]>()
+
+expectTypeOf<Delete>().toBeCallableWith('abc').parameter(0).toBeString()
+expectTypeOf<Delete>().toBeCallableWith('abc').parameter(1).toBeUndefined()
+
+expectTypeOf<Delete>()
+  .toBeCallableWith(['abc', 'def', 'ghi'])
+  .parameter(0)
+  .toEqualTypeOf<string[]>()
+
+expectTypeOf<Delete>()
+  .toBeCallableWith(['abc', 'def', 'ghi'])
+  .parameter(1)
+  .toEqualTypeOf<{force: boolean} | undefined>()
 ```
 
 You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error::
@@ -696,6 +731,10 @@ const two = valueFromFunctionTwo({some: {other: inputs}})
 
 expectTypeOf(one).toEqualTypeof<typeof two>()
 ```
+
+### Overloaded functions
+
+Due to a TypeScript [design limitation](https://github.com/microsoft/TypeScript/issues/32164#issuecomment-506810756), the native TypeScript `Parameters<...>` and `ReturnType<...>` helpers only return types from one variant of an overloaded function. This limitation doesn't apply to expect-type, since it is not used to author TypeScript code, only to assert on existing types. So, we use a workaround for this TypeScript behaviour to assert on _all_ overloads as a union (actually, not necessarily _all_ - we cap out at 10 overloads).
 
 ### Within test frameworks
 

@@ -22,6 +22,7 @@ import {
   ExpectUndefined,
   ExpectNullable,
   ConstructorParams,
+  FilterExtendedBy,
 } from './utils'
 
 // backcompat - everything was in `index.ts` before so exported as part of the library. Might delete later.
@@ -520,6 +521,8 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
     ? <A extends OverloadParameters<Actual>>(
         ...args: A
       ) => {
+        parameters: ExpectTypeOf<FilterExtendedBy<OverloadParameters<Actual>, A>, Options>
+        parameter: <N extends number>(n: N) => ExpectTypeOf<FilterExtendedBy<OverloadParameters<Actual>, A>[N], Options>
         returns: ExpectTypeOf<OverloadReturnTypeForParameters<Actual, A>, Options>
       }
     : //ExpectTypeOf<SelectOverloadsInfo<OverloadsInfoTuple<Actual>, A>, Options>
@@ -670,9 +673,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param index - The index of the parameter to extract.
    * @returns The extracted parameter type.
    */
-  parameter: <Index extends keyof OverloadParameters<Actual>>(
-    index: Index,
-  ) => ExpectTypeOf<OverloadParameters<Actual>[Index], Options>
+  parameter: <Index extends number>(index: Index) => ExpectTypeOf<OverloadParameters<Actual>[Index], Options>
 
   /**
    * Equivalent to the {@linkcode Parameters} utility type.

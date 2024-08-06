@@ -733,3 +733,22 @@ test('Issue #53: `.omit()` should work similarly to `Omit`', () => {
 
   expectTypeOf<Loading | Failed>().omit<'code'>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
 })
+
+test('Overload edge cases', () => {
+  type GenericFnType<T> = {
+    (a: 1, t: T): T
+    (b: 2, t: T): T
+  }
+
+  expectTypeOf<GenericFnType<number>>().parameters.not.toEqualTypeOf<[number, number]>()
+  expectTypeOf<GenericFnType<number>>().parameters.toEqualTypeOf<[1, number] | [2, number]>()
+  expectTypeOf<GenericFnType<number>>().returns.toEqualTypeOf<number>()
+
+  type NoArgOverload = {
+    (): 1
+    (a: 1): 1
+  }
+
+  expectTypeOf<NoArgOverload>().parameters.toEqualTypeOf<[] | [1]>()
+  expectTypeOf<NoArgOverload>().returns.toEqualTypeOf<1>()
+})
