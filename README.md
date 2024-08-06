@@ -149,7 +149,7 @@ expectTypeOf<never>().toBeNumber()
 expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 ```
 
-Test for basic javascript types:
+You can test for basic JavaScript types:
 
 ```typescript
 expectTypeOf(() => 1).toBeFunction()
