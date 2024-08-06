@@ -3,9 +3,9 @@
 [![CI](https://github.com/mmkal/expect-type/actions/workflows/ci.yml/badge.svg)](https://github.com/mmkal/expect-type/actions/workflows/ci.yml)
 ![npm](https://img.shields.io/npm/dt/expect-type)
 
-Compile-time tests for types. Useful to make sure types don't regress into being overly-permissive as changes go in over time.
+Compile-time tests for types. Useful to make sure types don't regress into being overly permissive as changes go in over time.
 
-Similar to Jest's `expect`, but with type-awareness. Gives you access to a number of type-matchers that let you make assertions about the form of a reference or generic type parameter.
+Similar to Jest's `expect`, but with type-awareness. Gives you access to several type-matchers that let you make assertions about the form of a reference or generic type parameter.
 
 ```ts
 import {expectTypeOf} from 'expect-type'
@@ -33,7 +33,7 @@ See below for lots more examples.
    - [Where is `.toExtend`?](#where-is-toextend)
    - [Internal type helpers](#internal-type-helpers)
    - [Error messages](#error-messages)
-      - [Concrete "expected" objects vs typeargs](#concrete-expected-objects-vs-typeargs)
+      - [Concrete "expected" objects vs type arguments](#concrete-expected-objects-vs-type-arguments)
    - [Within test frameworks](#within-test-frameworks)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
    - [Limitations](#limitations)
@@ -54,7 +54,7 @@ import {expectTypeOf} from 'expect-type'
 
 ## Documentation
 
-The `expectTypeOf` method takes a single argument, or a generic parameter. Neither it, nor the functions chained off its return value, have any meaningful runtime behaviour. The assertions you write will be _compile-time_ errors if they don't hold true.
+The `expectTypeOf` method takes a single argument or a generic type parameter. Neither it nor the functions chained off its return value have any meaningful runtime behaviour. The assertions you write will be _compile-time_ errors if they don't hold true.
 
 ### Features
 
@@ -65,7 +65,7 @@ Check an object's type with `.toEqualTypeOf`:
 expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 ```
 
-`.toEqualTypeOf` can check that two concrete objects have equivalent types (note: when these assertions _fail_, the error messages can be less informative vs the generic typearg syntax above - see [error messages docs](#error-messages)):
+`.toEqualTypeOf` can check that two concrete objects have equivalent types (note: when these assertions _fail_, the error messages can be less informative vs the generic type argument syntax above - see [error messages docs](#error-messages)):
 
 ```typescript
 expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
@@ -149,9 +149,7 @@ expectTypeOf<never>().toBeNumber()
 expectTypeOf<{deeply: {nested: any}}>().not.toEqualTypeOf<{deeply: {nested: unknown}}>()
 ```
 
-Test for basic javascript types:
-
-eslint-disable-next-line vitest/valid-title
+You can test for basic JavaScript types:
 
 ```typescript
 expectTypeOf(() => 1).toBeFunction()
@@ -165,7 +163,7 @@ expectTypeOf(Promise.resolve(123)).resolves.toBeNumber()
 expectTypeOf(Symbol(1)).toBeSymbol()
 ```
 
-`.toBe...` methods allow for types which extend the expected type:
+`.toBe...` methods allow for types that extend the expected type:
 
 ```typescript
 expectTypeOf<number>().toBeNumber()
@@ -449,7 +447,7 @@ expectTypeOf<{a?: number | null}>().not.toEqualTypeOf<{a: number | null}>()
 expectTypeOf<{a: {b?: number}}>().not.toEqualTypeOf<{a: {}}>()
 ```
 
-Detect the difference between regular and readonly properties:
+Detect the difference between regular and `readonly` properties:
 
 ```typescript
 type A1 = {readonly a: string; b: string}
@@ -509,7 +507,7 @@ type Simplify<T> = {[K in keyof T]: T[K]}
 expectTypeOf<Simplify<{a: 1} & {b: 2}>>().toEqualTypeOf<{a: 1; b: 2}>()
 ```
 
-But this won't work if the nesting is deeper in the type. For these situations, you can use the `.branded` helper. Note that this comes at a performance cost, and can cause the compiler to 'give up' if used with excessively deep types, so use sparingly. This helper is under `.branded` because it depply transforms the Actual and Expected types into a pseudo-AST:
+But this won't work if the nesting is deeper in the type. For these situations, you can use the `.branded` helper. Note that this comes at a performance cost, and can cause the compiler to 'give up' if used with excessively deep types, so use sparingly. This helper is under `.branded` because it deeply transforms the Actual and Expected types into a pseudo-AST:
 
 ```typescript
 // @ts-expect-error
@@ -528,7 +526,7 @@ expectTypeOf<() => () => () => () => 1>().branded.toEqualTypeOf<() => () => () =
 expectTypeOf<() => () => () => () => 1>().toEqualTypeOf<() => () => () => () => 2>()
 ```
 
-So, if you have an extremely deep type which ALSO has an intersection in it, you're out of luck and this library won't be able to test your type properly:
+So, if you have an extremely deep type that ALSO has an intersection in it, you're out of luck and this library won't be able to test your type properly:
 
 ```typescript
 // @ts-expect-error this fails, but it should succeed.
@@ -578,7 +576,7 @@ A few people have asked for a method like `toExtend` - this is essentially what 
 
 ### Internal type helpers
 
-🚧 This library also exports some helper types for performing boolean operations on types, checking extension/equality in various ways, branding types, and checking for various special types like `never`, `any`, `unknown`. Use at your own risk! Nothing is stopping you using these beyond this warning:
+🚧 This library also exports some helper types for performing boolean operations on types, checking extension/equality in various ways, branding types, and checking for various special types like `never`, `any`, `unknown`. Use at your own risk! Nothing is stopping you from using these beyond this warning:
 
 >All internal types that are not documented here are _not_ part of the supported API surface, and may be renamed, modified, or removed, without warning or documentation in release notes.
 
@@ -586,7 +584,7 @@ For a dedicated internal type library, feel free to look at the [source code](./
 
 ### Error messages
 
-When types don't match, `.toEqualTypeOf` and `.toMatchTypeOf` use a special helper type to produce error messages that are as actionable as possible. But there's a bit of an nuance to understanding them. Since the assertions are written "fluently", the failure should be on the "expected" type, not the "actual" type (`expect<Actual>().toEqualTypeOf<Expected>()`). This means that type errors can be a little confusing - so this library produces a `MismatchInfo` type to try to make explicit what the expectation is. For example:
+When types don't match, `.toEqualTypeOf` and `.toMatchTypeOf` use a special helper type to produce error messages that are as actionable as possible. But there's a bit of a nuance to understanding them. Since the assertions are written "fluently", the failure should be on the "expected" type, not the "actual" type (`expect<Actual>().toEqualTypeOf<Expected>()`). This means that type errors can be a little confusing - so this library produces a `MismatchInfo` type to try to make explicit what the expectation is. For example:
 
 ```ts
 expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
@@ -602,9 +600,9 @@ test/test.ts:999:999 - error TS2344: Type '{ a: string; }' does not satisfy the 
 999 expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
 ```
 
-Note that the type constraint reported is a human-readable messaging specifying both the "expected" and "actual" types. Rather than taking the sentence `Types of property 'a' are incompatible // Type 'string' is not assignable to type "Expected: string, Actual: number"` literally - just look at the property name (`'a'`) and the message: `Expected: string, Actual: number`. This will tell you what's wrong, in most cases. Extremely complex types will of course be more effort to debug, and may require some experimentation. Please [raise an issue](https://github.com/mmkal/expect-type) if the error messages are actually misleading.
+Note that the type constraint reported is a human-readable messaging specifying both the "expected" and "actual" types. Rather than taking the sentence `Types of property 'a' are incompatible // Type 'string' is not assignable to type "Expected: string, Actual: number"` literally - just look at the property name (`'a'`) and the message: `Expected: string, Actual: number`. This will tell you what's wrong, in most cases. Extremely complex types will, of course, be more effort to debug, and may require some experimentation. Please [raise an issue](https://github.com/mmkal/expect-type) if the error messages are misleading.
 
-The `toBe...` methods (like `toBeString`, `toBeNumber`, `toBeVoid` etc.) fail by resolving to a non-callable type when the `Actual` type under test doesn't match up. For example, the failure for an assertion like `expectTypeOf(1).toBeString()` will look something like this:
+The `toBe...` methods (like `toBeString`, `toBeNumber`, `toBeVoid`, etc.) fail by resolving to a non-callable type when the `Actual` type under test doesn't match up. For example, the failure for an assertion like `expectTypeOf(1).toBeString()` will look something like this:
 
 ```
 test/test.ts:999:999 - error TS2349: This expression is not callable.
@@ -616,9 +614,9 @@ test/test.ts:999:999 - error TS2349: This expression is not callable.
 
 The `This expression is not callable` part isn't all that helpful - the meaningful error is the next line, `Type 'ExpectString<number> has no call signatures`. This essentially means you passed a number but asserted it should be a string.
 
-If TypeScript added support for ["throw" types](https://github.com/microsoft/TypeScript/pull/40468) these error messagess could be improved. Until then they will take a certain amount of squinting.
+If TypeScript added support for ["throw" types](https://github.com/microsoft/TypeScript/pull/40468) these error messages could be improved. Until then they will take a certain amount of squinting.
 
-#### Concrete "expected" objects vs typeargs
+#### Concrete "expected" objects vs type arguments
 
 Error messages for an assertion like this:
 
@@ -632,7 +630,7 @@ Will be less helpful than for an assertion like this:
 expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()
 ```
 
-This is because the TypeScript compiler needs to infer the typearg for the `.toEqualTypeOf({a: ''})` style, and this library can only mark it as a failure by comparing it against a generic `Mismatch` type. So, where possible, use a typearg rather than a concrete type for `.toEqualTypeOf` and `toMatchTypeOf`. If it's much more convenient to compare two concrete types, you can use `typeof`:
+This is because the TypeScript compiler needs to infer the type argument for the `.toEqualTypeOf({a: ''})` style and this library can only mark it as a failure by comparing it against a generic `Mismatch` type. So, where possible, use a type argument rather than a concrete type for `.toEqualTypeOf` and `toMatchTypeOf`. If it's much more convenient to compare two concrete types, you can use `typeof`:
 
 ```ts
 const one = valueFromFunctionOne({some: {complex: inputs}})
@@ -647,7 +645,7 @@ expectTypeOf(one).toEqualTypeof<typeof two>()
 
 If you're using Jest along with `eslint-plugin-jest`, and you put assertions inside `test(...)` definitions, you may get warnings from the [`jest/expect-expect`](https://github.com/jest-community/eslint-plugin-jest/blob/master/docs/rules/expect-expect.md) rule, complaining that "Test has no assertions" for tests that only use `expectTypeOf()`.
 
-To remove this warning, configure the ESlint rule to consider `expectTypeOf` as an assertion:
+To remove this warning, configure the ESLint rule to consider `expectTypeOf` as an assertion:
 
 ```json
 "rules": {
@@ -666,11 +664,11 @@ To remove this warning, configure the ESlint rule to consider `expectTypeOf` as 
 
 ### Limitations
 
-A summary of some of the limitations of this library. Some of these is documented more fully elsewhere.
+A summary of some of the limitations of this library. Some of these are documented more fully elsewhere.
 
-1. Intersection types can result in failures when the expected and actual types are not identically defined, even when they are effectively identical. See [Why is my assertion failing](#why-is-my-assertion-failing) for details. TL;DR: use `.brand` in these cases - and accept the perf hit that it comes with.
-1. `toBeCallableWith` will likely fail if you try to use it with a generic function or an overload. See [this issue](https://github.com/mmkal/expect-type/issues/50) for an example and how to work around.
-1. (For now) overloaded functions might trip up the `.parameter` and `.parameters` helpers. This matches how the built-in typescript helper `Parameters<...>` works. This may be improved in the future though ([see related issue](https://github.com/mmkal/expect-type/issues/30)).
+1. Intersection types can result in failures when the expected and actual types are not identically defined, even when they are effectively identical. See [Why is my assertion failing](#why-is-my-assertion-failing) for details. TL;DR: use `.brand` in these cases - and accept the performance hit that it comes with.
+1. `toBeCallableWith` will likely fail if you try to use it with a generic function or an overload. See [this issue](https://github.com/mmkal/expect-type/issues/50) for an example and how to work around it.
+1. (For now) overloaded functions might trip up the `.parameter` and `.parameters` helpers. This matches how the built-in TypeScript helper `Parameters<...>` works. This may be improved in the future though ([see related issue](https://github.com/mmkal/expect-type/issues/30)).
 1. `expectTypeOf(this).toEqualTypeOf(this)` inside class methods does not work.
 
 ## Similar projects
@@ -702,14 +700,14 @@ The key differences in this project are:
   - nullable types
 - assertions on types "matching" rather than exact type equality, for "is-a" relationships e.g. `expectTypeOf(square).toMatchTypeOf<Shape>()`
 - built into existing tooling. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
-- small implementation with no dependencies. [Take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of typescript).
+- small implementation with no dependencies. [Take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of TypeScript).
 
 ## Contributing
 
-In most cases, it's worth checking existing issues or creating on to discuss a new feature or a bug fix before opening a pull request.
+In most cases, it's worth checking existing issues or creating one to discuss a new feature or a bug fix before opening a pull request.
 
 Once you're ready to make a pull request: clone the repo, and install pnpm if you don't have it already with `npm install --global pnpm`. Lockfiles for `npm` and `yarn` are gitignored.
 
-If you're adding a feature, you should write a self-contained usage example in the form of a test, in [test/usage.test.ts](./test/usage.test.ts). This file is used to populate the bulk of this readme using [eslint-plugin-codegen](https://npmjs.com/package/eslint-plugin-codegen), and to generate an ["errors" test file](./test/errors.test.ts), which captures the error messages that are emitted for failing assertions by the typescript compiler. So, the test name should be written as a human-readable sentence explaining the usage example. Have a look at the existing tests for an idea of the style.
+If you're adding a feature, you should write a self-contained usage example in the form of a test, in [test/usage.test.ts](./test/usage.test.ts). This file is used to populate the bulk of this readme using [eslint-plugin-codegen](https://npmjs.com/package/eslint-plugin-codegen), and to generate an ["errors" test file](./test/errors.test.ts), which captures the error messages that are emitted for failing assertions by the TypeScript compiler. So, the test name should be written as a human-readable sentence explaining the usage example. Have a look at the existing tests for an idea of the style.
 
 After adding the tests, run `npm run lint -- --fix` to update the readme, and `npm test -- --updateSnapshot` to update the errors test. The generated documentation and tests should be pushed to the same branch as the source code, and submitted as a pull request. CI will test that the docs and tests are up to date if you forget to run these commands.
