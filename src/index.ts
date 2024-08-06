@@ -912,6 +912,12 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
       get returns() {
         return expectTypeOf({})
       },
+      get parameters() {
+        return expectTypeOf({})
+      },
+      parameter() {
+        return expectTypeOf({})
+      },
     }),
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
     extract: expectTypeOf,
