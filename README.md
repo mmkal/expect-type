@@ -668,7 +668,7 @@ A summary of some of the limitations of this library. Some of these are document
 
 1. Intersection types can result in failures when the expected and actual types are not identically defined, even when they are effectively identical. See [Why is my assertion failing](#why-is-my-assertion-failing) for details. TL;DR: use `.brand` in these cases - and accept the performance hit that it comes with.
 1. `toBeCallableWith` will likely fail if you try to use it with a generic function or an overload. See [this issue](https://github.com/mmkal/expect-type/issues/50) for an example and how to work around it.
-1. (For now) overloaded functions might trip up the `.parameter` and `.parameters` helpers. This matches how the built-in typescript helper `Parameters<...>` works. This may be improved in the future though ([see related issue](https://github.com/mmkal/expect-type/issues/30)).
+1. (For now) overloaded functions might trip up the `.parameter` and `.parameters` helpers. This matches how the built-in TypeScript helper `Parameters<...>` works. This may be improved in the future though ([see related issue](https://github.com/mmkal/expect-type/issues/30)).
 1. `expectTypeOf(this).toEqualTypeOf(this)` inside class methods does not work.
 
 ## Similar projects
@@ -700,7 +700,7 @@ The key differences in this project are:
   - nullable types
 - assertions on types "matching" rather than exact type equality, for "is-a" relationships e.g. `expectTypeOf(square).toMatchTypeOf<Shape>()`
 - built into existing tooling. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
-- small implementation with no dependencies. [Take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of typescript).
+- small implementation with no dependencies. [Take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of TypeScript).
 
 ## Contributing
 
@@ -708,6 +708,6 @@ In most cases, it's worth checking existing issues or creating one to discuss a 
 
 Once you're ready to make a pull request: clone the repo, and install pnpm if you don't have it already with `npm install --global pnpm`. Lockfiles for `npm` and `yarn` are gitignored.
 
-If you're adding a feature, you should write a self-contained usage example in the form of a test, in [test/usage.test.ts](./test/usage.test.ts). This file is used to populate the bulk of this readme using [eslint-plugin-codegen](https://npmjs.com/package/eslint-plugin-codegen), and to generate an ["errors" test file](./test/errors.test.ts), which captures the error messages that are emitted for failing assertions by the typescript compiler. So, the test name should be written as a human-readable sentence explaining the usage example. Have a look at the existing tests for an idea of the style.
+If you're adding a feature, you should write a self-contained usage example in the form of a test, in [test/usage.test.ts](./test/usage.test.ts). This file is used to populate the bulk of this readme using [eslint-plugin-codegen](https://npmjs.com/package/eslint-plugin-codegen), and to generate an ["errors" test file](./test/errors.test.ts), which captures the error messages that are emitted for failing assertions by the TypeScript compiler. So, the test name should be written as a human-readable sentence explaining the usage example. Have a look at the existing tests for an idea of the style.
 
 After adding the tests, run `npm run lint -- --fix` to update the readme, and `npm test -- --updateSnapshot` to update the errors test. The generated documentation and tests should be pushed to the same branch as the source code, and submitted as a pull request. CI will test that the docs and tests are up to date if you forget to run these commands.
