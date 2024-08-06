@@ -9,7 +9,7 @@ test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('`.toEqualTypeOf` can check that two concrete objects have equivalent types (note: when these assertions _fail_, the error messages can be less informative vs the generic typearg syntax above - see [error messages docs](#error-messages))', () => {
+test('`.toEqualTypeOf` can check that two concrete objects have equivalent types (note: when these assertions _fail_, the error messages can be less informative vs the generic type argument syntax above - see [error messages docs](#error-messages))', () => {
   expectTypeOf({a: 1}).toEqualTypeOf({a: 1})
 })
 
@@ -86,7 +86,7 @@ test('Test for basic javascript types', () => {
   expectTypeOf(Symbol(1)).toBeSymbol()
 })
 
-test('`.toBe...` methods allow for types which extend the expected type', () => {
+test('`.toBe...` methods allow for types that extend the expected type', () => {
   expectTypeOf<number>().toBeNumber()
   expectTypeOf<1>().toBeNumber()
 
@@ -320,7 +320,7 @@ test('Distinguish between missing/null/optional properties', () => {
   expectTypeOf<{a: {b?: number}}>().not.toEqualTypeOf<{a: {}}>()
 })
 
-test('Detect the difference between regular and readonly properties', () => {
+test('Detect the difference between regular and `readonly` properties', () => {
   type A1 = {readonly a: string; b: string}
   type E1 = {a: string; b: string}
 
@@ -372,7 +372,7 @@ test('To workaround for simple cases, you can use a mapped type', () => {
   expectTypeOf<Simplify<{a: 1} & {b: 2}>>().toEqualTypeOf<{a: 1; b: 2}>()
 })
 
-test("But this won't work if the nesting is deeper in the type. For these situations, you can use the `.branded` helper. Note that this comes at a performance cost, and can cause the compiler to 'give up' if used with excessively deep types, so use sparingly. This helper is under `.branded` because it depply transforms the Actual and Expected types into a pseudo-AST", () => {
+test("But this won't work if the nesting is deeper in the type. For these situations, you can use the `.branded` helper. Note that this comes at a performance cost, and can cause the compiler to 'give up' if used with excessively deep types, so use sparingly. This helper is under `.branded` because it deeply transforms the Actual and Expected types into a pseudo-AST", () => {
   // @ts-expect-error
   expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
 
@@ -387,7 +387,7 @@ test('Be careful with `.branded` for very deep or complex types, though. If poss
   expectTypeOf<() => () => () => () => 1>().toEqualTypeOf<() => () => () => () => 2>()
 })
 
-test("So, if you have an extremely deep type which ALSO has an intersection in it, you're out of luck and this library won't be able to test your type properly", () => {
+test("So, if you have an extremely deep type that ALSO has an intersection in it, you're out of luck and this library won't be able to test your type properly", () => {
   // @ts-expect-error this fails, but it should succeed.
   expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<
     () => () => () => () => {a: 1; b: 2}
