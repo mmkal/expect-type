@@ -692,7 +692,7 @@ test('Distinguish between identical types that are AND`d together', () => {
 
 test('limitations', () => {
   // these *shouldn't* fail, but kept here to document missing behaviours. Once fixed, remove the expect-error comments to make sure they can't regress
-  // @ts-expect-error typescript can't handle the truth: https://github.com/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
+  // @ts-expect-error TypeScript can't handle the truth: https://github.com/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
   expectTypeOf<a.StrictEqualUsingBranding<() => () => () => void, () => () => () => string>>().toEqualTypeOf<false>()
 
   // @ts-expect-error toEqualTypeOf relies on TypeScript's internal `toBeIdentical` function which falls down with intersection types, but is otherwise accurate and performant: https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122
