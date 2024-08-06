@@ -397,7 +397,7 @@ type Delete = {
 expectTypeOf<Delete>().toBeCallableWith('abc').parameters.toEqualTypeOf<[string]>()
 expectTypeOf<Delete>()
   .toBeCallableWith(['abc', 'def'], {force: true})
-  .parameters.toEqualTypeOf<[string[], options?: {force: boolean}]>()
+  .parameters.toEqualTypeOf<[string[], {force: boolean}?]>()
 
 expectTypeOf<Delete>().toBeCallableWith('abc').parameter(0).toBeString()
 expectTypeOf<Delete>().toBeCallableWith('abc').parameter(1).toBeUndefined()
