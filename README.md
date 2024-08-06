@@ -602,7 +602,7 @@ expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
 ```
 <!-- codegen:end -->
 
-Overloads limitation for typescript <5.3: Overloaded functions which include an overload resembling `(...args: unknown[]) => unknown` will exclude `unknown[]` from `.parameters` and exclude `unknown` from `.returns`:
+Overloads limitation for TypeScript <5.3: Overloaded functions which include an overload resembling `(...args: unknown[]) => unknown` will exclude `unknown[]` from `.parameters` and exclude `unknown` from `.returns`:
 
 ```typescript
 type Factorize = {

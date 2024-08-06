@@ -123,7 +123,7 @@ export type MismatchInfo<Actual, Expected> =
  * Recursively walk a type and replace it with a branded type related to the
  * original. This is useful for equality-checking stricter than
  * `A extends B ? B extends A ? true : false : false`, because it detects the
- * difference between a few edge-case types that vanilla typescript
+ * difference between a few edge-case types that vanilla TypeScript
  * doesn't by default:
  * - `any` vs `unknown`
  * - `{ readonly a: string }` vs `{ a: string }`
