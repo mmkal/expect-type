@@ -20,26 +20,32 @@ export type UnknownFn = (...p: unknown[]) => unknown
  */
 export type IsUselessOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOperator<T, UnknownFn>
 
-/** Old versions of typescript can sometimes seem to refuse to separate out union members unless you put them each in a pointless tuple and add an extra `infer X` expression */
+/**
+ * Old versions of typescript can sometimes seem to refuse to separate out union members unless you put them each in a pointless tuple and add an extra `infer X` expression.
+ * There may be a better way to work around this problem, but since it's not a problem in newer versions of TypeScript, it's not a priority right now.
+ */
 export type Tuplify<T> = T extends infer X ? [X] : never
 
 /**
  * For older versions of TypeScript, we need two separate workarounds to get overload info.
  * First, we need need to use {@linkcode DecreasingOverloadsInfoUnion} to get the overload info for functions with 1-10 overloads.
  * Then, we need to filter out the "useless" overloads that are present in older versions of TypeScript, for parameterless functions.
- * To do this we check if `F` is parameterless, then use {@linkcode IsUselessOverloadInfo} to replace useless overloads with the parameterless overload.
+ * To do this we use {@linkcode IsUselessOverloadInfo} to remove useless overloads.
  *
  * Related: https://github.com/microsoft/TypeScript/issues/28867
  */
-export type TSPre53OverloadsInfoUnion<F> = F extends (...args: infer A) => infer R
-  ? Tuplify<DecreasingOverloadsInfoUnion<F>> extends infer Tup
-    ? Tup extends [infer Fn]
-      ? StrictEqualUsingTSInternalIdenticalToOperator<Tup, [UnknownFn]> extends true
-        ? (...p: A) => R
-        : Fn
+export type TSPre53OverloadsInfoUnion<F> =
+  // first, pointlessly wrap the overload variants in a 1-tuple, then infer them as `Tup` - this helps TypeScript isolate out the overload variants
+  Tuplify<DecreasingOverloadsInfoUnion<F>> extends infer Tup
+    ? // we know `Tup` is a 1-tuple because we just used Tuplify, but use an infer so that TypeScript knows too
+      Tup extends [infer Fn]
+      ? // Now check if the Fn is "useless" i.e. hit by the historical TypeScript bug that adds `(...args: unknown[]) => unknown` overloads
+        IsUselessOverloadInfo<Fn> extends true
+        ? // if it's useless, get rid of it from the resultant union using never
+          never
+        : Fn // deeply hidden happy path - keep this. We'll end up with a union of the actual meaningful overload variants
       : never
     : never
-  : DecreasingOverloadsInfoUnion<F>
 
 // prettier-ignore
 /**
