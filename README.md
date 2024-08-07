@@ -2,10 +2,11 @@
 
 [![CI](https://github.com/mmkal/expect-type/actions/workflows/ci.yml/badge.svg)](https://github.com/mmkal/expect-type/actions/workflows/ci.yml)
 ![npm](https://img.shields.io/npm/dt/expect-type)
+![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/mmkal)
 
 Compile-time tests for types. Useful to make sure types don't regress into being overly permissive as changes go in over time.
 
-Similar to Jest's `expect`, but with type-awareness. Gives you access to several type-matchers that let you make assertions about the form of a reference or generic type parameter.
+Similar to `expect`, but with type-awareness. Gives you access to several type-matchers that let you make assertions about the form of a reference or generic type parameter.
 
 ```ts
 import {expectTypeOf} from 'expect-type'
@@ -19,7 +20,7 @@ expectTypeOf(bar).parameter(0).toBeString()
 expectTypeOf(bar).returns.not.toBeAny()
 ```
 
-It can be used in your existing test files - or any other type-checked file you'd like - it's built into existing tooling with no dependencies. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
+It can be used in your existing test files (and is actually [built in to vitest](https://vitest.dev/guide/testing-types)). Or it can be used in any other type-checked file you'd like - it's built into existing tooling with no dependencies. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
 
 See below for lots more examples.
 
@@ -35,6 +36,7 @@ See below for lots more examples.
    - [Error messages](#error-messages)
       - [Concrete "expected" objects vs type arguments](#concrete-expected-objects-vs-type-arguments)
    - [Within test frameworks](#within-test-frameworks)
+   - [Vitest](#vitest)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
    - [Limitations](#limitations)
 - [Similar projects](#similar-projects)
@@ -640,6 +642,22 @@ expectTypeOf(one).toEqualTypeof<typeof two>()
 ```
 
 ### Within test frameworks
+
+### Vitest
+
+`expectTypeOf` is built in to [vitest](https://vitest.dev/guide/testing-types), so you can import `expectTypeOf` from the vitest library directly if you prefer. Note that there is no set release cadence, at time of writing, so vitest may not always be using the very latest version.
+
+```ts
+import {expectTypeOf} from 'vitest'
+import {mount} from './mount.js'
+
+test('my types work properly', () => {
+  expectTypeOf(mount).toBeFunction()
+  expectTypeOf(mount).parameter(0).toMatchTypeOf<{name: string}>()
+
+  expectTypeOf(mount({name: 42})).toBeString()
+})
+```
 
 #### Jest & `eslint-plugin-jest`
 
