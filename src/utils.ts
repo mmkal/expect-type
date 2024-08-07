@@ -219,7 +219,9 @@ type ReadonlyEquivalent<X, Y> = Extends<
  * Checks if one type extends another.
  */
 export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : [L] extends [R] ? true : false
+
 export type ExtendsUsingBranding<L, R> = Extends<DeepBrand<L>, DeepBrand<R>>
+
 export type ExtendsExcludingAnyOrNever<L, R> = IsAny<L> extends true ? IsAny<R> : Extends<L, R>
 
 /**
@@ -267,6 +269,7 @@ export type ConstructorParams<Actual> = Actual extends new (...args: infer P) =>
     ? P | []
     : P
   : never
+
 const mismatch = Symbol('mismatch')
 type Mismatch = {[mismatch]: 'mismatch'}
 
@@ -303,34 +306,49 @@ export interface ExpectTypeOfOptions {
   positive: boolean
   branded: boolean
 }
+
 const inverted = Symbol('inverted')
 type Inverted<T> = {[inverted]: T}
+
 const expectNull = Symbol('expectNull')
 export type ExpectNull<T> = {[expectNull]: T; result: ExtendsExcludingAnyOrNever<T, null>}
+
 const expectUndefined = Symbol('expectUndefined')
 export type ExpectUndefined<T> = {[expectUndefined]: T; result: ExtendsExcludingAnyOrNever<T, undefined>}
+
 const expectNumber = Symbol('expectNumber')
 export type ExpectNumber<T> = {[expectNumber]: T; result: ExtendsExcludingAnyOrNever<T, number>}
+
 const expectString = Symbol('expectString')
 export type ExpectString<T> = {[expectString]: T; result: ExtendsExcludingAnyOrNever<T, string>}
+
 const expectBoolean = Symbol('expectBoolean')
 export type ExpectBoolean<T> = {[expectBoolean]: T; result: ExtendsExcludingAnyOrNever<T, boolean>}
+
 const expectVoid = Symbol('expectVoid')
 export type ExpectVoid<T> = {[expectVoid]: T; result: ExtendsExcludingAnyOrNever<T, void>}
+
 const expectFunction = Symbol('expectFunction')
 export type ExpectFunction<T> = {[expectFunction]: T; result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>}
+
 const expectObject = Symbol('expectObject')
 export type ExpectObject<T> = {[expectObject]: T; result: ExtendsExcludingAnyOrNever<T, object>}
+
 const expectArray = Symbol('expectArray')
 export type ExpectArray<T> = {[expectArray]: T; result: ExtendsExcludingAnyOrNever<T, any[]>}
+
 const expectSymbol = Symbol('expectSymbol')
 export type ExpectSymbol<T> = {[expectSymbol]: T; result: ExtendsExcludingAnyOrNever<T, symbol>}
+
 const expectAny = Symbol('expectAny')
 export type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}
+
 const expectUnknown = Symbol('expectUnknown')
 export type ExpectUnknown<T> = {[expectUnknown]: T; result: IsUnknown<T>}
+
 const expectNever = Symbol('expectNever')
 export type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
+
 const expectNullable = Symbol('expectNullable')
 export type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
 

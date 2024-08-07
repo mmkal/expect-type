@@ -25,8 +25,7 @@ import {
   FilterExtendedBy,
 } from './utils'
 
-// backcompat - everything was in `index.ts` before so exported as part of the library. Might delete later.
-export * from './utils'
+export * from './utils' // backcompat, consider removing in next major version
 
 /**
  * Represents the positive assertion methods available for type checking in the
