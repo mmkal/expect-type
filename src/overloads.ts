@@ -20,7 +20,9 @@ export type UnknownFn = (...p: unknown[]) => unknown
  */
 export type IsUselessOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOperator<T, UnknownFn>
 
-// prettier-ignore
+/** Old versions of typescript can sometimes seem to refuse to separate out union members unless you put them each in a pointless tuple and add an extra `infer X` expression */
+export type Tuplify<T> = T extends infer X ? [X] : never
+
 /**
  * For older versions of TypeScript, we need two separate workarounds to get overload info.
  * First, we need need to use {@linkcode DecreasingOverloadsInfoUnion} to get the overload info for functions with 1-10 overloads.
@@ -30,16 +32,12 @@ export type IsUselessOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOper
  * Related: https://github.com/microsoft/TypeScript/issues/28867
  */
 export type TSPre53OverloadsInfoUnion<F> = F extends (...args: infer A) => infer R
-  ? DecreasingOverloadsInfoUnion<F> extends infer T
-    ? Extract<
-        {
-          [K in keyof T]:
-            IsUselessOverloadInfo<T[K]> extends true
-              ? (...p: A) => R
-              : T[K]
-        },
-        Array<(...p: unknown[]) => unknown>
-      >
+  ? Tuplify<DecreasingOverloadsInfoUnion<F>> extends infer Tup
+    ? Tup extends [infer Fn]
+      ? StrictEqualUsingTSInternalIdenticalToOperator<Tup, [UnknownFn]> extends true
+        ? (...p: A) => R
+        : Fn
+      : never
     : never
   : DecreasingOverloadsInfoUnion<F>
 
@@ -77,13 +75,10 @@ export type OverloadsInfoUnion<F> =
     ? TSPre53OverloadsInfoUnion<F>
     : TSPost53OverloadsInfoUnion<F>
 
-/** A union type of the parameters allowed for any overload of function `F` */
-export type OverloadParameters0<F> =
-  OverloadsInfoUnion<F> extends infer Fn ? Parameters<Extract<Fn, (...args: any) => any>> : never
-
 /** Allows inferring any function using the `infer` keyword */
 export type InferFn<F extends (...args: any) => any> = F
 
+/** A union type of the parameters allowed for any overload of function `F` */
 export type OverloadParameters<F> = OverloadsInfoUnion<F> extends InferFn<infer Fn> ? Parameters<Fn> : never
 
 /** A union type of the return types for any overload of function `F` */

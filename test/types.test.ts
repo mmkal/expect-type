@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {test} from 'vitest'
 import * as a from '../src'
+import {OverloadParameters, OverloadReturnTypes} from '../src/overloads'
 
 const {expectTypeOf} = a
 
@@ -732,6 +733,17 @@ test('Issue #53: `.omit()` should work similarly to `Omit`', () => {
   expectTypeOf<Omit<Loading | Failed, 'code'>>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
 
   expectTypeOf<Loading | Failed>().omit<'code'>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
+})
+
+test('Overload utils', () => {
+  type O = {
+    (): 0
+    (a: 1): 1
+    (a: 2): 2
+  }
+
+  expectTypeOf<OverloadParameters<O>>().toEqualTypeOf<[] | [1] | [2]>()
+  expectTypeOf<OverloadReturnTypes<O>>().toEqualTypeOf<0 | 1 | 2>()
 })
 
 test('Overload edge cases', () => {
