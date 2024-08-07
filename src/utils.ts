@@ -365,13 +365,5 @@ export type Scolder<
     ? Expecter
     : Inverted<Expecter>
 
-/**
- * Keeps the types in a union which are extended by `T` - sort of similar to `Extract` except the other way around.
- *
- * @example
- * ```ts
- * type MyOverloadParameters = [number] | [string] | [boolean]
- *
- * type FilteredOverloadParameters = FilterExtendedBy<MyOverloadParameters, [6]> // [number]
- */
-export type FilterExtendedBy<Union, T> = Union extends (T extends Union ? Union : never) ? Union : never
+/** `A | B | C` -> `A & B & C` */
+export type UnionToIntersection<T> = (T extends any ? (x: T) => void : never) extends (x: infer I) => void ? I : never

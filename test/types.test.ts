@@ -2,7 +2,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {test} from 'vitest'
 import * as a from '../src'
-import {OverloadParameters, OverloadReturnTypes} from '../src/overloads'
+import {UnionToIntersection} from '../src'
+import {
+  OverloadParameters,
+  OverloadReturnTypes,
+  OverloadsInfoUnion,
+  OverloadsNarrowedByParameters,
+} from '../src/overloads'
 
 const {expectTypeOf} = a
 
@@ -744,6 +750,18 @@ test('Overload utils', () => {
 
   expectTypeOf<OverloadParameters<O>>().toEqualTypeOf<[] | [1] | [2]>()
   expectTypeOf<OverloadReturnTypes<O>>().toEqualTypeOf<0 | 1 | 2>()
+
+  type u = OverloadsInfoUnion<O>
+  type o = UnionToIntersection<Exclude<u, (_: 2) => 2>>
+
+  expectTypeOf<o>().toBeCallableWith()
+  expectTypeOf<o>().toBeCallableWith(1)
+  // @ts-expect-error
+  expectTypeOf<o>().toBeCallableWith(2)
+
+  type o2 = OverloadsNarrowedByParameters<O, []>
+
+  expectTypeOf<o2>().toEqualTypeOf<() => 0>()
 })
 
 test('Overload edge cases', () => {

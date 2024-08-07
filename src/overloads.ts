@@ -1,4 +1,4 @@
-import {StrictEqualUsingTSInternalIdenticalToOperator, IsNever} from './utils'
+import {StrictEqualUsingTSInternalIdenticalToOperator, IsNever, UnionToIntersection} from './utils'
 
 // prettier-ignore
 /**
@@ -94,7 +94,7 @@ export type OverloadReturnTypes<F> = OverloadsInfoUnion<F> extends InferFn<infer
 export type SelectOverloadsInfo<Union extends UnknownFn, A extends unknown[]> =
   Union extends InferFn<infer Fn> ? (A extends Parameters<Fn> ? Fn : never) : never
 
-// prettier-ignore
-/** Gets the matching return type from a parameters-type (usually a overload variants union) */
-export type OverloadReturnTypeForParameters<F, A extends unknown[]> =
-  SelectOverloadsInfo<OverloadsInfoUnion<F>, A> extends InferFn<infer Fn> ? ReturnType<Fn> : never
+/** Creates a new overload (an intersection type) from an existing one, which only includes variant(s) which can accept `A` as parameters */
+export type OverloadsNarrowedByParameters<F, A extends OverloadParameters<F>> = UnionToIntersection<
+  SelectOverloadsInfo<OverloadsInfoUnion<F>, A>
+>

@@ -1,4 +1,4 @@
-import {OverloadParameters, OverloadReturnTypeForParameters, OverloadReturnTypes} from './overloads'
+import {OverloadParameters, OverloadReturnTypes, OverloadsNarrowedByParameters} from './overloads'
 import {
   StrictEqualUsingTSInternalIdenticalToOperator,
   MismatchInfo,
@@ -22,7 +22,6 @@ import {
   ExpectUndefined,
   ExpectNullable,
   ConstructorParams,
-  FilterExtendedBy,
 } from './utils'
 
 export * from './utils' // backcompat, consider removing in next major version
@@ -499,7 +498,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * Checks whether a function is callable with the given parameters.
    *
    * __Note__: You cannot negate this assertion with
-   * {@linkcode PositiveExpectTypeOf.not `.not`} you need to use
+   * {@linkcode PositiveExpectTypeOf.not `.not`}, you need to use
    * `ts-expect-error` instead.
    *
    * @example
@@ -519,13 +518,8 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   toBeCallableWith: Options['positive'] extends true
     ? <A extends OverloadParameters<Actual>>(
         ...args: A
-      ) => {
-        parameters: ExpectTypeOf<FilterExtendedBy<OverloadParameters<Actual>, A>, Options>
-        parameter: <N extends number>(n: N) => ExpectTypeOf<FilterExtendedBy<OverloadParameters<Actual>, A>[N], Options>
-        returns: ExpectTypeOf<OverloadReturnTypeForParameters<Actual, A>, Options>
-      }
-    : //ExpectTypeOf<SelectOverloadsInfo<OverloadsInfoTuple<Actual>, A>, Options>
-      never
+      ) => ExpectTypeOf<OverloadsNarrowedByParameters<Actual, A>, Options>
+    : never
 
   /**
    * Checks whether a class is constructible with the given parameters.
@@ -907,18 +901,8 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeConstructibleWith: fn,
-    toBeCallableWith: () => ({
-      get returns() {
-        return expectTypeOf({})
-      },
-      get parameters() {
-        return expectTypeOf({})
-      },
-      parameter() {
-        return expectTypeOf({})
-      },
-    }),
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+    toBeCallableWith: expectTypeOf,
     extract: expectTypeOf,
     exclude: expectTypeOf,
     pick: expectTypeOf,
