@@ -383,9 +383,10 @@ expectTypeOf<Factorize>().toBeCallableWith(6n)
 ```typescript
 type Factorize = {
   (input: number): number[]
-  (input: bigint, options: {force: boolean}): bigint[]
+  (input: bigint): bigint[]
 }
 expectTypeOf<Factorize>().toBeCallableWith(6).returns.toEqualTypeOf<number[]>()
+expectTypeOf<Factorize>().toBeCallableWith(6n).returns.toEqualTypeOf<bigint[]>()
 ```
 
 `.toBeCallableWith` can be used to narrow down the parameters of a function:
