@@ -266,9 +266,10 @@ test('`.toBeCallableWith` allows for overloads. You can also use it to narrow do
 test('`.toBeCallableWith` returns a type that can be used to narrow down the return type for given input parameters.', () => {
   type Factorize = {
     (input: number): number[]
-    (input: bigint, options: {force: boolean}): bigint[]
+    (input: bigint): bigint[]
   }
   expectTypeOf<Factorize>().toBeCallableWith(6).returns.toEqualTypeOf<number[]>()
+  expectTypeOf<Factorize>().toBeCallableWith(6n).returns.toEqualTypeOf<bigint[]>()
 })
 
 test('`.toBeCallableWith` can be used to narrow down the parameters of a function', () => {
