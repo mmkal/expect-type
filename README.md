@@ -466,11 +466,11 @@ class DBConnection {
   }
 }
 
-expectTypeOf<typeof DBConnection>().toBeConstructibleWith()
-expectTypeOf<typeof DBConnection>().toBeConstructibleWith('localhost')
-expectTypeOf<typeof DBConnection>().toBeConstructibleWith({host: 'localhost', port: 1234})
+expectTypeOf(DBConnection).toBeConstructibleWith()
+expectTypeOf(DBConnection).toBeConstructibleWith('localhost')
+expectTypeOf(DBConnection).toBeConstructibleWith({host: 'localhost', port: 1234})
 // @ts-expect-error - as when calling `new DBConnection(...)` you can't actually use the `(...args: unknown[])` overlaod, it's purely for the implementation.
-expectTypeOf<typeof DBConnection>().toBeConstructibleWith(1, 2)
+expectTypeOf(DBConnection).toBeConstructibleWith(1, 2)
 ```
 
 Check function `this` parameters:
