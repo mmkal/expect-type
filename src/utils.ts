@@ -148,12 +148,14 @@ export type DeepBrand<T> =
           : T extends new (...args: any[]) => any
             ? {
                 type: 'constructor'
+                // todo: use overload helper to get all constructor params
                 params: ConstructorParams<T>
                 instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>>
               }
             : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
               ? {
                   type: 'function'
+                  // todo: use overload helper instead of `...args: infer P` to get all params
                   params: DeepBrand<P>
                   return: DeepBrand<R>
                   this: DeepBrand<ThisParameterType<T>>
@@ -254,11 +256,6 @@ export type StrictEqualUsingBranding<Left, Right> = And<
  */
 export type HopefullyPerformantEqual<Left, Right> =
   StrictEqualUsingTSInternalIdenticalToOperator<Left, Right> extends true ? true : StrictEqualUsingBranding<Left, Right>
-
-/**
- * Extracts the parameter types from a function type.
- */
-export type Params<Actual> = Actual extends (...args: infer ParameterTypes) => any ? ParameterTypes : never
 
 /**
  * Represents the constructor parameters of a class or constructor function.
