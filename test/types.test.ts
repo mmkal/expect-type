@@ -4,7 +4,6 @@ import {test} from 'vitest'
 import * as a from '../src'
 import {UnionToIntersection} from '../src'
 import {
-  ConstructorOverloadParameters,
   OverloadParameters,
   OverloadReturnTypes,
   OverloadsInfoUnion,
