@@ -2,6 +2,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {test} from 'vitest'
 import * as a from '../src'
+import {UnionToIntersection} from '../src'
+import {
+  OverloadParameters,
+  OverloadReturnTypes,
+  OverloadsInfoUnion,
+  OverloadsNarrowedByParameters,
+} from '../src/overloads'
 
 const {expectTypeOf} = a
 
@@ -732,4 +739,46 @@ test('Issue #53: `.omit()` should work similarly to `Omit`', () => {
   expectTypeOf<Omit<Loading | Failed, 'code'>>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
 
   expectTypeOf<Loading | Failed>().omit<'code'>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
+})
+
+test('Overload utils', () => {
+  type O = {
+    (): 0
+    (a: 1): 1
+    (a: 2): 2
+  }
+
+  expectTypeOf<OverloadParameters<O>>().toEqualTypeOf<[] | [1] | [2]>()
+  expectTypeOf<OverloadReturnTypes<O>>().toEqualTypeOf<0 | 1 | 2>()
+
+  type u = OverloadsInfoUnion<O>
+  type o = UnionToIntersection<Exclude<u, (_: 2) => 2>>
+
+  expectTypeOf<o>().toBeCallableWith()
+  expectTypeOf<o>().toBeCallableWith(1)
+  // @ts-expect-error
+  expectTypeOf<o>().toBeCallableWith(2)
+
+  type o2 = OverloadsNarrowedByParameters<O, []>
+
+  expectTypeOf<o2>().toEqualTypeOf<() => 0>()
+})
+
+test('Overload edge cases', () => {
+  type GenericFnType<T> = {
+    (a: 1, t: T): T
+    (b: 2, t: T): T
+  }
+
+  expectTypeOf<GenericFnType<number>>().parameters.not.toEqualTypeOf<[number, number]>()
+  expectTypeOf<GenericFnType<number>>().parameters.toEqualTypeOf<[1, number] | [2, number]>()
+  expectTypeOf<GenericFnType<number>>().returns.toEqualTypeOf<number>()
+
+  type NoArgOverload = {
+    (): 1
+    (a: 1): 1
+  }
+
+  expectTypeOf<NoArgOverload>().parameters.toEqualTypeOf<[] | [1]>()
+  expectTypeOf<NoArgOverload>().returns.toEqualTypeOf<1>()
 })

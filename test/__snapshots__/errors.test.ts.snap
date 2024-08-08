@@ -139,6 +139,12 @@ test/usage.test.ts:999:999 - error TS2345: Argument of type 'string' is not assi
 
 999   expectTypeOf(f).toBeCallableWith('foo')
                                        ~~~~~
+test/usage.test.ts:999:999 - error TS2345: Argument of type '[1, 2]' is not assignable to parameter of type '[] | [connectionString: string] | [options: { host: string; port: number; }]'.
+  Type '[1, 2]' is not assignable to type '[options: { host: string; port: number; }]'.
+    Source has 2 element(s) but target allows only 1.
+
+999   expectTypeOf(DBConnection).toBeConstructibleWith(1, 2)
+                                                       ~~~~
 test/usage.test.ts:999:999 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'Mismatch'.
 
 999   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
