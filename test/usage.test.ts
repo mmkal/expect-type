@@ -333,9 +333,7 @@ test('Constructor overloads', () => {
     constructor()
     constructor(connectionString: string)
     constructor(options: {host: string; port: number})
-    constructor(...args: unknown[]) {
-      args satisfies unknown[]
-    }
+    constructor(..._: unknown[]) {}
   }
 
   expectTypeOf(DBConnection).toBeConstructibleWith()
