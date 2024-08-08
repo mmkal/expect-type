@@ -328,6 +328,23 @@ test('Assert on constructor parameters', () => {
   expectTypeOf(Date).constructorParameters.toEqualTypeOf<[] | [string | number | Date]>()
 })
 
+test('Constructor overloads', () => {
+  class DBConnection {
+    constructor()
+    constructor(connectionString: string)
+    constructor(options: {host: string; port: number})
+    constructor(...args: unknown[]) {
+      args satisfies unknown[]
+    }
+  }
+
+  expectTypeOf(DBConnection).toBeConstructibleWith()
+  expectTypeOf(DBConnection).toBeConstructibleWith('localhost')
+  expectTypeOf(DBConnection).toBeConstructibleWith({host: 'localhost', port: 1234})
+  // @ts-expect-error - as when calling `new DBConnection(...)` you can't actually use the `(...args: unknown[])` overlaod, it's purely for the implementation.
+  expectTypeOf(DBConnection).toBeConstructibleWith(1, 2)
+})
+
 test('Check function `this` parameters', () => {
   function greet(this: {name: string}, message: string) {
     return `Hello ${this.name}, here's your message: ${message}`

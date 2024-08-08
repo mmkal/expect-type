@@ -98,3 +98,85 @@ export type SelectOverloadsInfo<Union extends UnknownFn, A extends unknown[]> =
 export type OverloadsNarrowedByParameters<F, A extends OverloadParameters<F>> = UnionToIntersection<
   SelectOverloadsInfo<OverloadsInfoUnion<F>, A>
 >
+
+// Deep breath. Now for constructor parameters.
+
+// prettier-ignore
+/**
+ * The simple(ish) way to get overload info from a constructor `C`. Recent versions of TypeScript will match any constructor against a generic 10-overload type, filling in slots with duplicates of the constructor.
+ * So, we can just match against a single type and get all the overloads.
+ *
+ * For older versions of TypeScript, we'll need to painstakingly do ten separate matches.
+ */
+export type TSPost53ConstructorOverloadsInfoUnion<C> =
+  C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; new (...args: infer A4): infer R4; new (...args: infer A5): infer R5; new (...args: infer A6): infer R6; new (...args: infer A7): infer R7; new (...args: infer A8): infer R8; new (...args: infer A9): infer R9; new (...args: infer A10): infer R10}
+    ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3) | (new (...p: A4) => R4) | (new (...p: A5) => R5) | (new (...p: A6) => R6) | (new (...p: A7) => R7) | (new (...p: A8) => R8) | (new (...p: A9) => R9) | (new (...p: A10) => R10)
+    : never
+
+export type UnknownConstructor = new (...args: unknown[]) => unknown
+
+// prettier-ignore
+export type IsUselessConstructorOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOperator<T, UnknownConstructor>
+
+/**
+ * For older versions of TypeScript, we need two separate workarounds to get constructor overload info.
+ * First, we need need to use {@linkcode DecreasingConstructorOverloadsInfoUnion} to get the overload info for constructors with 1-10 overloads.
+ * Then, we need to filter out the "useless" overloads that are present in older versions of TypeScript, for parameterless constructors.
+ * To do this we use {@linkcode IsUselessConstructorOverloadInfo} to remove useless overloads.
+ *
+ * Related: https://github.com/microsoft/TypeScript/issues/28867
+ */
+export type TSPre53ConstructorOverloadsInfoUnion<C> =
+  // first, pointlessly wrap the overload variants in a 1-tuple, then infer them as `Tup` - this helps TypeScript isolate out the overload variants
+  Tuplify<DecreasingConstructorOverloadsInfoUnion<C>> extends infer Tup
+    ? // we know `Tup` is a 1-tuple because we just used Tuplify, but use an infer so that TypeScript knows too
+      Tup extends [infer Ctor]
+      ? // Now check if the Ctor is "useless" i.e. hit by the historical TypeScript bug that adds `new (...args: unknown[]) => unknown` overloads
+        IsUselessConstructorOverloadInfo<Ctor> extends true
+        ? // if it's useless, get rid of it from the resultant union using never
+          never
+        : Ctor // deeply hidden happy path - keep this. We'll end up with a union of the actual meaningful overload variants
+      : never
+    : never
+
+// prettier-ignore
+/**
+ * For versions of TypeScript below 5.3, we need to check for 10 overloads, then 9, then 8, etc., to get a union of the overlaod variants.
+ */
+export type DecreasingConstructorOverloadsInfoUnion<C> = C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; new (...args: infer A4): infer R4; new (...args: infer A5): infer R5; new (...args: infer A6): infer R6; new (...args: infer A7): infer R7; new (...args: infer A8): infer R8; new (...args: infer A9): infer R9; new (...args: infer A10): infer R10}
+  ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3) | (new (...p: A4) => R4) | (new (...p: A5) => R5) | (new (...p: A6) => R6) | (new (...p: A7) => R7) | (new (...p: A8) => R8) | (new (...p: A9) => R9) | (new (...p: A10) => R10)
+  : C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; new (...args: infer A4): infer R4; new (...args: infer A5): infer R5; new (...args: infer A6): infer R6; new (...args: infer A7): infer R7; new (...args: infer A8): infer R8; new (...args: infer A9): infer R9; }
+    ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3) | (new (...p: A4) => R4) | (new (...p: A5) => R5) | (new (...p: A6) => R6) | (new (...p: A7) => R7) | (new (...p: A8) => R8) | (new (...p: A9) => R9)
+    : C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; new (...args: infer A4): infer R4; new (...args: infer A5): infer R5; new (...args: infer A6): infer R6; new (...args: infer A7): infer R7; new (...args: infer A8): infer R8; }
+      ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3) | (new (...p: A4) => R4) | (new (...p: A5) => R5) | (new (...p: A6) => R6) | (new (...p: A7) => R7) | (new (...p: A8) => R8)
+      : C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; new (...args: infer A4): infer R4; new (...args: infer A5): infer R5; new (...args: infer A6): infer R6; new (...args: infer A7): infer R7; }
+        ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3) | (new (...p: A4) => R4) | (new (...p: A5) => R5) | (new (...p: A6) => R6) | (new (...p: A7) => R7)
+        : C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; new (...args: infer A4): infer R4; new (...args: infer A5): infer R5; new (...args: infer A6): infer R6; }
+          ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3) | (new (...p: A4) => R4) | (new (...p: A5) => R5) | (new (...p: A6) => R6)
+          : C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; new (...args: infer A4): infer R4; new (...args: infer A5): infer R5; }
+            ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3) | (new (...p: A4) => R4) | (new (...p: A5) => R5)
+            : C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; new (...args: infer A4): infer R4; }
+              ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3) | (new (...p: A4) => R4)
+              : C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; }
+                ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3)
+                : C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; }
+                  ? (new (...p: A1) => R1) | (new (...p: A2) => R2)
+                  : C extends new (...args: infer A1) => infer R1 ? (new (...p: A1) => R1)
+                    : never
+
+/**
+ * Get a union of overload variants for a constructor `C`. Does a check for whether we can do the one-shot 10-overload matcher (which works for ts>5.3), and if not, falls back to the more complicated utility.
+ */
+export type ConstructorOverloadsUnion<C> =
+  // recent TypeScript versions (5.3+) can treat a 1-overload type constructor as a 10-overload. Test for this by seeing if we can successfully get a union from a 1-overload constructor. If we can't, we're on an old TypeScript and need to use the more complicated utility.
+  IsNever<TSPost53ConstructorOverloadsInfoUnion<new (a: 1) => any>> extends true
+    ? TSPre53ConstructorOverloadsInfoUnion<C>
+    : TSPost53ConstructorOverloadsInfoUnion<C>
+
+/** Allows inferring any constructor using the `infer` keyword. */
+// This *looks* fairly pointless but if you try to use `new (...args: any) => any` directly, TypeScript will not infer the constructor type correctly.
+export type InferConstructor<C extends new (...args: any) => any> = C
+
+/** A union type of the parameters allowed for any overload of constructor `C` */
+export type ConstructorOverloadParameters<C> =
+  ConstructorOverloadsUnion<C> extends InferConstructor<infer Ctor> ? ConstructorParameters<Ctor> : never

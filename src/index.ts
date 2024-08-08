@@ -1,4 +1,9 @@
-import {OverloadParameters, OverloadReturnTypes, OverloadsNarrowedByParameters} from './overloads'
+import {
+  ConstructorOverloadParameters,
+  OverloadParameters,
+  OverloadReturnTypes,
+  OverloadsNarrowedByParameters,
+} from './overloads'
 import {
   StrictEqualUsingTSInternalIdenticalToOperator,
   MismatchInfo,
@@ -538,7 +543,9 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param args - The arguments to check for constructibility.
    * @returns `true`.
    */
-  toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
+  toBeConstructibleWith: Options['positive'] extends true
+    ? <A extends ConstructorOverloadParameters<Actual>>(...args: A) => true
+    : never
 
   /**
    * Equivalent to the {@linkcode Extract} utility type.
