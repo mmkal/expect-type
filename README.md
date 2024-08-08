@@ -333,7 +333,9 @@ expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
 expectTypeOf<Factorize>().parameter(0).toEqualTypeOf<number | bigint>()
 ```
 
-Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>, which simply choose a single overload (see the [Overloaded functions](#overloaded-functions) section for more information):
+Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>:
+
+The TypeScript builtins simply choose a single overload (see the [Overloaded functions](#overloaded-functions) section for more information)
 
 ```typescript
 type Factorize = {
@@ -341,6 +343,7 @@ type Factorize = {
   (input: bigint): bigint[]
 }
 
+// overload using `number` is ignored!
 expectTypeOf<Parameters<Factorize>>().toEqualTypeOf<[bigint]>()
 expectTypeOf<ReturnType<Factorize>>().toEqualTypeOf<bigint[]>()
 ```

@@ -224,12 +224,14 @@ test('Up to ten overloads will produce union types for `.parameters` and `.retur
   expectTypeOf<Factorize>().parameter(0).toEqualTypeOf<number | bigint>()
 })
 
-test("Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>, which simply choose a single overload (see the [Overloaded functions](#overloaded-functions) section for more information)", () => {
+/** The TypeScript builtins simply choose a single overload (see the [Overloaded functions](#overloaded-functions) section for more information) */
+test("Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>", () => {
   type Factorize = {
     (input: number): number[]
     (input: bigint): bigint[]
   }
 
+  // overload using `number` is ignored!
   expectTypeOf<Parameters<Factorize>>().toEqualTypeOf<[bigint]>()
   expectTypeOf<ReturnType<Factorize>>().toEqualTypeOf<bigint[]>()
 })
