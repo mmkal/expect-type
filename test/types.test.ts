@@ -680,6 +680,57 @@ test('Works arounds tsc bug not handling intersected types for this form of equi
   expectTypeOf(one).branded.not.toEqualTypeOf(two)
 })
 
+test(".branded doesn't get tripped up by overloaded functions", () => {
+  type A = {
+    f: {
+      (_: 1): 1
+      (_: 2): 2
+    }
+  }
+
+  type B = {
+    f: (_: 2) => 2
+  }
+
+  type C = {
+    f: (_: 1 | 2) => 1 | 2
+  }
+
+  type D = {
+    f: (...args: [1] | [2]) => 1 | 2
+  }
+
+  // @ts-expect-error
+  expectTypeOf<A>().branded.toEqualTypeOf<B>()
+  // @ts-expect-error
+  expectTypeOf<A>().branded.toEqualTypeOf<C>()
+  // @ts-expect-error
+  expectTypeOf<A>().branded.toEqualTypeOf<D>()
+  // @ts-expect-error
+  expectTypeOf<B>().branded.toEqualTypeOf<C>()
+})
+
+test(".branded doesn't get tripped up by overloaded constructors", () => {
+  class A {
+    constructor(_: 1)
+    constructor(_: 2)
+    constructor(_: number) {}
+
+    x = 1
+  }
+  class B {
+    constructor(_: 2) {}
+
+    x = 1
+  }
+
+  // @ts-expect-error
+  expectTypeOf(A).branded.toEqualTypeOf<typeof B>()
+
+  expectTypeOf<A>().toEqualTypeOf<B>()
+  expectTypeOf<A>().branded.toEqualTypeOf<B>()
+})
+
 test('Distinguish between identical types that are AND`d together', () => {
   expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
   // Note: The `& T` in `Equal` in index.ts makes this work.

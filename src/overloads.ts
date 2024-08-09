@@ -1,4 +1,4 @@
-import {StrictEqualUsingTSInternalIdenticalToOperator, IsNever, UnionToIntersection} from './utils'
+import {StrictEqualUsingTSInternalIdenticalToOperator, IsNever, UnionToIntersection, UnionToTuple} from './utils'
 
 // prettier-ignore
 /**
@@ -180,3 +180,5 @@ export type InferConstructor<C extends new (...args: any) => any> = C
 /** A union type of the parameters allowed for any overload of constructor `C` */
 export type ConstructorOverloadParameters<C> =
   ConstructorOverloadsUnion<C> extends InferConstructor<infer Ctor> ? ConstructorParameters<Ctor> : never
+
+export type NumOverloads<T> = UnionToTuple<OverloadsInfoUnion<T>>['length']

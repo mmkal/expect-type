@@ -1,3 +1,5 @@
+import {ConstructorOverloadParameters, NumOverloads, OverloadsInfoUnion} from './overloads'
+
 /**
  * Negates a boolean type.
  */
@@ -149,18 +151,26 @@ export type DeepBrand<T> =
             ? {
                 type: 'constructor'
                 // todo: use overload helper to get all constructor params
-                params: ConstructorParams<T>
+                params: ConstructorOverloadParameters<T>
                 instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>>
               }
             : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
-              ? {
-                  type: 'function'
-                  // todo: use overload helper instead of `...args: infer P` to get all params
-                  params: DeepBrand<P>
-                  return: DeepBrand<R>
-                  this: DeepBrand<ThisParameterType<T>>
-                  props: DeepBrand<Omit<T, keyof Function>>
-                }
+              ? NumOverloads<T> extends 1
+                ? {
+                    type: 'function'
+                    params: DeepBrand<P>
+                    return: DeepBrand<R>
+                    this: DeepBrand<ThisParameterType<T>>
+                    props: DeepBrand<Omit<T, keyof Function>>
+                  }
+                : UnionToTuple<OverloadsInfoUnion<T>> extends infer OverloadsTuple
+                  ? {
+                      type: 'overloads'
+                      overloads: {
+                        [K in keyof OverloadsTuple]: DeepBrand<OverloadsTuple[K]>
+                      }
+                    }
+                  : never
               : T extends any[]
                 ? {
                     type: 'array'
@@ -176,7 +186,7 @@ export type DeepBrand<T> =
                     readonly: ReadonlyKeys<T>
                     required: RequiredKeys<T>
                     optional: OptionalKeys<T>
-                    constructorParams: DeepBrand<ConstructorParams<T>>
+                    constructorParams: DeepBrand<ConstructorOverloadParameters<T>>
                   }
 
 /**
@@ -364,3 +374,14 @@ export type Scolder<
 
 /** `A | B | C` -> `A & B & C` */
 export type UnionToIntersection<T> = (T extends any ? (x: T) => void : never) extends (x: infer I) => void ? I : never
+
+/**
+ * Get the last element of a union. First, converts to a union of `() => T` functions, then uses `UnionToIntersection` to get the last one.
+ */
+export type LastOf<T> = UnionToIntersection<T extends any ? () => T : never> extends () => infer R ? R : never
+
+/** Intermediate type for {@linkcode UnionToTuple} which pushes the "last" union member to the end of a tuple, and recursively prepends the remainder of the union */
+export type TuplifyUnion<T, L = LastOf<T>> = IsNever<T> extends true ? [] : [...TuplifyUnion<Exclude<T, L>>, L]
+
+/** Convert a union like `1 | 2 | 3` to a tuple like `[1, 2, 3]` */
+export type UnionToTuple<T> = TuplifyUnion<T>
