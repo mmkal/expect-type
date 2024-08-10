@@ -189,6 +189,11 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ...MISMATCH: MismatchArgs<Extends<KeyType, keyof Actual>, true>
   ) => KeyType extends keyof Actual ? PositiveExpectTypeOf<Actual[KeyType]> : true
 
+  property: <KeyType extends keyof Required<Actual>>(
+    key: KeyType,
+    ...MISMATCH: MismatchArgs<Extends<KeyType, keyof Actual>, true>
+  ) => PositiveExpectTypeOf<Actual[KeyType]>
+
   /**
    * Inverts the result of the following assertions.
    *
@@ -899,6 +904,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toBeCallableWith: fn,
     toBeConstructibleWith: fn,
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+    property: expectTypeOf,
     extract: expectTypeOf,
     exclude: expectTypeOf,
     pick: expectTypeOf,
