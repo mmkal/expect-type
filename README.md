@@ -271,6 +271,43 @@ type Person = {name: string; age: number}
 expectTypeOf<Person>().pick<'name'>().toEqualTypeOf<{name: string}>()
 ```
 
+Use `.property` to pick a property from an object and narrow down complex objects:
+
+```typescript
+type CSSDisplay = 'flex' | 'grid' | 'block';
+interface CSSProperties {
+  display: CSSDisplay | `inline-${CSSDisplay}`;
+  font?: {
+    size?: 'lg' | 'sm' | 'xl' | 'base';
+    style?: 'normal' | 'italic' | 'bold';
+  };
+}
+
+const cssProperties: CSSProperties = { display: 'block' };
+
+class CSSPropertyBuilder {
+  public constructor() { }
+
+  public css!: CSSProperties;
+  public build(css: CSSProperties): CSSProperties {
+    this.css = css;
+    return css;
+  }
+}
+
+// instance object
+expectTypeOf(CSSPropertyBuilder).instance.toHaveProperty('build');
+expectTypeOf(CSSPropertyBuilder).instance.property('build').toBeFunction();
+expectTypeOf(CSSPropertyBuilder).instance.pick('build').not.toBeFunction();
+
+// plain object
+expectTypeOf(cssProperties).property('display').toBeString();
+expectTypeOf<CSSProperties>().property('display').toEqualTypeOf<CSSDisplay | `inline-${CSSDisplay}`>();
+
+// deep-nested instance
+expectTypeOf(CSSPropertyBuilder).instance.property('css').property('display').not.toBeNullable();
+```
+
 Use `.omit` to remove a set of properties from an object:
 
 ```typescript
