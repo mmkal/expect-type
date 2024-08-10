@@ -189,6 +189,26 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ...MISMATCH: MismatchArgs<Extends<KeyType, keyof Actual>, true>
   ) => KeyType extends keyof Actual ? PositiveExpectTypeOf<Actual[KeyType]> : true
 
+  /**
+   * Extracts a certain object properties with `.property(key)` call to
+   * perform other assertions on it.
+   *
+   * @example
+   * ```ts
+   * const foo = {
+   *   bar: 10,
+   *   baz: 'hello world',
+   * }
+   *
+   * expectTypeOf(foo).property('bar').toBeNumber()
+   *
+   * expectTypeOf(foo).parameter('baz').toBeString()
+   * ```
+   *
+   * @param key - The property key of the properties to extract.
+   * @returns The extracted property type.
+   */
+
   property: <KeyType extends keyof Required<Actual>>(
     key: KeyType,
     ...MISMATCH: MismatchArgs<Extends<KeyType, keyof Actual>, true>
