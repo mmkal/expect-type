@@ -7,7 +7,6 @@ import {
   RequiredKeys,
   OptionalKeys,
   MutuallyExtends,
-  ConstructorParams,
   UnionToTuple,
 } from './utils'
 
@@ -42,7 +41,7 @@ export type DeepBrand<T> =
           : T extends new (...args: any[]) => any
             ? {
                 type: 'constructor'
-                params: ConstructorParams<T>
+                params: ConstructorOverloadParameters<T>
                 instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>>
               }
             : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching

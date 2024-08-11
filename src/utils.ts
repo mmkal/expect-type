@@ -134,16 +134,6 @@ export type StrictEqualUsingTSInternalIdenticalToOperator<L, R> =
  */
 export type MutuallyExtends<L, R> = And<[Extends<L, R>, Extends<R, L>]>
 
-/**
- * Represents the constructor parameters of a class or constructor function.
- * If the constructor takes no arguments, an empty array is returned.
- */
-export type ConstructorParams<Actual> = Actual extends new (...args: infer P) => any
-  ? Actual extends new () => any
-    ? P | []
-    : P
-  : never
-
 const mismatch = Symbol('mismatch')
 type Mismatch = {[mismatch]: 'mismatch'}
 

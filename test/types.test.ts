@@ -4,6 +4,7 @@ import {test} from 'vitest'
 import * as a from '../src'
 import {UnionToIntersection} from '../src'
 import {
+  ConstructorOverloadParameters,
   OverloadParameters,
   OverloadReturnTypes,
   OverloadsInfoUnion,
@@ -125,14 +126,27 @@ test('constructor params', () => {
   // This test checks that's still the case to avoid unnecessarily maintaining a workaround,
   // in case it's fixed in a future version
 
-  // broken built-in behaviour:
+  // unhelpful built-in behaviour:
   expectTypeOf<ConstructorParameters<typeof Date>>().toEqualTypeOf<[string | number | Date]>()
   expectTypeOf<typeof Date extends new (...args: infer Args) => any ? Args : never>().toEqualTypeOf<
     [string | number | Date]
   >()
 
   // workaround:
-  expectTypeOf<a.ConstructorParams<typeof Date>>().toEqualTypeOf<[] | [string | number | Date]>()
+  expectTypeOf<ConstructorOverloadParameters<typeof Date>>().toEqualTypeOf<
+    | []
+    | [value: string | number | Date]
+    | [value: string | number]
+    | [
+        year: number,
+        monthIndex: number,
+        date?: number | undefined,
+        hours?: number | undefined,
+        minutes?: number | undefined,
+        seconds?: number | undefined,
+        ms?: number | undefined,
+      ]
+  >()
 })
 
 test('guarded & asserted types', () => {
@@ -724,9 +738,11 @@ test(".branded doesn't get tripped up by overloaded constructors", () => {
     x = 1
   }
 
+  // todo[>=1.0.0]: change this to .branded.not instead of using a ts-expect-error
   // @ts-expect-error
   expectTypeOf(A).branded.toEqualTypeOf<typeof B>()
 
+  expectTypeOf(A).not.toEqualTypeOf<typeof B>()
   expectTypeOf<A>().toEqualTypeOf<B>()
   expectTypeOf<A>().branded.toEqualTypeOf<B>()
 })

@@ -23,7 +23,7 @@ import {
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends, ConstructorParams} from './utils'
+import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
@@ -696,6 +696,8 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * Extracts constructor parameters as an array of values and
    * perform assertions on them with this method.
    *
+   * For overloaded constructors it will return a union of all possible parameter-tuples.
+   *
    * @example
    * ```ts
    * expectTypeOf(Date).constructorParameters.toEqualTypeOf<
@@ -703,7 +705,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * >()
    * ```
    */
-  constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, Options>
+  constructorParameters: ExpectTypeOf<ConstructorOverloadParameters<Actual>, Options>
 
   /**
    * Equivalent to the {@linkcode ThisParameterType} utility type.
