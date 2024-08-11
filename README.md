@@ -451,7 +451,20 @@ expectTypeOf(Date).toBeConstructibleWith(0)
 expectTypeOf(Date).toBeConstructibleWith(new Date())
 expectTypeOf(Date).toBeConstructibleWith()
 
-expectTypeOf(Date).constructorParameters.toEqualTypeOf<[] | [string | number | Date]>()
+expectTypeOf(Date).constructorParameters.toEqualTypeOf<
+  | []
+  | [value: string | number]
+  | [value: string | number | Date]
+  | [
+      year: number,
+      monthIndex: number,
+      date?: number | undefined,
+      hours?: number | undefined,
+      minutes?: number | undefined,
+      seconds?: number | undefined,
+      ms?: number | undefined,
+    ]
+>()
 ```
 
 Constructor overloads:
