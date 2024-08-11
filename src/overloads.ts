@@ -16,12 +16,14 @@ export type UnknownFn = (...p: unknown[]) => unknown
 
 /**
  * `true` iff `T` is equivalent to `(...p: unknown[]) => unknown`, which is what an overload variant looks like for a non-existent overload
- * This is useful because older versions of TypeScript end up with 9 "useless" overloads and one real one for parameterless/generic functions
+ * This is useful because older versions of TypeScript end up with 9 "useless" overloads and one real one for parameterless/generic functions.
+ *
+ * Related: https://github.com/microsoft/TypeScript/issues/28867
  */
 export type IsUselessOverloadInfo<T> = StrictEqualUsingTSInternalIdenticalToOperator<T, UnknownFn>
 
 /**
- * Old versions of typescript can sometimes seem to refuse to separate out union members unless you put them each in a pointless tuple and add an extra `infer X` expression.
+ * Old versions of TypeScript can sometimes seem to refuse to separate out union members unless you put them each in a pointless tuple and add an extra `infer X` expression.
  * There may be a better way to work around this problem, but since it's not a problem in newer versions of TypeScript, it's not a priority right now.
  */
 export type Tuplify<T> = T extends infer X ? [X] : never
