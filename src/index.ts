@@ -1,16 +1,6 @@
+import {StrictEqualUsingBranding} from './branding'
 import {
-  ConstructorOverloadParameters,
-  OverloadParameters,
-  OverloadReturnTypes,
-  OverloadsNarrowedByParameters,
-} from './overloads'
-import {
-  StrictEqualUsingTSInternalIdenticalToOperator,
   MismatchInfo,
-  AValue,
-  MismatchArgs,
-  Extends,
-  StrictEqualUsingBranding,
   Scolder,
   ExpectAny,
   ExpectUnknown,
@@ -26,10 +16,18 @@ import {
   ExpectNull,
   ExpectUndefined,
   ExpectNullable,
-  ConstructorParams,
-} from './utils'
+} from './messages'
+import {
+  ConstructorOverloadParameters,
+  OverloadParameters,
+  OverloadReturnTypes,
+  OverloadsNarrowedByParameters,
+} from './overloads'
+import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends, ConstructorParams} from './utils'
 
+export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
+export * from './messages' // backcompat, consider removing in next major version
 
 /**
  * Represents the positive assertion methods available for type checking in the
