@@ -1,4 +1,4 @@
-import {StrictEqualUsingBranding} from './brand'
+import {StrictEqualUsingBranding} from './branding'
 import {And, Extends, Not, IsAny, UsefulKeys, ExtendsExcludingAnyOrNever, IsUnknown, IsNever} from './utils'
 
 /**

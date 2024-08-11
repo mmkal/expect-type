@@ -1,4 +1,4 @@
-import {StrictEqualUsingBranding} from './brand'
+import {StrictEqualUsingBranding} from './branding'
 import {
   MismatchInfo,
   Scolder,
@@ -26,7 +26,7 @@ import {
   ConstructorParams,
 } from './utils'
 
-export * from './brand' // backcompat, consider removing in next major version
+export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
 export * from './messages' // backcompat, consider removing in next major version
 
