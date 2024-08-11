@@ -1,10 +1,6 @@
+import {StrictEqualUsingBranding} from './branding'
 import {
-  StrictEqualUsingTSInternalIdenticalToOperator,
   MismatchInfo,
-  AValue,
-  MismatchArgs,
-  Extends,
-  StrictEqualUsingBranding,
   Scolder,
   ExpectAny,
   ExpectUnknown,
@@ -20,11 +16,19 @@ import {
   ExpectNull,
   ExpectUndefined,
   ExpectNullable,
+} from './messages'
+import {
+  StrictEqualUsingTSInternalIdenticalToOperator,
+  AValue,
+  MismatchArgs,
+  Extends,
   Params,
   ConstructorParams,
 } from './utils'
 
+export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
+export * from './messages' // backcompat, consider removing in next major version
 
 /**
  * Represents the positive assertion methods available for type checking in the
