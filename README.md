@@ -346,6 +346,19 @@ const f = (a: number) => [a, a]
 expectTypeOf(f).toBeCallableWith('foo')
 ```
 
+Use `.map` to transform types:
+
+This can be useful for generic functions or complex types which you can't access via `.toBeCallableWith`, `.toHaveProperty` etc. The callback function isn't called at runtime, which can make this a useful way to get complex inferred types without worrying about running code.
+
+```typescript
+const capitalize = <S extends string>(input: S) =>
+  (input.slice(0, 1).toUpperCase() + input.slice(1)) as Capitalize<S>
+
+expectTypeOf(capitalize)
+  .map(fn => fn('hello world'))
+  .toEqualTypeOf<'Hello world'>()
+```
+
 You can also check type guards & type assertions:
 
 ```typescript
