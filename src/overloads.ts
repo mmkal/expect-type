@@ -12,7 +12,7 @@ export type TSPost53OverloadsInfoUnion<F> =
   ? ((...p: A1) => R1) | ((...p: A2) => R2) | ((...p: A3) => R3) | ((...p: A4) => R4) | ((...p: A5) => R5) | ((...p: A6) => R6) | ((...p: A7) => R7) | ((...p: A8) => R8) | ((...p: A9) => R9) | ((...p: A10) => R10)
   : never
 
-export type UnknownFn = (...p: unknown[]) => unknown
+export type UnknownFunction = (...args: unknown[]) => unknown
 
 /**
  * `true` iff `T` is equivalent to `(...p: unknown[]) => unknown`, which is what an overload variant looks like for a non-existent overload
