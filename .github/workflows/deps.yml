@@ -68,34 +68,34 @@ jobs:
           if [ -z "$diff" ]; then
             echo "no diff between $main_branch and $deps_branch"
             echo status=clean >> $GITHUB_OUTPUT
-
-            update_commits=$(git --no-pager log --oneline --no-merges main..deps)
-            echo "Debug: update_commits contents:"
-            echo "$update_commits"
-            updated_deps=$(
-              echo $update_commits
-                | grep "update dependency"
-                | sed -E 's/.*update dependency ([^ ]+) to.*/\1/'
-                | uniq
-            )
-            count=$(echo "$updated_deps" | wc -l)
-
-            if [ $count -le 4 ]; then
-              formatted=$(echo "$updated_deps" | paste -sd ", ")
-              pr_title="chore: update dependencies $formatted"
-            else
-              formatted=$(echo "$updated_deps" | head -n 3 | paste -sd ", ")
-              remainder=$((count - 3))
-              pr_title="chore: update dependencies $formatted and $remainder more"
-            fi
-
-            echo "update_commits=$update_commits" >> $GITHUB_OUTPUT
-            echo "pr_title=$pr_title" >> $GITHUB_OUTPUT
           else
             echo "diff between $main_branch and $deps_branch:"
             echo "$diff"
             echo status=dirty >> $GITHUB_OUTPUT
           fi
+
+          update_commits=$(git --no-pager log --oneline --no-merges main..deps)
+          echo "Debug: update_commits contents:"
+          echo "$update_commits"
+          updated_deps=$(
+            echo $update_commits
+              | grep "update dependency"
+              | sed -E 's/.*update dependency ([^ ]+) to.*/\1/'
+              | uniq
+          )
+          count=$(echo "$updated_deps" | wc -l)
+
+          if [ $count -le 4 ]; then
+            formatted=$(echo "$updated_deps" | paste -sd ", ")
+            pr_title="chore: update dependencies $formatted"
+          else
+            formatted=$(echo "$updated_deps" | head -n 3 | paste -sd ", ")
+            remainder=$((count - 3))
+            pr_title="chore: update dependencies $formatted and $remainder more"
+          fi
+
+          echo "update_commits=$update_commits" >> $GITHUB_OUTPUT
+          echo "pr_title=$pr_title" >> $GITHUB_OUTPUT
       - name: Reset deps branch
         if: steps.deps_diff.outputs.status == 'clean'
         run: |
