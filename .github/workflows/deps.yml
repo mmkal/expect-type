@@ -100,9 +100,15 @@ jobs:
               .filter(Boolean)
               .map(match => match[1])
             
-            const prTitle = updatedDeps.length <= 4
-              ? `chore: update dependencies ${updatedDeps.join(', ')}`
-              : `chore: update dependencies ${updatedDeps.slice(0, 3).join(', ')} and ${updatedDeps.length - 3} more`
+            const depsSummary = updatedDeps
+                .slice(0, 4)
+                .map((dep, i, {length}) => {
+                  if (i === 3 && updatedDeps.length > 4) return `and ${updatedDeps.length - 3} more`
+                  if (i > 0 && i === length - 1) return `and ${dep}`
+                  return dep
+                })
+                .join(', ').replace(', and', ' and')
+            const prTitle = `update ${updatedDeps.length === 1 ? 'dependency' : 'dependencies'} ${depsSummary}`
 
             console.log({prTitle, updateCommits})
             const prBody = [
