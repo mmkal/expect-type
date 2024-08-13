@@ -108,13 +108,13 @@ jobs:
                   return dep
                 })
                 .join(', ').replace(', and', ' and')
-            const prTitle = `update ${updatedDeps.length === 1 ? 'dependency' : 'dependencies'} ${depsSummary}`
+            const prTitle = `renovate: update ${updatedDeps.length === 1 ? 'dependency' : 'dependencies'} ${depsSummary} 🌲`
 
             console.log({prTitle, updateCommits})
             const prBody = [
               'This PR was automatically created by the ${{ github.workflow }} workflow.',
               '',
-              'Review each dependency update and merge as needed.',
+              'Review the dependency updates made by @renovate-bot, and merge as needed.',
               '',
               '### Updates included:',
               '',
