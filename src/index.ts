@@ -176,7 +176,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * @example
    * <caption>check that properties exist</caption>
    * ```ts
-   * const obj = {a: 1, b: ''}
+   * const obj = { a: 1, b: '' }
    *
    * expectTypeOf(obj).toHaveProperty('a')
    *
@@ -395,7 +395,7 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * @example
    * <caption>check that properties exist</caption>
    * ```ts
-   * const obj = {a: 1, b: ''}
+   * const obj = { a: 1, b: '' }
    *
    * expectTypeOf(obj).toHaveProperty('a')
    *
@@ -854,12 +854,12 @@ export type _ExpectTypeOf = {
  * form of a reference or generic type parameter.
  *
  * @example
- * import {foo, bar} from '../foo'
- * import {expectTypeOf} from 'expect-type'
+ * import { foo, bar } from '../foo'
+ * import { expectTypeOf } from 'expect-type'
  *
  * test('foo types', () => {
- *   // make sure `foo` has type {a: number}
- *   expectTypeOf(foo).toMatchTypeOf({a: 1})
+ *   // make sure `foo` has type { a: number }
+ *   expectTypeOf(foo).toMatchTypeOf({ a: 1 })
  *   expectTypeOf(foo).toHaveProperty('a').toBeNumber()
  *
  *   // make sure `bar` is a function taking a string:

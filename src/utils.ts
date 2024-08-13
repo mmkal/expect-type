@@ -57,7 +57,7 @@ export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
  *
  * @example
  * ```ts
- * UsefulKeys<{a: 1; b: 2}> // 'a' | 'b'
+ * UsefulKeys<{ a: 1; b: 2 }> // 'a' | 'b'
  *
  * UsefulKeys<['a', 'b']> // '0' | '1'
  *
