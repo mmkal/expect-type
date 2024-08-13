@@ -116,8 +116,17 @@ jobs:
             })
             const {deps_branch: head, main_branch: base} = process.env
 
-            const prTitle = '${{ steps.deps_diff.outputs.pr_title }}'
-            const updateCommits = '${{ steps.deps_diff.outputs.update_commits }}'
+            const childProcess = require('child_process')
+            const updateCommits = childProcess.execSync('git --no-pager log --oneline --no-merges main..deps').toString().trim().split('\n')
+            const updatedDeps = updateCommits
+              .map(line => line.match(/update dependency (.+) to/))
+              .filter(Boolean)
+              .map(match => match[1])
+            
+            const prTitle = updatedDeps.length <= 4
+              ? `chore: update dependencies ${updatedDeps.join(', ')}`
+              : `chore: update dependencies ${updatedDeps.slice(0, 3).join(', ')} and ${updatedDeps.length - 3} more`
+
             console.log({prTitle, updateCommits})
             const prBody = [
               'This PR was automatically created by the ${{ github.workflow }} workflow.',
@@ -126,7 +135,7 @@ jobs:
               '',
               '### Updates included:',
               '',
-              updateCommits.replace(/\s*[a-f0-9]{7} chore/g, m => '\n- ' + m.trim()),
+              updateCommits.map(commit => `- ${commit}`).join('\n'),
             ].join('\n')
 
             for await (const {data: pulls} of iterator) {
