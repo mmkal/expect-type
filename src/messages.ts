@@ -33,8 +33,9 @@ export type PrintType<T> =
 
 /**
  * Helper for showing end-user a hint why their type assertion is failing.
- * This swaps "leaf" types with a literal message about what the actual and expected types are.
- * Needs to check for Not<IsAny<Actual>> because otherwise LeafTypeOf<Actual> returns never, which extends everything 🤔
+ * This swaps "leaf" types with a literal message about what the actual and
+ * expected types are. Needs to check for `Not<IsAny<Actual>>` because
+ * otherwise `LeafTypeOf<Actual>` returns `never`, which extends everything 🤔
  */
 export type MismatchInfo<Actual, Expected> =
   And<[Extends<PrintType<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
@@ -96,7 +97,8 @@ const expectNullable = Symbol('expectNullable')
 export type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
 
 /**
- * Checks if the result of an expecter matches the specified options, and resolves to a fairly readable error message if not.
+ * Checks if the result of an expecter matches the specified options, and
+ * resolves to a fairly readable error message if not.
  */
 export type Scolder<
   Expecter extends {result: boolean},
