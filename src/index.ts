@@ -18,13 +18,12 @@ import {
   ExpectNullable,
 } from './messages'
 import {
-  StrictEqualUsingTSInternalIdenticalToOperator,
-  AValue,
-  MismatchArgs,
-  Extends,
-  Params,
-  ConstructorParams,
-} from './utils'
+  ConstructorOverloadParameters,
+  OverloadParameters,
+  OverloadReturnTypes,
+  OverloadsNarrowedByParameters,
+} from './overloads'
+import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
@@ -502,7 +501,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * Checks whether a function is callable with the given parameters.
    *
    * __Note__: You cannot negate this assertion with
-   * {@linkcode PositiveExpectTypeOf.not `.not`} you need to use
+   * {@linkcode PositiveExpectTypeOf.not `.not`}, you need to use
    * `ts-expect-error` instead.
    *
    * @example
@@ -519,7 +518,11 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param args - The arguments to check for callability.
    * @returns `true`.
    */
-  toBeCallableWith: Options['positive'] extends true ? (...args: Params<Actual>) => true : never
+  toBeCallableWith: Options['positive'] extends true
+    ? <A extends OverloadParameters<Actual>>(
+        ...args: A
+      ) => ExpectTypeOf<OverloadsNarrowedByParameters<Actual, A>, Options>
+    : never
 
   /**
    * Checks whether a class is constructible with the given parameters.
@@ -538,7 +541,9 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param args - The arguments to check for constructibility.
    * @returns `true`.
    */
-  toBeConstructibleWith: Options['positive'] extends true ? (...args: ConstructorParams<Actual>) => true : never
+  toBeConstructibleWith: Options['positive'] extends true
+    ? <A extends ConstructorOverloadParameters<Actual>>(...args: A) => true
+    : never
 
   /**
    * Equivalent to the {@linkcode Extract} utility type.
@@ -666,7 +671,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @param index - The index of the parameter to extract.
    * @returns The extracted parameter type.
    */
-  parameter: <Index extends keyof Params<Actual>>(index: Index) => ExpectTypeOf<Params<Actual>[Index], Options>
+  parameter: <Index extends number>(index: Index) => ExpectTypeOf<OverloadParameters<Actual>[Index], Options>
 
   /**
    * Equivalent to the {@linkcode Parameters} utility type.
@@ -684,12 +689,14 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * expectTypeOf(hasParam).parameters.toEqualTypeOf<[string]>()
    * ```
    */
-  parameters: ExpectTypeOf<Params<Actual>, Options>
+  parameters: ExpectTypeOf<OverloadParameters<Actual>, Options>
 
   /**
    * Equivalent to the {@linkcode ConstructorParameters} utility type.
    * Extracts constructor parameters as an array of values and
    * perform assertions on them with this method.
+   *
+   * For overloaded constructors it will return a union of all possible parameter-tuples.
    *
    * @example
    * ```ts
@@ -698,7 +705,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * >()
    * ```
    */
-  constructorParameters: ExpectTypeOf<ConstructorParams<Actual>, Options>
+  constructorParameters: ExpectTypeOf<ConstructorOverloadParameters<Actual>, Options>
 
   /**
    * Equivalent to the {@linkcode ThisParameterType} utility type.
@@ -738,7 +745,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * expectTypeOf((a: number) => [a, a]).returns.toEqualTypeOf([1, 2])
    * ```
    */
-  returns: Actual extends (...args: any[]) => infer R ? ExpectTypeOf<R, Options> : never
+  returns: Actual extends Function ? ExpectTypeOf<OverloadReturnTypes<Actual>, Options> : never
 
   /**
    * Extracts resolved value of a Promise,
@@ -900,9 +907,9 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toBeNullable: fn,
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
-    toBeCallableWith: fn,
     toBeConstructibleWith: fn,
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+    toBeCallableWith: expectTypeOf,
     extract: expectTypeOf,
     exclude: expectTypeOf,
     pick: expectTypeOf,

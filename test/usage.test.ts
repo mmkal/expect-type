@@ -212,6 +212,30 @@ test("But often it's preferable to use `.parameters` or `.returns` for more spec
   expectTypeOf<HasParam>().returns.toBeVoid()
 })
 
+test('Up to ten overloads will produce union types for `.parameters` and `.returns`', () => {
+  type Factorize = {
+    (input: number): number[]
+    (input: bigint): bigint[]
+  }
+
+  expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
+  expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
+
+  expectTypeOf<Factorize>().parameter(0).toEqualTypeOf<number | bigint>()
+})
+
+/** The TypeScript builtins simply choose a single overload (see the [Overloaded functions](#overloaded-functions) section for more information) */
+test("Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>", () => {
+  type Factorize = {
+    (input: number): number[]
+    (input: bigint): bigint[]
+  }
+
+  // overload using `number` is ignored!
+  expectTypeOf<Parameters<Factorize>>().toEqualTypeOf<[bigint]>()
+  expectTypeOf<ReturnType<Factorize>>().toEqualTypeOf<bigint[]>()
+})
+
 test('More examples of ways to work with functions - parameters using `.parameter(n)` or `.parameters`, and return values using `.returns`', () => {
   const f = (a: number) => [a, a]
 
@@ -229,6 +253,50 @@ test('More examples of ways to work with functions - parameters using `.paramete
   const twoArgFunc = (a: number, b: string) => ({a, b})
 
   expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
+})
+
+test('`.toBeCallableWith` allows for overloads. You can also use it to narrow down the return type for given input parameters.', () => {
+  type Factorize = {
+    (input: number): number[]
+    (input: bigint): bigint[]
+  }
+
+  expectTypeOf<Factorize>().toBeCallableWith(6)
+  expectTypeOf<Factorize>().toBeCallableWith(6n)
+})
+
+test('`.toBeCallableWith` returns a type that can be used to narrow down the return type for given input parameters.', () => {
+  type Factorize = {
+    (input: number): number[]
+    (input: bigint): bigint[]
+  }
+  expectTypeOf<Factorize>().toBeCallableWith(6).returns.toEqualTypeOf<number[]>()
+  expectTypeOf<Factorize>().toBeCallableWith(6n).returns.toEqualTypeOf<bigint[]>()
+})
+
+test('`.toBeCallableWith` can be used to narrow down the parameters of a function', () => {
+  type Delete = {
+    (path: string): void
+    (paths: string[], options?: {force: boolean}): void
+  }
+
+  expectTypeOf<Delete>().toBeCallableWith('abc').parameters.toEqualTypeOf<[string]>()
+  expectTypeOf<Delete>()
+    .toBeCallableWith(['abc', 'def'], {force: true})
+    .parameters.toEqualTypeOf<[string[], {force: boolean}?]>()
+
+  expectTypeOf<Delete>().toBeCallableWith('abc').parameter(0).toBeString()
+  expectTypeOf<Delete>().toBeCallableWith('abc').parameter(1).toBeUndefined()
+
+  expectTypeOf<Delete>()
+    .toBeCallableWith(['abc', 'def', 'ghi'])
+    .parameter(0)
+    .toEqualTypeOf<string[]>()
+
+  expectTypeOf<Delete>()
+    .toBeCallableWith(['abc', 'def', 'ghi'])
+    .parameter(1)
+    .toEqualTypeOf<{force: boolean} | undefined>()
 })
 
 test("You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error:", () => {
@@ -257,7 +325,35 @@ test('Assert on constructor parameters', () => {
   expectTypeOf(Date).toBeConstructibleWith(new Date())
   expectTypeOf(Date).toBeConstructibleWith()
 
-  expectTypeOf(Date).constructorParameters.toEqualTypeOf<[] | [string | number | Date]>()
+  expectTypeOf(Date).constructorParameters.toEqualTypeOf<
+    | []
+    | [value: string | number]
+    | [value: string | number | Date]
+    | [
+        year: number,
+        monthIndex: number,
+        date?: number | undefined,
+        hours?: number | undefined,
+        minutes?: number | undefined,
+        seconds?: number | undefined,
+        ms?: number | undefined,
+      ]
+  >()
+})
+
+test('Constructor overloads', () => {
+  class DBConnection {
+    constructor()
+    constructor(connectionString: string)
+    constructor(options: {host: string; port: number})
+    constructor(..._: unknown[]) {}
+  }
+
+  expectTypeOf(DBConnection).toBeConstructibleWith()
+  expectTypeOf(DBConnection).toBeConstructibleWith('localhost')
+  expectTypeOf(DBConnection).toBeConstructibleWith({host: 'localhost', port: 1234})
+  // @ts-expect-error - as when calling `new DBConnection(...)` you can't actually use the `(...args: unknown[])` overlaod, it's purely for the implementation.
+  expectTypeOf(DBConnection).toBeConstructibleWith(1, 2)
 })
 
 test('Check function `this` parameters', () => {

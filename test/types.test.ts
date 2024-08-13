@@ -2,6 +2,14 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {test} from 'vitest'
 import * as a from '../src'
+import {UnionToIntersection} from '../src'
+import {
+  ConstructorOverloadParameters,
+  OverloadParameters,
+  OverloadReturnTypes,
+  OverloadsInfoUnion,
+  OverloadsNarrowedByParameters,
+} from '../src/overloads'
 
 const {expectTypeOf} = a
 
@@ -118,14 +126,27 @@ test('constructor params', () => {
   // This test checks that's still the case to avoid unnecessarily maintaining a workaround,
   // in case it's fixed in a future version
 
-  // broken built-in behaviour:
+  // unhelpful built-in behaviour:
   expectTypeOf<ConstructorParameters<typeof Date>>().toEqualTypeOf<[string | number | Date]>()
   expectTypeOf<typeof Date extends new (...args: infer Args) => any ? Args : never>().toEqualTypeOf<
     [string | number | Date]
   >()
 
   // workaround:
-  expectTypeOf<a.ConstructorParams<typeof Date>>().toEqualTypeOf<[] | [string | number | Date]>()
+  expectTypeOf<ConstructorOverloadParameters<typeof Date>>().toEqualTypeOf<
+    | []
+    | [value: string | number | Date]
+    | [value: string | number]
+    | [
+        year: number,
+        monthIndex: number,
+        date?: number | undefined,
+        hours?: number | undefined,
+        minutes?: number | undefined,
+        seconds?: number | undefined,
+        ms?: number | undefined,
+      ]
+  >()
 })
 
 test('guarded & asserted types', () => {
@@ -673,6 +694,59 @@ test('Works arounds tsc bug not handling intersected types for this form of equi
   expectTypeOf(one).branded.not.toEqualTypeOf(two)
 })
 
+test(".branded doesn't get tripped up by overloaded functions", () => {
+  type A = {
+    f: {
+      (_: 1): 1
+      (_: 2): 2
+    }
+  }
+
+  type B = {
+    f: (_: 2) => 2
+  }
+
+  type C = {
+    f: (_: 1 | 2) => 1 | 2
+  }
+
+  type D = {
+    f: (...args: [1] | [2]) => 1 | 2
+  }
+
+  // @ts-expect-error
+  expectTypeOf<A>().branded.toEqualTypeOf<B>()
+  // @ts-expect-error
+  expectTypeOf<A>().branded.toEqualTypeOf<C>()
+  // @ts-expect-error
+  expectTypeOf<A>().branded.toEqualTypeOf<D>()
+  // @ts-expect-error
+  expectTypeOf<B>().branded.toEqualTypeOf<C>()
+})
+
+test(".branded doesn't get tripped up by overloaded constructors", () => {
+  class A {
+    constructor(_: 1)
+    constructor(_: 2)
+    constructor(_: number) {}
+
+    x = 1
+  }
+  class B {
+    constructor(_: 2) {}
+
+    x = 1
+  }
+
+  // todo[>=1.0.0]: change this to .branded.not instead of using a ts-expect-error
+  // @ts-expect-error
+  expectTypeOf(A).branded.toEqualTypeOf<typeof B>()
+
+  expectTypeOf(A).not.toEqualTypeOf<typeof B>()
+  expectTypeOf<A>().toEqualTypeOf<B>()
+  expectTypeOf<A>().branded.toEqualTypeOf<B>()
+})
+
 test('Distinguish between identical types that are AND`d together', () => {
   expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
   // Note: The `& T` in `Equal` in index.ts makes this work.
@@ -732,4 +806,46 @@ test('Issue #53: `.omit()` should work similarly to `Omit`', () => {
   expectTypeOf<Omit<Loading | Failed, 'code'>>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
 
   expectTypeOf<Loading | Failed>().omit<'code'>().toEqualTypeOf<{state: 'loading' | 'failed'}>()
+})
+
+test('Overload utils', () => {
+  type O = {
+    (): 0
+    (a: 1): 1
+    (a: 2): 2
+  }
+
+  expectTypeOf<OverloadParameters<O>>().toEqualTypeOf<[] | [1] | [2]>()
+  expectTypeOf<OverloadReturnTypes<O>>().toEqualTypeOf<0 | 1 | 2>()
+
+  type u = OverloadsInfoUnion<O>
+  type o = UnionToIntersection<Exclude<u, (_: 2) => 2>>
+
+  expectTypeOf<o>().toBeCallableWith()
+  expectTypeOf<o>().toBeCallableWith(1)
+  // @ts-expect-error
+  expectTypeOf<o>().toBeCallableWith(2)
+
+  type o2 = OverloadsNarrowedByParameters<O, []>
+
+  expectTypeOf<o2>().toEqualTypeOf<() => 0>()
+})
+
+test('Overload edge cases', () => {
+  type GenericFnType<T> = {
+    (a: 1, t: T): T
+    (b: 2, t: T): T
+  }
+
+  expectTypeOf<GenericFnType<number>>().parameters.not.toEqualTypeOf<[number, number]>()
+  expectTypeOf<GenericFnType<number>>().parameters.toEqualTypeOf<[1, number] | [2, number]>()
+  expectTypeOf<GenericFnType<number>>().returns.toEqualTypeOf<number>()
+
+  type NoArgOverload = {
+    (): 1
+    (a: 1): 1
+  }
+
+  expectTypeOf<NoArgOverload>().parameters.toEqualTypeOf<[] | [1]>()
+  expectTypeOf<NoArgOverload>().returns.toEqualTypeOf<1>()
 })

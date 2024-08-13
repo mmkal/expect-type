@@ -35,13 +35,16 @@ See below for lots more examples.
    - [Internal type helpers](#internal-type-helpers)
    - [Error messages](#error-messages)
       - [Concrete "expected" objects vs type arguments](#concrete-expected-objects-vs-type-arguments)
+   - [Overloaded functions](#overloaded-functions)
    - [Within test frameworks](#within-test-frameworks)
    - [Vitest](#vitest)
       - [Jest & `eslint-plugin-jest`](#jest--eslint-plugin-jest)
    - [Limitations](#limitations)
 - [Similar projects](#similar-projects)
    - [Comparison](#comparison)
+- [TypeScript backwards-compatibility](#typescript-backwards-compatibility)
 - [Contributing](#contributing)
+   - [Documentation of limitations through tests](#documentation-of-limitations-through-tests)
 <!-- codegen:end -->
 
 ## Installation and usage
@@ -316,6 +319,35 @@ expectTypeOf<HasParam>().parameters.toEqualTypeOf<[string]>()
 expectTypeOf<HasParam>().returns.toBeVoid()
 ```
 
+Up to ten overloads will produce union types for `.parameters` and `.returns`:
+
+```typescript
+type Factorize = {
+  (input: number): number[]
+  (input: bigint): bigint[]
+}
+
+expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
+expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
+
+expectTypeOf<Factorize>().parameter(0).toEqualTypeOf<number | bigint>()
+```
+
+Note that these aren't exactly like TypeScript's built-in Parameters<...> and ReturnType<...>:
+
+The TypeScript builtins simply choose a single overload (see the [Overloaded functions](#overloaded-functions) section for more information)
+
+```typescript
+type Factorize = {
+  (input: number): number[]
+  (input: bigint): bigint[]
+}
+
+// overload using `number` is ignored!
+expectTypeOf<Parameters<Factorize>>().toEqualTypeOf<[bigint]>()
+expectTypeOf<ReturnType<Factorize>>().toEqualTypeOf<bigint[]>()
+```
+
 More examples of ways to work with functions - parameters using `.parameter(n)` or `.parameters`, and return values using `.returns`:
 
 ```typescript
@@ -335,6 +367,56 @@ expectTypeOf(1).parameter(0).toBeNever()
 const twoArgFunc = (a: number, b: string) => ({a, b})
 
 expectTypeOf(twoArgFunc).parameters.toEqualTypeOf<[number, string]>()
+```
+
+`.toBeCallableWith` allows for overloads. You can also use it to narrow down the return type for given input parameters.:
+
+```typescript
+type Factorize = {
+  (input: number): number[]
+  (input: bigint): bigint[]
+}
+
+expectTypeOf<Factorize>().toBeCallableWith(6)
+expectTypeOf<Factorize>().toBeCallableWith(6n)
+```
+
+`.toBeCallableWith` returns a type that can be used to narrow down the return type for given input parameters.:
+
+```typescript
+type Factorize = {
+  (input: number): number[]
+  (input: bigint): bigint[]
+}
+expectTypeOf<Factorize>().toBeCallableWith(6).returns.toEqualTypeOf<number[]>()
+expectTypeOf<Factorize>().toBeCallableWith(6n).returns.toEqualTypeOf<bigint[]>()
+```
+
+`.toBeCallableWith` can be used to narrow down the parameters of a function:
+
+```typescript
+type Delete = {
+  (path: string): void
+  (paths: string[], options?: {force: boolean}): void
+}
+
+expectTypeOf<Delete>().toBeCallableWith('abc').parameters.toEqualTypeOf<[string]>()
+expectTypeOf<Delete>()
+  .toBeCallableWith(['abc', 'def'], {force: true})
+  .parameters.toEqualTypeOf<[string[], {force: boolean}?]>()
+
+expectTypeOf<Delete>().toBeCallableWith('abc').parameter(0).toBeString()
+expectTypeOf<Delete>().toBeCallableWith('abc').parameter(1).toBeUndefined()
+
+expectTypeOf<Delete>()
+  .toBeCallableWith(['abc', 'def', 'ghi'])
+  .parameter(0)
+  .toEqualTypeOf<string[]>()
+
+expectTypeOf<Delete>()
+  .toBeCallableWith(['abc', 'def', 'ghi'])
+  .parameter(1)
+  .toEqualTypeOf<{force: boolean} | undefined>()
 ```
 
 You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-error::
@@ -369,7 +451,37 @@ expectTypeOf(Date).toBeConstructibleWith(0)
 expectTypeOf(Date).toBeConstructibleWith(new Date())
 expectTypeOf(Date).toBeConstructibleWith()
 
-expectTypeOf(Date).constructorParameters.toEqualTypeOf<[] | [string | number | Date]>()
+expectTypeOf(Date).constructorParameters.toEqualTypeOf<
+  | []
+  | [value: string | number]
+  | [value: string | number | Date]
+  | [
+      year: number,
+      monthIndex: number,
+      date?: number | undefined,
+      hours?: number | undefined,
+      minutes?: number | undefined,
+      seconds?: number | undefined,
+      ms?: number | undefined,
+    ]
+>()
+```
+
+Constructor overloads:
+
+```typescript
+class DBConnection {
+  constructor()
+  constructor(connectionString: string)
+  constructor(options: {host: string; port: number})
+  constructor(..._: unknown[]) {}
+}
+
+expectTypeOf(DBConnection).toBeConstructibleWith()
+expectTypeOf(DBConnection).toBeConstructibleWith('localhost')
+expectTypeOf(DBConnection).toBeConstructibleWith({host: 'localhost', port: 1234})
+// @ts-expect-error - as when calling `new DBConnection(...)` you can't actually use the `(...args: unknown[])` overlaod, it's purely for the implementation.
+expectTypeOf(DBConnection).toBeConstructibleWith(1, 2)
 ```
 
 Check function `this` parameters:
@@ -561,6 +673,21 @@ expectTypeOf(B).instance.toEqualTypeOf<{b: string; foo: () => void}>()
 ```
 <!-- codegen:end -->
 
+Overloads limitation for TypeScript <5.3: Due to a [TypeScript bug fixed in 5.3](https://github.com/microsoft/TypeScript/issues/28867), overloaded functions which include an overload resembling `(...args: unknown[]) => unknown` will exclude `unknown[]` from `.parameters` and exclude `unknown` from `.returns`:
+
+```typescript
+type Factorize = {
+  (...args: unknown[]): unknown
+  (input: number): number[]
+  (input: bigint): bigint[]
+}
+
+expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
+expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
+```
+
+This overload, however, allows any input and returns an unknown output anyway, so it's not very useful. If you are worried about this for some reason, you'll have to update TypeScript to 5.3+.
+
 ### Why is my assertion failing?
 
 For complex types, an assertion might fail when it should if the `Actual` type contains a deeply-nested intersection type but the `Expected` doesn't. In these cases you can use `.branded` as described above:
@@ -641,6 +768,10 @@ const two = valueFromFunctionTwo({some: {other: inputs}})
 expectTypeOf(one).toEqualTypeof<typeof two>()
 ```
 
+### Overloaded functions
+
+Due to a TypeScript [design limitation](https://github.com/microsoft/TypeScript/issues/32164#issuecomment-506810756), the native TypeScript `Parameters<...>` and `ReturnType<...>` helpers only return types from one variant of an overloaded function. This limitation doesn't apply to expect-type, since it is not used to author TypeScript code, only to assert on existing types. So, we use a workaround for this TypeScript behaviour to assert on _all_ overloads as a union (actually, not necessarily _all_ - we cap out at 10 overloads).
+
 ### Within test frameworks
 
 ### Vitest
@@ -720,6 +851,10 @@ The key differences in this project are:
 - built into existing tooling. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
 - small implementation with no dependencies. [Take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of TypeScript).
 
+## TypeScript backwards-compatibility
+
+There is a CI job called `test-types` that checks whether the tests still pass with certain older TypeScript versions. To check the supported TypeScript versions, [refer to the job definition](./.github/workflows/ci.yml).
+
 ## Contributing
 
 In most cases, it's worth checking existing issues or creating one to discuss a new feature or a bug fix before opening a pull request.
@@ -729,3 +864,7 @@ Once you're ready to make a pull request: clone the repo, and install pnpm if yo
 If you're adding a feature, you should write a self-contained usage example in the form of a test, in [test/usage.test.ts](./test/usage.test.ts). This file is used to populate the bulk of this readme using [eslint-plugin-codegen](https://npmjs.com/package/eslint-plugin-codegen), and to generate an ["errors" test file](./test/errors.test.ts), which captures the error messages that are emitted for failing assertions by the TypeScript compiler. So, the test name should be written as a human-readable sentence explaining the usage example. Have a look at the existing tests for an idea of the style.
 
 After adding the tests, run `npm run lint -- --fix` to update the readme, and `npm test -- --updateSnapshot` to update the errors test. The generated documentation and tests should be pushed to the same branch as the source code, and submitted as a pull request. CI will test that the docs and tests are up to date if you forget to run these commands.
+
+### Documentation of limitations through tests
+
+Limitations of the library are documented through tests in `usage.test.ts`. This means that if a future TypeScript version (or library version) fixes the limitation, the test will start failing, and it will be automatically removed from the documentation once it no longer applies.
