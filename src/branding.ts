@@ -1,3 +1,4 @@
+import {ConstructorOverloadParameters, NumOverloads, OverloadsInfoUnion} from './overloads'
 import {
   IsNever,
   IsAny,
@@ -6,7 +7,7 @@ import {
   RequiredKeys,
   OptionalKeys,
   MutuallyExtends,
-  ConstructorParams,
+  UnionToTuple,
 } from './utils'
 
 /**
@@ -40,17 +41,26 @@ export type DeepBrand<T> =
           : T extends new (...args: any[]) => any
             ? {
                 type: 'constructor'
-                params: ConstructorParams<T>
+                params: ConstructorOverloadParameters<T>
                 instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>>
               }
             : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
-              ? {
-                  type: 'function'
-                  params: DeepBrand<P>
-                  return: DeepBrand<R>
-                  this: DeepBrand<ThisParameterType<T>>
-                  props: DeepBrand<Omit<T, keyof Function>>
-                }
+              ? NumOverloads<T> extends 1
+                ? {
+                    type: 'function'
+                    params: DeepBrand<P>
+                    return: DeepBrand<R>
+                    this: DeepBrand<ThisParameterType<T>>
+                    props: DeepBrand<Omit<T, keyof Function>>
+                  }
+                : UnionToTuple<OverloadsInfoUnion<T>> extends infer OverloadsTuple
+                  ? {
+                      type: 'overloads'
+                      overloads: {
+                        [K in keyof OverloadsTuple]: DeepBrand<OverloadsTuple[K]>
+                      }
+                    }
+                  : never
               : T extends any[]
                 ? {
                     type: 'array'
@@ -66,7 +76,7 @@ export type DeepBrand<T> =
                     readonly: ReadonlyKeys<T>
                     required: RequiredKeys<T>
                     optional: OptionalKeys<T>
-                    constructorParams: DeepBrand<ConstructorParams<T>>
+                    constructorParams: DeepBrand<ConstructorOverloadParameters<T>>
                   }
 
 /**
