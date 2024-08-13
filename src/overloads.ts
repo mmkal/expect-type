@@ -84,7 +84,7 @@ export type OverloadsInfoUnion<F> =
     : TSPost53OverloadsInfoUnion<F>
 
 /** Allows inferring any function using the `infer` keyword */
-export type InferFn<F extends (...args: any) => any> = F
+export type InferFunctionType<FunctionType extends (...args: any) => any> = FunctionType
 
 /** A union type of the parameters allowed for any overload of function `F` */
 export type OverloadParameters<F> = OverloadsInfoUnion<F> extends InferFn<infer Fn> ? Parameters<Fn> : never
