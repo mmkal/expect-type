@@ -134,21 +134,6 @@ export type StrictEqualUsingTSInternalIdenticalToOperator<L, R> =
  */
 export type MutuallyExtends<L, R> = And<[Extends<L, R>, Extends<R, L>]>
 
-/**
- * Extracts the parameter types from a function type.
- */
-export type Params<Actual> = Actual extends (...args: infer ParameterTypes) => any ? ParameterTypes : never
-
-/**
- * Represents the constructor parameters of a class or constructor function.
- * If the constructor takes no arguments, an empty array is returned.
- */
-export type ConstructorParams<Actual> = Actual extends new (...args: infer P) => any
-  ? Actual extends new () => any
-    ? P | []
-    : P
-  : never
-
 const mismatch = Symbol('mismatch')
 type Mismatch = {[mismatch]: 'mismatch'}
 
@@ -185,3 +170,17 @@ export interface ExpectTypeOfOptions {
   positive: boolean
   branded: boolean
 }
+
+/** `A | B | C` -> `A & B & C` */
+export type UnionToIntersection<T> = (T extends any ? (x: T) => void : never) extends (x: infer I) => void ? I : never
+
+/**
+ * Get the last element of a union. First, converts to a union of `() => T` functions, then uses `UnionToIntersection` to get the last one.
+ */
+export type LastOf<T> = UnionToIntersection<T extends any ? () => T : never> extends () => infer R ? R : never
+
+/** Intermediate type for {@linkcode UnionToTuple} which pushes the "last" union member to the end of a tuple, and recursively prepends the remainder of the union */
+export type TuplifyUnion<T, L = LastOf<T>> = IsNever<T> extends true ? [] : [...TuplifyUnion<Exclude<T, L>>, L]
+
+/** Convert a union like `1 | 2 | 3` to a tuple like `[1, 2, 3]` */
+export type UnionToTuple<T> = TuplifyUnion<T>
