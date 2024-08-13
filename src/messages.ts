@@ -96,7 +96,7 @@ const expectNullable = Symbol('expectNullable')
 export type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
 
 /**
- * Checks if the result of an expecter matches the specified options, and resolves to a fairly readable error messsage if not.
+ * Checks if the result of an expecter matches the specified options, and resolves to a fairly readable error message if not.
  */
 export type Scolder<
   Expecter extends {result: boolean},
