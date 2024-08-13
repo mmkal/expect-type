@@ -143,7 +143,7 @@ export type TSPre53ConstructorOverloadsInfoUnion<C> =
 
 // prettier-ignore
 /**
- * For versions of TypeScript below 5.3, we need to check for 10 overloads, then 9, then 8, etc., to get a union of the overlaod variants.
+ * For versions of TypeScript below 5.3, we need to check for 10 overloads, then 9, then 8, etc., to get a union of the overload variants.
  */
 export type DecreasingConstructorOverloadsInfoUnion<C> = C extends {new (...args: infer A1): infer R1; new (...args: infer A2): infer R2; new (...args: infer A3): infer R3; new (...args: infer A4): infer R4; new (...args: infer A5): infer R5; new (...args: infer A6): infer R6; new (...args: infer A7): infer R7; new (...args: infer A8): infer R8; new (...args: infer A9): infer R9; new (...args: infer A10): infer R10}
   ? (new (...p: A1) => R1) | (new (...p: A2) => R2) | (new (...p: A3) => R3) | (new (...p: A4) => R4) | (new (...p: A5) => R5) | (new (...p: A6) => R6) | (new (...p: A7) => R7) | (new (...p: A8) => R8) | (new (...p: A9) => R9) | (new (...p: A10) => R10)
