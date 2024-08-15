@@ -28,7 +28,14 @@ export type Eq<Left extends boolean, Right extends boolean> = Left extends true 
  */
 export type Xor<Types extends [boolean, boolean]> = Not<Eq<Types[0], Types[1]>>
 
+/**
+ * @internal
+ */
 const secret = Symbol('secret')
+
+/**
+ * @internal
+ */
 type Secret = typeof secret
 
 /**
@@ -103,6 +110,8 @@ export type ReadonlyKeys<T> = Extract<{
 // prettier-ignore
 /**
  * Determines if two types, are equivalent in a `readonly` manner.
+ *
+ * @internal
  */
 type ReadonlyEquivalent<X, Y> = Extends<
   (<T>() => T extends X ? true : false), (<T>() => T extends Y ? true : false)
@@ -123,7 +132,7 @@ export type ExtendsExcludingAnyOrNever<Left, Right> = IsAny<Left> extends true ?
  * Checks if two types are strictly equal using
  * the TypeScript internal identical-to operator.
  *
- * @see {@link https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122 much history}
+ * @see {@link https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122 | much history}
  */
 export type StrictEqualUsingTSInternalIdenticalToOperator<L, R> =
   (<T>() => T extends (L & T) | T ? true : false) extends <T>() => T extends (R & T) | T ? true : false
@@ -140,14 +149,23 @@ export type StrictEqualUsingTSInternalIdenticalToOperator<L, R> =
  */
 export type MutuallyExtends<Left, Right> = And<[Extends<Left, Right>, Extends<Right, Left>]>
 
+/**
+ * @internal
+ */
 const mismatch = Symbol('mismatch')
+
+/**
+ * @internal
+ */
 type Mismatch = {[mismatch]: 'mismatch'}
 
 /**
  * A type which should match anything passed as a value but *doesn't*
  * match {@linkcode Mismatch}. It helps TypeScript select the right overload
- * for {@linkcode PositiveExpectTypeOf.toEqualTypeOf `.toEqualTypeOf()`} and
- * {@linkcode PositiveExpectTypeOf.toMatchTypeOf `.toMatchTypeOf()`}.
+ * for {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()} and
+ * {@linkcode PositiveExpectTypeOf.toMatchTypeOf | .toMatchTypeOf()}.
+ *
+ * @internal
  */
 const avalue = Symbol('avalue')
 
@@ -179,7 +197,7 @@ export interface ExpectTypeOfOptions {
 
 /**
  * Convert a union to an intersection.
- * `A | B | C` -> `A & B & C`
+ * `A | B | C` -\> `A & B & C`
  */
 export type UnionToIntersection<Union> = (Union extends any ? (distributedUnion: Union) => void : never) extends (
   mergedIntersection: infer Intersection,

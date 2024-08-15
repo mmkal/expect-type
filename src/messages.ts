@@ -51,48 +51,97 @@ export type MismatchInfo<Actual, Expected> =
       ? Actual
       : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
 
+/**
+ * @internal
+ */
 const inverted = Symbol('inverted')
+
+/**
+ * @internal
+ */
 type Inverted<T> = {[inverted]: T}
 
+/**
+ * @internal
+ */
 const expectNull = Symbol('expectNull')
 export type ExpectNull<T> = {[expectNull]: T; result: ExtendsExcludingAnyOrNever<T, null>}
 
+/**
+ * @internal
+ */
 const expectUndefined = Symbol('expectUndefined')
 export type ExpectUndefined<T> = {[expectUndefined]: T; result: ExtendsExcludingAnyOrNever<T, undefined>}
 
+/**
+ * @internal
+ */
 const expectNumber = Symbol('expectNumber')
 export type ExpectNumber<T> = {[expectNumber]: T; result: ExtendsExcludingAnyOrNever<T, number>}
 
+/**
+ * @internal
+ */
 const expectString = Symbol('expectString')
 export type ExpectString<T> = {[expectString]: T; result: ExtendsExcludingAnyOrNever<T, string>}
 
+/**
+ * @internal
+ */
 const expectBoolean = Symbol('expectBoolean')
 export type ExpectBoolean<T> = {[expectBoolean]: T; result: ExtendsExcludingAnyOrNever<T, boolean>}
 
+/**
+ * @internal
+ */
 const expectVoid = Symbol('expectVoid')
 export type ExpectVoid<T> = {[expectVoid]: T; result: ExtendsExcludingAnyOrNever<T, void>}
 
+/**
+ * @internal
+ */
 const expectFunction = Symbol('expectFunction')
 export type ExpectFunction<T> = {[expectFunction]: T; result: ExtendsExcludingAnyOrNever<T, (...args: any[]) => any>}
 
+/**
+ * @internal
+ */
 const expectObject = Symbol('expectObject')
 export type ExpectObject<T> = {[expectObject]: T; result: ExtendsExcludingAnyOrNever<T, object>}
 
+/**
+ * @internal
+ */
 const expectArray = Symbol('expectArray')
 export type ExpectArray<T> = {[expectArray]: T; result: ExtendsExcludingAnyOrNever<T, any[]>}
 
+/**
+ * @internal
+ */
 const expectSymbol = Symbol('expectSymbol')
 export type ExpectSymbol<T> = {[expectSymbol]: T; result: ExtendsExcludingAnyOrNever<T, symbol>}
 
+/**
+ * @internal
+ */
 const expectAny = Symbol('expectAny')
 export type ExpectAny<T> = {[expectAny]: T; result: IsAny<T>}
 
+/**
+ * @internal
+ */
 const expectUnknown = Symbol('expectUnknown')
 export type ExpectUnknown<T> = {[expectUnknown]: T; result: IsUnknown<T>}
 
+/**
+ * @internal
+ */
 const expectNever = Symbol('expectNever')
 export type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
 
+/**
+ * @internal
+ */
 const expectNullable = Symbol('expectNullable')
 export type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
 

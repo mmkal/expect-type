@@ -28,7 +28,7 @@ export type UnknownFunction = (...args: unknown[]) => unknown
  * This is useful because older versions of TypeScript end up with
  * 9 "useless" overloads and one real one for parameterless/generic functions.
  *
- * @see {@link https://github.com/microsoft/TypeScript/issues/28867 Related}
+ * @see {@link https://github.com/microsoft/TypeScript/issues/28867 | Related}
  */
 export type IsUselessOverloadInfo<FunctionType> = StrictEqualUsingTSInternalIdenticalToOperator<
   FunctionType,
@@ -53,7 +53,7 @@ export type Tuplify<Union> = Union extends infer X ? [X] : never
  * for parameterless functions. To do this we use
  * {@linkcode IsUselessOverloadInfo} to remove useless overloads.
  *
- * @see {@link https://github.com/microsoft/TypeScript/issues/28867 Related}
+ * @see {@link https://github.com/microsoft/TypeScript/issues/28867 | Related}
  */
 export type TSPre53OverloadsInfoUnion<FunctionType> =
   // first, pointlessly wrap the overload variants in a 1-tuple, then infer them as `Tup` - this helps TypeScript isolate out the overload variants
@@ -97,7 +97,7 @@ export type DecreasingOverloadsInfoUnion<F> = F extends {(...args: infer A1): in
 /**
  * Get a union of overload variants for a function {@linkcode FunctionType}.
  * Does a check for whether we can do the one-shot
- * 10-overload matcher (which works for ts>5.3), and if not,
+ * 10-overload matcher (which works for ts\>5.3), and if not,
  * falls back to the more complicated utility.
  */
 export type OverloadsInfoUnion<FunctionType> =
@@ -181,7 +181,7 @@ export type IsUselessConstructorOverloadInfo<FunctionType> = StrictEqualUsingTSI
  * for parameterless constructors. To do this we use
  * {@linkcode IsUselessConstructorOverloadInfo} to remove useless overloads.
  *
- * @see {@link https://github.com/microsoft/TypeScript/issues/28867 Related}
+ * @see {@link https://github.com/microsoft/TypeScript/issues/28867 | Related}
  */
 export type TSPre53ConstructorOverloadsInfoUnion<ConstructorType> =
   // first, pointlessly wrap the overload variants in a 1-tuple, then infer them as `Tup` - this helps TypeScript isolate out the overload variants
@@ -225,7 +225,7 @@ export type DecreasingConstructorOverloadsInfoUnion<ConstructorType> = Construct
 /**
  * Get a union of overload variants for a constructor
  * {@linkcode ConstructorType}. Does a check for whether we can do the
- * one-shot 10-overload matcher (which works for ts>5.3), and if not,
+ * one-shot 10-overload matcher (which works for ts\>5.3), and if not,
  * falls back to the more complicated utility.
  */
 export type ConstructorOverloadsUnion<ConstructorType> =
@@ -234,7 +234,9 @@ export type ConstructorOverloadsUnion<ConstructorType> =
     ? TSPre53ConstructorOverloadsInfoUnion<ConstructorType>
     : TSPost53ConstructorOverloadsInfoUnion<ConstructorType>
 
-/** Allows inferring any constructor using the `infer` keyword. */
+/**
+ * Allows inferring any constructor using the `infer` keyword.
+ */
 // This *looks* fairly pointless but if you try to use `new (...args: any) => any` directly, TypeScript will not infer the constructor type correctly.
 export type InferConstructor<ConstructorType extends new (...args: any) => any> = ConstructorType
 
