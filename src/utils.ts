@@ -197,7 +197,7 @@ export interface ExpectTypeOfOptions {
 
 /**
  * Convert a union to an intersection.
- * `A | B | C` -> `A & B & C`
+ * `A | B | C` -\> `A & B & C`
  */
 export type UnionToIntersection<Union> = (Union extends any ? (distributedUnion: Union) => void : never) extends (
   mergedIntersection: infer Intersection,

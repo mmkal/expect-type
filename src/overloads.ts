@@ -109,7 +109,7 @@ export type DecreasingOverloadsInfoUnion<F> = F extends {(...args: infer A1): in
 /**
  * Get a union of overload variants for a function {@linkcode FunctionType}.
  * Does a check for whether we can do the one-shot
- * 10-overload matcher (which works for ts>5.3), and if not,
+ * 10-overload matcher (which works for ts\>5.3), and if not,
  * falls back to the more complicated utility.
  *
  * @internal
@@ -259,7 +259,7 @@ export type DecreasingConstructorOverloadsInfoUnion<ConstructorType> = Construct
 /**
  * Get a union of overload variants for a constructor
  * {@linkcode ConstructorType}. Does a check for whether we can do the
- * one-shot 10-overload matcher (which works for ts>5.3), and if not,
+ * one-shot 10-overload matcher (which works for ts\>5.3), and if not,
  * falls back to the more complicated utility.
  *
  * @internal
