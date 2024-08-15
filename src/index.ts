@@ -854,6 +854,7 @@ export type _ExpectTypeOf = {
  * form of a reference or generic type parameter.
  *
  * @example
+ * ```ts
  * import { foo, bar } from '../foo'
  * import { expectTypeOf } from 'expect-type'
  *
@@ -866,6 +867,7 @@ export type _ExpectTypeOf = {
  *   expectTypeOf(bar).parameter(0).toBeString()
  *   expectTypeOf(bar).returns.not.toBeAny()
  * })
+ * ```
  *
  * @description
  * See the [full docs](https://npmjs.com/package/expect-type#documentation) for lots more examples.
