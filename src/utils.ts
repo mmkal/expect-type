@@ -57,7 +57,7 @@ export type IsNeverOrAny<T> = Or<[IsNever<T>, IsAny<T>]>
  *
  * @example
  * ```ts
- * UsefulKeys<{a: 1; b: 2}> // 'a' | 'b'
+ * UsefulKeys<{ a: 1; b: 2 }> // 'a' | 'b'
  *
  * UsefulKeys<['a', 'b']> // '0' | '1'
  *
@@ -88,7 +88,7 @@ export type OptionalKeys<T> = Exclude<keyof T, RequiredKeys<T>>
 // adapted from some answers to https://github.com/type-challenges/type-challenges/issues?q=label%3A5+label%3Aanswer
 // prettier-ignore
 /**
- * Extracts the keys from a type that are not readonly.
+ * Extracts the keys from a type that are not `readonly`.
  */
 export type ReadonlyKeys<T> = Extract<{
   [K in keyof T]-?: ReadonlyEquivalent<
@@ -111,9 +111,13 @@ type ReadonlyEquivalent<X, Y> = Extends<
 /**
  * Checks if one type extends another.
  */
-export type Extends<L, R> = IsNever<L> extends true ? IsNever<R> : [L] extends [R] ? true : false
+export type Extends<Left, Right> = IsNever<Left> extends true ? IsNever<Right> : [Left] extends [Right] ? true : false
 
-export type ExtendsExcludingAnyOrNever<L, R> = IsAny<L> extends true ? IsAny<R> : Extends<L, R>
+/**
+ * Checks if the {@linkcode Left} type extends the {@linkcode Right} type,
+ * excluding `any` or `never`.
+ */
+export type ExtendsExcludingAnyOrNever<Left, Right> = IsAny<Left> extends true ? IsAny<Right> : Extends<Left, Right>
 
 /**
  * Checks if two types are strictly equal using
@@ -129,10 +133,12 @@ export type StrictEqualUsingTSInternalIdenticalToOperator<L, R> =
     : false
 
 /**
- * Checks that `L` and `R` extend each other. Not quite the same as an equality check since `any` can make it resolve to true.
- * So should only be used when `L` and `R` are known to avoid `any`.
+ * Checks that {@linkcode Left} and {@linkcode Right} extend each other.
+ * Not quite the same as an equality check since `any` can make it resolve
+ * to `true`. So should only be used when {@linkcode Left} and
+ * {@linkcode Right} are known to avoid `any`.
  */
-export type MutuallyExtends<L, R> = And<[Extends<L, R>, Extends<R, L>]>
+export type MutuallyExtends<Left, Right> = And<[Extends<Left, Right>, Extends<Right, Left>]>
 
 const mismatch = Symbol('mismatch')
 type Mismatch = {[mismatch]: 'mismatch'}
@@ -171,16 +177,33 @@ export interface ExpectTypeOfOptions {
   branded: boolean
 }
 
-/** `A | B | C` -> `A & B & C` */
-export type UnionToIntersection<T> = (T extends any ? (x: T) => void : never) extends (x: infer I) => void ? I : never
+/**
+ * Convert a union to an intersection.
+ * `A | B | C` -> `A & B & C`
+ */
+export type UnionToIntersection<Union> = (Union extends any ? (distributedUnion: Union) => void : never) extends (
+  mergedIntersection: infer Intersection,
+) => void
+  ? Intersection
+  : never
 
 /**
- * Get the last element of a union. First, converts to a union of `() => T` functions, then uses `UnionToIntersection` to get the last one.
+ * Get the last element of a union.
+ * First, converts to a union of `() => T` functions,
+ * then uses {@linkcode UnionToIntersection} to get the last one.
  */
-export type LastOf<T> = UnionToIntersection<T extends any ? () => T : never> extends () => infer R ? R : never
+export type LastOf<Union> =
+  UnionToIntersection<Union extends any ? () => Union : never> extends () => infer R ? R : never
 
-/** Intermediate type for {@linkcode UnionToTuple} which pushes the "last" union member to the end of a tuple, and recursively prepends the remainder of the union */
-export type TuplifyUnion<T, L = LastOf<T>> = IsNever<T> extends true ? [] : [...TuplifyUnion<Exclude<T, L>>, L]
+/**
+ * Intermediate type for {@linkcode UnionToTuple} which pushes the
+ * "last" union member to the end of a tuple, and recursively prepends
+ * the remainder of the union.
+ */
+export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
+  IsNever<Union> extends true ? [] : [...TuplifyUnion<Exclude<Union, LastElement>>, LastElement]
 
-/** Convert a union like `1 | 2 | 3` to a tuple like `[1, 2, 3]` */
-export type UnionToTuple<T> = TuplifyUnion<T>
+/**
+ * Convert a union like `1 | 2 | 3` to a tuple like `[1, 2, 3]`.
+ */
+export type UnionToTuple<Union> = TuplifyUnion<Union>
