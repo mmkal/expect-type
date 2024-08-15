@@ -4,13 +4,21 @@ on: [push, pull_request]
 jobs:
   run:
     runs-on: ubuntu-latest
+    outputs:
+      artifact: ${{ steps.pack.outputs.tarball }}
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
       - run: pnpm install
-      - run: pnpm run build
       - run: pnpm run lint
       - run: pnpm test
+      - run: pnpm run build
+      - id: pack
+        run: echo "tarball=$(pnpm pack | tail -n1)" >> $GITHUB_OUTPUT
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifact
+          path: ./*.tgz
 
   test-types:
     runs-on: ubuntu-latest
@@ -24,3 +32,16 @@ jobs:
       - run: pnpm install
       - run: pnpm install typescript@${{ matrix.ts }}
       - run: pnpm type-check
+
+  are-the-types-wrong:
+    runs-on: ubuntu-latest
+    needs: run
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: pnpm install
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifact
+          path: ./
+      - run: pnpx @arethetypeswrong/cli@latest ${{ needs.run.outputs.artifact }}
