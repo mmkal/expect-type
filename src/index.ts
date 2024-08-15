@@ -28,6 +28,7 @@ import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Ext
 export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
 export * from './messages' // backcompat, consider removing in next major version
+export * from './overloads'
 
 /**
  * Represents the positive assertion methods available for type checking in the
