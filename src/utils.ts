@@ -132,7 +132,7 @@ export type ExtendsExcludingAnyOrNever<Left, Right> = IsAny<Left> extends true ?
  * Checks if two types are strictly equal using
  * the TypeScript internal identical-to operator.
  *
- * @see {@link https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122 much history}
+ * @see {@link https://github.com/microsoft/TypeScript/issues/55188#issuecomment-1656328122 | much history}
  */
 export type StrictEqualUsingTSInternalIdenticalToOperator<L, R> =
   (<T>() => T extends (L & T) | T ? true : false) extends <T>() => T extends (R & T) | T ? true : false
@@ -162,6 +162,8 @@ type Mismatch = {[mismatch]: 'mismatch'}
 /**
  * A type which should match anything passed as a value but *doesn't*
  * match {@linkcode Mismatch}. It helps TypeScript select the right overload
+ * for {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()} and
+ * {@linkcode PositiveExpectTypeOf.toMatchTypeOf | .toMatchTypeOf()}.
  *
  * @internal
  */

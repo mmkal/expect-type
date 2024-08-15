@@ -32,6 +32,7 @@ export type UnknownFunction = (...args: unknown[]) => unknown
  * This is useful because older versions of TypeScript end up with
  * 9 "useless" overloads and one real one for parameterless/generic functions.
  *
+ * @see {@link https://github.com/microsoft/TypeScript/issues/28867 | Related}
  *
  * @internal
  */
@@ -60,6 +61,7 @@ export type Tuplify<Union> = Union extends infer X ? [X] : never
  * for parameterless functions. To do this we use
  * {@linkcode IsUselessOverloadInfo} to remove useless overloads.
  *
+ * @see {@link https://github.com/microsoft/TypeScript/issues/28867 | Related}
  *
  * @internal
  */
@@ -209,6 +211,7 @@ export type IsUselessConstructorOverloadInfo<FunctionType> = StrictEqualUsingTSI
  * for parameterless constructors. To do this we use
  * {@linkcode IsUselessConstructorOverloadInfo} to remove useless overloads.
  *
+ * @see {@link https://github.com/microsoft/TypeScript/issues/28867 | Related}
  *
  * @internal
  */
