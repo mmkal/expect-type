@@ -31,7 +31,7 @@
     "lint": "tsc && pnpm eslint .",
     "type-check": "tsc",
     "build": "tsc -p tsconfig.lib.json",
-    "prepack": "pnpm run build",
+    "prepack": "pnpm build",
     "test": "vitest run"
   },
   "devDependencies": {
