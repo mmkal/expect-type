@@ -33,6 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: run
     steps:
+      - run: corepack enable
       - uses: actions/download-artifact@v4
         with:
           name: artifact
