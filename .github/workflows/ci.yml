@@ -10,7 +10,7 @@ jobs:
       - run: pnpm install
       - run: pnpm run lint
       - run: pnpm test
-      - run: mv $(pnpm pack) pkg.tgz
+      - run: mv $(pnpm pack | tail -n1) pkg.tgz
       - uses: actions/upload-artifact@v4
         with:
           name: artifact
@@ -40,4 +40,4 @@ jobs:
         with:
           name: artifact
           path: pkg.tgz
-      - run: pnpx @arethetypeswrong/cli@latest pkg.tgz
+      - run: pnpx @arethetypeswrong/cli@latest ./pkg.tgz
