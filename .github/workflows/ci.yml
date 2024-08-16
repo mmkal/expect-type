@@ -12,8 +12,7 @@ jobs:
       - run: pnpm install
       - run: pnpm run lint
       - run: pnpm test
-      - id: pack
-        run: echo "tarball=$(pnpm pack | tail -n1)" >> $GITHUB_OUTPUT
+      - run: mv $(pnpm pack) pkg.tgz
       - uses: actions/upload-artifact@v4
         with:
           name: artifact
