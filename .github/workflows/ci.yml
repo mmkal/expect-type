@@ -33,9 +33,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: run
     steps:
-      - uses: actions/checkout@v4
-      - run: corepack enable
-      - run: pnpm install
       - uses: actions/download-artifact@v4
         with:
           name: artifact
