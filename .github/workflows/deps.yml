@@ -95,11 +95,12 @@ jobs:
 
             const childProcess = require('child_process')
             const updateCommits = childProcess.execSync('git --no-pager log --oneline --no-merges main..deps').toString().trim().split('\n')
-            const updatedDeps = updateCommits
+            let updatedDeps = updateCommits
               .map(line => line.match(/update dependency (.+) to/))
               .filter(Boolean)
               .map(match => match[1])
-            
+            updatedDeps = [...new Set(updatedDeps)]
+
             const depsSummary = updatedDeps
                 .slice(0, 4)
                 .map((dep, i, {length}) => {
@@ -108,7 +109,7 @@ jobs:
                   return dep
                 })
                 .join(', ').replace(', and', ' and')
-            const prTitle = `renovate: update ${updatedDeps.length === 1 ? 'dependency' : 'dependencies'} ${depsSummary} 🌲`
+            const prTitle = `renovate: update ${depsSummary} 🌲`
 
             console.log({prTitle, updateCommits})
             const prBody = [
