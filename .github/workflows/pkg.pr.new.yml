@@ -5,23 +5,20 @@ on:
     branches: [main, deps]
 
 jobs:
-  publish:
+  run:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
       - run: pnpm install
       - run: pnpm build
-      - run: pnpm pkg-pr-new publish
-  arethetypeswrong:
-    runs-on: ubuntu-latest
-    needs: [publish]
-    steps:
+      - name: publish with pkg.pr.new
+        run: pnpm pkg-pr-new publish | tee pkg.pr.new.log
       - name: install arethetypeswrong
         run: npm install --global @arethetypeswrong/cli
-      - name: load package
+      - name: download package again
         run: |
-          short_sha=$(echo ${{ github.sha }} | cut -c 1-7)
-          curl --silent --location --output pkg.tgz "https://pkg.pr.new/${{ github.repository_owner }}/$short_sha"
+          url=$(cat pkg.pr.new.log | tr ' ' '\n' | grep 'https://pkg.pr.new/')
+          curl --silent --location --output pkg.tgz $url
       - name: test with arethetypeswrong
         run: attw pkg.tgz
