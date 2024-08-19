@@ -462,6 +462,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * Checks whether the type of the value is `number`.
    */
   toBeNumber: Scolder<ExpectNumber<Actual>, Options>
+  toBeNumber2: Scolder<ExpectNumber<Actual>, Options>
 
   /**
    * Checks whether the type of the value is `string`.
