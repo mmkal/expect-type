@@ -24,3 +24,11 @@ jobs:
       - run: pnpm install
       - run: pnpm install typescript@${{ matrix.ts }}
       - run: pnpm type-check
+
+  are-the-types-wrong:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: pnpm install
+      - run: pnpm arethetypeswrong
