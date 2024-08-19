@@ -31,9 +31,12 @@
     "lint": "tsc && pnpm eslint .",
     "type-check": "tsc",
     "build": "tsc -p tsconfig.lib.json",
+    "prepack": "pnpm build",
+    "arethetypeswrong": "attw --pack",
     "test": "vitest run"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.15.4",
     "@types/node": "^20.0.0",
     "eslint": "^8.57.0",
     "eslint-plugin-mmkal": "0.7.0",
