@@ -30,6 +30,8 @@ export * from './utils' // backcompat, consider removing in next major version
 export * from './messages' // backcompat, consider removing in next major version
 export * from './overloads'
 
+export const aaa = 111
+
 /**
  * Represents the positive assertion methods available for type checking in the
  * {@linkcode expectTypeOf()} utility.
@@ -462,7 +464,6 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * Checks whether the type of the value is `number`.
    */
   toBeNumber: Scolder<ExpectNumber<Actual>, Options>
-  toBeNumber2: Scolder<ExpectNumber<Actual>, Options>
 
   /**
    * Checks whether the type of the value is `string`.
