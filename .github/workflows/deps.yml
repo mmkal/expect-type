@@ -100,7 +100,7 @@ jobs:
               .filter(Boolean)
               .map(match => match[1])
             
-            const depsSummary = updatedDeps
+            const depsSummary = [...new Set(updatedDeps)]
                 .slice(0, 4)
                 .map((dep, i, {length}) => {
                   if (i === 3 && updatedDeps.length > 4) return `and ${updatedDeps.length - 3} more`
@@ -108,7 +108,7 @@ jobs:
                   return dep
                 })
                 .join(', ').replace(', and', ' and')
-            const prTitle = `renovate: update ${updatedDeps.length === 1 ? 'dependency' : 'dependencies'} ${depsSummary} 🌲`
+            const prTitle = `renovate: update ${depsSummary} 🌲`
 
             console.log({prTitle, updateCommits})
             const prBody = [
