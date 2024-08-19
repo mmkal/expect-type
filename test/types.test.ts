@@ -302,19 +302,17 @@ test('Distinguish between functions whose return types differ by readonly prop',
 
   // not and branded can't be combined
   // @ts-expect-error
-  expectTypeOf<{}>().not.branded // eslint-disable-line @typescript-eslint/no-unused-expressions, no-unused-expressions
+  expectTypeOf<{}>().not.branded
   // @ts-expect-error
-  expectTypeOf<{}>().branded.not // eslint-disable-line @typescript-eslint/no-unused-expressions, no-unused-expressions
+  expectTypeOf<{}>().branded.not
 })
 
 test('Distinguish between classes with only private properties', () => {
   class Original {
-    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
     private readonly prop = 1
   }
 
   class Different {
-    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
     private readonly prop = 1
   }
 

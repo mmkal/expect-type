@@ -28,6 +28,7 @@ import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Ext
 export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
 export * from './messages' // backcompat, consider removing in next major version
+export * from './overloads'
 
 /**
  * Represents the positive assertion methods available for type checking in the
@@ -44,8 +45,8 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      *
      * **_Unexpected failure_**? For a more permissive but less performant
      * check that accommodates for equivalent intersection types,
-     * use {@linkcode branded `.branded.toEqualTypeOf()`}.
-     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing The documentation for details}.
+     * use {@linkcode branded | .branded.toEqualTypeOf()}.
+     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing | The documentation for details}.
      *
      * @example
      * <caption>Using generic type argument syntax</caption>
@@ -85,8 +86,8 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      *
      * **_Unexpected failure_**? For a more permissive but less performant
      * check that accommodates for equivalent intersection types,
-     * use {@linkcode branded `.branded.toEqualTypeOf()`}.
-     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing The documentation for details}.
+     * use {@linkcode branded | .branded.toEqualTypeOf()}.
+     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing | The documentation for details}.
      *
      * @example
      * <caption>Using generic type argument syntax</caption>
@@ -118,7 +119,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
 
   toMatchTypeOf: {
     /**
-     * A less strict version of {@linkcode toEqualTypeOf `.toEqualTypeOf()`}
+     * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
      * in a function type argument.
@@ -145,7 +146,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
 
     /**
-     * A less strict version of {@linkcode toEqualTypeOf `.toEqualTypeOf()`}
+     * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
      * in a function type argument.
@@ -176,7 +177,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * @example
    * <caption>check that properties exist</caption>
    * ```ts
-   * const obj = {a: 1, b: ''}
+   * const obj = { a: 1, b: '' }
    *
    * expectTypeOf(obj).toHaveProperty('a')
    *
@@ -204,7 +205,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
 
   /**
    * Intersection types can cause issues with
-   * {@linkcode toEqualTypeOf `.toEqualTypeOf()`}:
+   * {@linkcode toEqualTypeOf | .toEqualTypeOf()}:
    * ```ts
    * // ❌ The following line doesn't compile, even though the types are arguably the same.
    * expectTypeOf<{ a: 1 } & { b: 2 }>().toEqualTypeOf<{ a: 1; b: 2 }>()
@@ -215,7 +216,7 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * __Note__: This comes at a performance cost, and can cause the compiler
    * to 'give up' if used with excessively deep types, so use sparingly.
    *
-   * @see {@link https://github.com/mmkal/expect-type/pull/21 Reference}
+   * @see {@link https://github.com/mmkal/expect-type/pull/21 | Reference}
    */
   branded: {
     /**
@@ -227,8 +228,8 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      *
      * **_Unexpected failure_**? For a more permissive but less performant
      * check that accommodates for equivalent intersection types,
-     * use {@linkcode PositiveExpectTypeOf.branded `.branded.toEqualTypeOf()`}.
-     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing The documentation for details}.
+     * use {@linkcode PositiveExpectTypeOf.branded | .branded.toEqualTypeOf()}.
+     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing | The documentation for details}.
      *
      * @example
      * <caption>Using generic type argument syntax</caption>
@@ -273,8 +274,8 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      *
      * **_Unexpected failure_**? For a more permissive but less performant
      * check that accommodates for equivalent intersection types,
-     * use {@linkcode PositiveExpectTypeOf.branded `.branded.toEqualTypeOf()`}.
-     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing The documentation for details}.
+     * use {@linkcode PositiveExpectTypeOf.branded | .branded.toEqualTypeOf()}.
+     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing | The documentation for details}.
      *
      * @example
      * <caption>Using generic type argument syntax</caption>
@@ -310,8 +311,8 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
      *
      * **_Unexpected failure_**? For a more permissive but less performant
      * check that accommodates for equivalent intersection types,
-     * use {@linkcode PositiveExpectTypeOf.branded `.branded.toEqualTypeOf()`}.
-     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing The documentation for details}.
+     * use {@linkcode PositiveExpectTypeOf.branded | .branded.toEqualTypeOf()}.
+     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing | The documentation for details}.
      *
      * @example
      * <caption>Using generic type argument syntax</caption>
@@ -338,7 +339,7 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
   toMatchTypeOf: {
     /**
      * A less strict version of
-     * {@linkcode PositiveExpectTypeOf.toEqualTypeOf `.toEqualTypeOf()`}
+     * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
      * in a function type argument.
@@ -366,7 +367,7 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
 
     /**
      * A less strict version of
-     * {@linkcode PositiveExpectTypeOf.toEqualTypeOf `.toEqualTypeOf()`}
+     * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
      * in a function type argument.
@@ -395,7 +396,7 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * @example
    * <caption>check that properties exist</caption>
    * ```ts
-   * const obj = {a: 1, b: ''}
+   * const obj = { a: 1, b: '' }
    *
    * expectTypeOf(obj).toHaveProperty('a')
    *
@@ -509,7 +510,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * Checks whether a function is callable with the given parameters.
    *
    * __Note__: You cannot negate this assertion with
-   * {@linkcode PositiveExpectTypeOf.not `.not`}, you need to use
+   * {@linkcode PositiveExpectTypeOf.not | .not}, you need to use
    * `ts-expect-error` instead.
    *
    * @example
@@ -521,15 +522,15 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    *
    * __Known Limitation__: This assertion will likely fail if you try to use it
    * with a generic function or an overload.
-   * @see {@link https://github.com/mmkal/expect-type/issues/50 This issue} for an example and a workaround.
+   * @see {@link https://github.com/mmkal/expect-type/issues/50 | This issue} for an example and a workaround.
    *
    * @param args - The arguments to check for callability.
    * @returns `true`.
    */
   toBeCallableWith: Options['positive'] extends true
-    ? <A extends OverloadParameters<Actual>>(
-        ...args: A
-      ) => ExpectTypeOf<OverloadsNarrowedByParameters<Actual, A>, Options>
+    ? <Args extends OverloadParameters<Actual>>(
+        ...args: Args
+      ) => ExpectTypeOf<OverloadsNarrowedByParameters<Actual, Args>, Options>
     : never
 
   /**
@@ -550,7 +551,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @returns `true`.
    */
   toBeConstructibleWith: Options['positive'] extends true
-    ? <A extends ConstructorOverloadParameters<Actual>>(...args: A) => true
+    ? <Args extends ConstructorOverloadParameters<Actual>>(...args: Args) => true
     : never
 
   /**
@@ -862,18 +863,20 @@ export type _ExpectTypeOf = {
  * form of a reference or generic type parameter.
  *
  * @example
- * import {foo, bar} from '../foo'
- * import {expectTypeOf} from 'expect-type'
+ * ```ts
+ * import { foo, bar } from '../foo'
+ * import { expectTypeOf } from 'expect-type'
  *
  * test('foo types', () => {
- *   // make sure `foo` has type {a: number}
- *   expectTypeOf(foo).toMatchTypeOf({a: 1})
+ *   // make sure `foo` has type { a: number }
+ *   expectTypeOf(foo).toMatchTypeOf({ a: 1 })
  *   expectTypeOf(foo).toHaveProperty('a').toBeNumber()
  *
  *   // make sure `bar` is a function taking a string:
  *   expectTypeOf(bar).parameter(0).toBeString()
  *   expectTypeOf(bar).returns.not.toBeAny()
  * })
+ * ```
  *
  * @description
  * See the [full docs](https://npmjs.com/package/expect-type#documentation) for lots more examples.
@@ -916,7 +919,6 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeConstructibleWith: fn,
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
     map: expectTypeOf,
     toBeCallableWith: expectTypeOf,
     extract: expectTypeOf,

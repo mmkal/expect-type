@@ -93,10 +93,52 @@ jobs:
             })
             const {deps_branch: head, main_branch: base} = process.env
 
+            const childProcess = require('child_process')
+            const updateCommits = childProcess.execSync('git --no-pager log --oneline --no-merges main..deps').toString().trim().split('\n')
+            let updatedDeps = updateCommits
+              .map(line => line.match(/update dependency (.+) to/))
+              .filter(Boolean)
+              .map(match => match[1])
+            updatedDeps = [...new Set(updatedDeps)]
+
+            const depsSummary = updatedDeps
+                .slice(0, 4)
+                .map((dep, i, {length}) => {
+                  if (i === 3 && updatedDeps.length > 4) return `and ${updatedDeps.length - 3} more`
+                  if (i > 0 && i === length - 1) return `and ${dep}`
+                  return dep
+                })
+                .join(', ').replace(', and', ' and')
+            const prTitle = `renovate: update ${depsSummary} 🌲`
+
+            console.log({prTitle, updateCommits})
+            const prBody = [
+              'This PR was automatically created by the ${{ github.workflow }} workflow.',
+              '',
+              'Review the dependency updates made by @renovate-bot, and merge as needed.',
+              '',
+              '### Updates included:',
+              '',
+              updateCommits.map(commit => `- ${commit}`).join('\n'),
+            ].join('\n')
+
             for await (const {data: pulls} of iterator) {
               const existing = pulls.find(p => p.head.ref === head && p.base.ref === base)
               if (existing) {
                 console.log(`Pull request into ${base} from ${head} already exists: ${existing.title} ${existing.html_url}`)
+
+                if (existing.title === prTitle && existing.body === prBody) {
+                  console.log('PR is up to date')
+                  return
+                } else {
+                  console.log('PR is out of date, updating...')
+                  await github.rest.pulls.update({
+                    ...context.repo,
+                    pull_number: existing.number,
+                    title: prTitle,
+                    body: prBody,
+                  })
+                }
                 return
               }
             }
@@ -105,12 +147,6 @@ jobs:
               ...context.repo,
               head,
               base,
-              title: 'chore: update dependencies',
-              body: [
-                'This PR was automatically created by the ${{ github.workflow }} workflow.',
-                '',
-                `Renovate will continue to push to ${head}.`,
-                '',
-                'Review each dependency update and merge as needed.',
-              ].join('\n'),
+              title: prTitle,
+              body: prBody,
             })
