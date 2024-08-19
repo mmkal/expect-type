@@ -5,7 +5,7 @@ on:
     branches: [main, deps]
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13,3 +13,15 @@ jobs:
       - run: pnpm install
       - run: pnpm build
       - run: pnpm pkg-pr-new publish
+  arethetypeswrong:
+    runs-on: ubuntu-latest
+    needs: [publish]
+    steps:
+      - name: install arethetypeswrong
+        run: npm install --global @arethetypeswrong/cli
+      - name: load package
+        run: |
+          short_sha=$(echo ${{ github.sha }} | cut -c 1-7)
+          curl --silent --location --output pkg.tgz "https://pkg.pr.new/${{ github.repository_owner }}/$short_sha"
+      - name: test with arethetypeswrong
+        run: attw pkg.tgz
