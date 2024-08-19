@@ -95,12 +95,13 @@ jobs:
 
             const childProcess = require('child_process')
             const updateCommits = childProcess.execSync('git --no-pager log --oneline --no-merges main..deps').toString().trim().split('\n')
-            const updatedDeps = updateCommits
+            let updatedDeps = updateCommits
               .map(line => line.match(/update dependency (.+) to/))
               .filter(Boolean)
               .map(match => match[1])
-            
-            const depsSummary = [...new Set(updatedDeps)]
+            updatedDeps = [...new Set(updatedDeps)]
+
+            const depsSummary = updatedDeps
                 .slice(0, 4)
                 .map((dep, i, {length}) => {
                   if (i === 3 && updatedDeps.length > 4) return `and ${updatedDeps.length - 3} more`
