@@ -179,7 +179,7 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisf
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
-                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                   ~~~~~~~~~~~~~
 
   src/index.ts:999:999
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
@@ -201,7 +201,7 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ a: {}; }' does not satisfy th
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<A1>().toEqualTypeOf<E1>()
-                         ~~~~~~~~~~~~~~~~~~~
+                         ~~~~~~~~~~~~~
 
   src/index.ts:999:999
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
@@ -210,7 +210,7 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<A2>().toEqualTypeOf<E2>()
-                         ~~~~~~~~~~~~~~~~~~~
+                         ~~~~~~~~~~~~~
 
   src/index.ts:999:999
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
@@ -219,7 +219,7 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
-                               ~~~~~~~~~~~~~~~~~~~~~~~~~
+                               ~~~~~~~~~~~~~
 
   src/index.ts:999:999
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
@@ -228,7 +228,7 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
-                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                      ~~~~~~~~~~~~~
 
   src/index.ts:999:999
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
@@ -237,7 +237,7 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
-                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                           ~~~~~~~~~~~~~
 
   src/index.ts:999:999
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
@@ -254,11 +254,7 @@ test/usage.test.ts:999:999 - error TS2344: Type '() => () => () => () => 2' does
 test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
 999   expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<
-                                                              ~~~~~~~~~~~~~~
-999     () => () => () => () => {a: 1; b: 2}
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-999   >()
-    ~~~~~
+                                                              ~~~~~~~~~~~~~
 
   src/index.ts:999:999
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>

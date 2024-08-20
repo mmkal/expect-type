@@ -39,11 +39,11 @@
     "@arethetypeswrong/cli": "0.15.4",
     "@types/node": "^20.0.0",
     "eslint": "^8.57.0",
-    "eslint-plugin-mmkal": "0.7.0",
+    "eslint-plugin-mmkal": "0.8.0",
     "np": "^10.0.0",
     "pkg-pr-new": "0.0.20",
     "strip-ansi": "7.1.0",
-    "ts-morph": "16.0.0",
+    "ts-morph": "23.0.0",
     "typescript": "5.5.4",
     "vitest": "^2.0.0"
   }
