@@ -138,7 +138,10 @@ test('Use `.inspect` to find badly-defined paths', () => {
   })
 
   expectTypeOf(bad).returns.inspect({
-    badlyDefinedPaths: ['.meta.parsed: any', '.exitCode: never'],
+    // badlyDefinedPaths: ['.meta.parsed: any', '.exitCode: never'],
+    badProps: {
+      '': '',
+    },
   })
 
   const good = (metadata: string) => ({
