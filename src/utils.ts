@@ -1,5 +1,3 @@
-import {DeepBrand, DeepBrandOptions, DeepBrandOptionsDefaults as DeepBrandOptionsDefaults} from './branding'
-
 /**
  * Negates a boolean type.
  */
@@ -230,84 +228,23 @@ export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
  */
 export type UnionToTuple<Union> = TuplifyUnion<Union>
 
+export type IsPrimitive<T> = [T] extends [string] | [number] | [boolean] | [null] | [undefined] | [void] | [bigint]
+  ? true
+  : false
+
+export type Entries<T> =
+  IsNever<T> extends true
+    ? []
+    : IsNever<keyof T> extends true
+      ? []
+      : UnionToTuple<
+          {
+            [K in keyof T]: [K, T[K]]
+          }[keyof T]
+        >
+
 /** `true` iff `T` is a tuple, as opposed to an indeterminate-length array */
 export type IsTuple<T extends readonly any[]> = number extends T['length'] ? false : true
-
-/**
- * @internal don't use this unless you are deeply familiar with it!
- *
- * Walks over a type `T`, assuming that it's the output of the {@linkcode DeepBrand} utility. It looks for leaf nodes looking like `{type: FindType}`.
- * When it finds them, it merges them into a string->string record, keeping track of a rough representation of the path-location.
- * For simple objects, this path will roughly match dot-prop notation but it also traverses into all the structures that `DeepBrand` can emit.
- * But it also goes into overloads, function parameters, return types, etc. The output is an ugly intersection of objects along with a marker `{gotem: true}`
- * which is purely for internal use. The output should not be shown to end-users!
- */
-type _DeepPropTypesOfBranded<T, PathTo extends string, FindType extends string> =
-  IsNever<T> extends true
-    ? {}
-    : T extends string
-      ? {}
-      : T extends {type: FindType}
-        ? {[K in PathTo]: T['type']} & {gotem: true}
-        : T extends {type: string} // an object like `{type: string}` gets "branded" to `{type: 'object', properties: {type: {type: 'string'}}}`
-          ? Entries<Omit<T, 'type'>> extends [[infer K, infer V], ...infer _Tail]
-            ? _DeepPropTypesOfBranded<V, `${PathTo}${DeepBrandPropPathSuffix<K>}`, FindType> &
-                _DeepPropTypesOfBranded<Omit<T, Extract<K, string | number>>, PathTo, FindType>
-            : {}
-          : T extends any[]
-            ? _DeepPropTypesOfBranded<TupleToRecord<T>, PathTo, FindType>
-            : UnionToIntersection<
-                {
-                  [K in keyof T]: Extract<
-                    _DeepPropTypesOfBranded<T[K], `${PathTo}.${Prop<K>}`, FindType>,
-                    {gotem: true}
-                  >
-                }[keyof T]
-              >
-
-/** Required options for for {@linkcode DeepBrandPropNotes}. */
-export type DeepBrandPropNotesOptions = Partial<DeepBrandOptions> & {findType: string}
-/** Default options for for {@linkcode DeepBrandPropNotes}. */
-export type DeepBrandPropNotesOptionsDefaults = {findType: 'any' | 'never'}
-
-/**
- * For an input type `T`, finds all deeply-nested properties in the {@linkcode DeepBrand} representation of it.
- *
- * The output is a developer-readable shallow record of prop-path -> resolved type.
- * @example
- * ```ts
- * type X = {a: any; b: boolean; c: {d: any}}
- * const notes: DeepBrandPropNotes<X, {findType: 'any'}> = {
- *   '.a': 'any',
- *   '.c.d': 'any',
- * }
- * ```
- */
-export type DeepBrandPropNotes<T, Options extends DeepBrandPropNotesOptions> =
-  _DeepPropTypesOfBranded<DeepBrand<T, DeepBrandOptionsDefaults & Options>, '', Options['findType']> extends infer X
-    ? {} extends X
-      ? Record<string | number | symbol, 'No flagged props found!'> // avoid letting `{'.propThatUsedToBeAny': 'any'}` still being accepted after it's fixed
-      : {[K in Exclude<keyof X, 'gotem'>]: X[K]}
-    : never
-
-/**
- * @internal
- *
- * Helper to coerce a type `K` that you are already pretty sure is a string because it camed from a `keyof T` type expression.
- * Useful because sometimes TypeScript forgets that.
- * When it's not a string or number, it will output a big ugly literal type `'UNEXPECTED_NON_LITERAL_PROP'` - try to avoid this!
- */
-export type Prop<K> = K extends string | number ? K : 'UNEXPECTED_NON_LITERAL_PROP'
-
-/**
- * Gets a sensible suffix to a property path for a {@linkcode DeepBrand} output type.
- * `[number]` for arrays, empty string for objects, and parenthesised-input for anything else.
- */
-type DeepBrandPropPathSuffix<K> = K extends 'items'
-  ? '[number]'
-  : K extends 'properties'
-    ? ''
-    : `(${Extract<K, string | number>})`
 
 /** The numbers between 0 and 9 that you learned in school */
 export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'

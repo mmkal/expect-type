@@ -1,4 +1,11 @@
-import {DeepBrandOptions, DeepBrandOptionsDefaults, StrictEqualUsingBranding} from './branding'
+import {
+  DeepBrandOptions,
+  DeepBrandOptionsDefaults,
+  StrictEqualUsingBranding,
+  DeepBrandPropNotes,
+  DeepBrandPropNotesOptions,
+  DeepBrandPropNotesOptionsDefaults,
+} from './branding'
 import {
   MismatchInfo,
   Scolder,
@@ -23,15 +30,7 @@ import {
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import {
-  StrictEqualUsingTSInternalIdenticalToOperator,
-  AValue,
-  MismatchArgs,
-  Extends,
-  DeepBrandPropNotes,
-  DeepBrandPropNotesOptions,
-  DeepBrandPropNotesOptionsDefaults,
-} from './utils'
+import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
