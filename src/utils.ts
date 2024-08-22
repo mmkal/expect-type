@@ -311,7 +311,7 @@ type _DeepPropTypesOfBranded<T, PathTo extends string, TypeName extends string> 
               >
 
 export type DeepPropTypes<T, TypeName extends string> =
-  _DeepPropTypesOfBranded<DeepBrand<T>, '', TypeName> extends X
+  _DeepPropTypesOfBranded<DeepBrand<T>, '', TypeName> extends infer X
     ? {
         [K in Exclude<keyof X, 'gotem'>]: X[K]
       }
@@ -376,10 +376,6 @@ type D = {
     }
   }
 }
-
-const f = <Tt extends t[number] = t[number]>(tt: Tt) => {}
-
-f('.properties.foo.overloads[0].params.items[0]: any')
 
 type e = Entries<Dreal>
 
