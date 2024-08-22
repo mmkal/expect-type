@@ -278,33 +278,24 @@ export type IsTuple<T extends readonly any[]> = number extends T['length'] ? fal
 //   ? [`${PathTo}: ${T['type']}`]
 //   : never
 
-type _DeepPropTypesOfBranded<T, PathTo extends string, NotableType extends string> =
+type _DeepPropTypesOfBranded<T, PathTo extends string, FindType extends string> =
   IsNever<T> extends true
     ? {}
     : T extends string
       ? {}
-      : T extends {type: NotableType}
+      : T extends {type: FindType}
         ? {[K in PathTo]: T['type']} & {gotem: true}
         : T extends {type: string} // an object like `{type: string}` gets "branded" to `{type: 'object', properties: {type: {type: 'string'}}}`
           ? Entries<Omit<T, 'type'>> extends [[infer K, infer V], ...infer _Tail]
-            ? _DeepPropTypesOfBranded<V, `${PathTo}${PropPathSuffix<K>}`, NotableType> &
-                _DeepPropTypesOfBranded<Omit<T, Extract<K, string | number>>, PathTo, NotableType>
+            ? _DeepPropTypesOfBranded<V, `${PathTo}${PropPathSuffix<K>}`, FindType> &
+                _DeepPropTypesOfBranded<Omit<T, Extract<K, string | number>>, PathTo, FindType>
             : {}
           : T extends any[]
-            ? // ? ConcatTupleEntries<{
-              //     [K in keyof T]: [K, DeepPropTypes<T[K], `${PathTo}[${Extract<K, string | number>}]`, TypeName>]
-              //   }>
-              _DeepPropTypesOfBranded<TupleToRecord<T>, PathTo, NotableType>
-            : // UnionToIntersection<{
-              //   [K in Extract<keyof T, number>]: Extract<
-              //     DeepPropTypes<T[K], `${PathTo}.${Prop<K>}`, TypeName>,
-              //     {gotem: true}
-              //   >
-              // }>
-              UnionToIntersection<
+            ? _DeepPropTypesOfBranded<TupleToRecord<T>, PathTo, FindType>
+            : UnionToIntersection<
                 {
                   [K in keyof T]: Extract<
-                    _DeepPropTypesOfBranded<T[K], `${PathTo}.${Prop<K>}`, NotableType>,
+                    _DeepPropTypesOfBranded<T[K], `${PathTo}.${Prop<K>}`, FindType>,
                     {gotem: true}
                   >
                 }[keyof T]
@@ -320,21 +311,13 @@ export type DeepBrandPropNotes<T, Options extends DeepBrandPropNotesOptions> =
       : {[K in Exclude<keyof X, 'gotem'>]: X[K]}
     : never
 
-type t2 = DeepBrandPropNotes<
-  X,
-  DeepBrandOptionsDefaults & {
-    notable: 'any' | 'never'
-  }
->
+export type Prop<K> = K extends string | number ? K : 'UNEXPECTED_NON_LITERAL_PROP'
 
-type Prop<K> = K extends string | number ? K : 'UNEXPECTED_NON_LITERAL_PROP'
-type PropPathSuffix<K> = K extends 'items'
+export type PropPathSuffix<K> = K extends 'items'
   ? '[number]'
   : K extends 'properties'
     ? ''
     : `(${Extract<K, string | number>})`
-
-type mytuple = [1, any, 2, never]
 
 export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
@@ -346,57 +329,3 @@ export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 export type TupleToRecord<T extends any[]> = {
   [K in keyof T as `${Extract<K, `${Digit}${string}`>}`]: T[K]
 }
-
-type mytuplerecord = TupleToRecord<mytuple>
-
-// type I2<T, PathTo extends string = ''> =
-
-type X = {
-  aa: any
-  bb: boolean
-  aa1: number[]
-  obj: {
-    oa: any
-    ob: boolean
-  }
-  aa2: Array<{x: number; y: any; z: never}>
-  nn: never
-  tt: [0, any, 2, never, 3]
-  oo: {
-    (a: any, b: any): any[]
-    (b: unknown[]): never
-  }
-  ff: (this: any, x: 1) => 2
-}
-type Dreal = DeepBrand<X, DeepBrandOptionsDefaults> //['properties']['foo']['overloads']
-
-export type GetEm<T> = {
-  [K in Exclude<keyof T, 'gotem'>]: T[K]
-}
-
-type t = GetEm<_DeepPropTypesOfBranded<Dreal, '', 'any' | 'never'>>
-
-type D = {
-  type: 'object'
-  properties: {
-    a: {
-      type: 'any'
-    }
-  }
-}
-
-type e = Entries<Dreal>
-
-type T = D
-type PathTo = ''
-
-type x =
-  Entries<T> extends [[infer K, infer V], ...infer _Tail]
-    ? // ? [
-      //     // `${PathTo}.${K}`, //
-      //     ...InstancesOf<V, `${PathTo}.${K}`>,
-      //     // keyof V,
-      //     ...InstancesOf<Omit<T, K>, PathTo>,
-      //   ]
-      'yes'
-    : 'no'

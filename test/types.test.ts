@@ -856,48 +856,39 @@ test('Overload edge cases', () => {
   expectTypeOf<NoArgOverload>().returns.toEqualTypeOf<1>()
 })
 
-test('BadlyDefinedPaths', () => {
-  const badPaths: a.BadlyDefinedPaths<{
-    any: any
-    b: boolean
-    goodArray: number[]
-    badArray: Array<{x: number; y: any; z: never}>
-    n: never
-    tuple: [0, any, 2, never, 3]
-  }> = [
-    '.any: any',
-    '.badArray[number].y: any',
-    '.badArray[number].z: never',
-    '.n: never',
-    '.tuple.1: any',
-    '.tuple.3: never',
-  ]
-
-  expectTypeOf(badPaths).toBeArray()
-})
-
-test('InstancesOf', () => {
+test('prop notes', () => {
   type X = {
-    any: any
-    b: boolean
-    goodArray: number[]
-    badArray: Array<{x: number; y: any; z: never}>
-    n: never
-    tuple: [0, any, 2, never, 3]
+    aa: any
+    bb: boolean
+    aa1: number[]
+    obj: {
+      oa: any
+      ob: boolean
+    }
+    aa2: Array<{x: number; y: any; z: never}>
+    nn: never
+    tt: [0, any, 2, never, 3]
+    oo: {
+      (a: any, b: any): any[]
+      (b: unknown[]): never
+    }
+    ff: (this: any, x: 1) => 2
   }
 
-  const instancesOfAnyAndNever: a.DeepBrandPropNotes<X> = [
-    '.any: any',
-    '.badArray[number].y: any',
-    '.badArray[number].z: never',
-    '.n: never',
-    '.tuple.1: any',
-    '.tuple.3: never',
-    // '.any: any',
-    // '.badArray[number].y: any',
-    // '.badArray[number].z: never',
-    // '.n: never',
-    // '.tuple.1: any',
-    // '.tuple.3: never',
-  ]
+  const notes: a.DeepBrandPropNotes<X, a.DeepBrandOptionsDefaults & {notable: 'any' | 'never'}> = {
+    '.aa': 'any',
+    '.obj.oa': 'any',
+    '.aa2[number].y': 'any',
+    '.aa2[number].z': 'never',
+    '.nn': 'never',
+    '.tt[number].1': 'any',
+    '.tt[number].3': 'never',
+    '.oo(overloads).0(params)[number].0': 'any',
+    '.oo(overloads).0(params)[number].1': 'any',
+    '.oo(overloads).0(return)[number]': 'any',
+    '.oo(overloads).1(return)': 'never',
+    '.ff(this)': 'any',
+  }
+
+  expectTypeOf(notes).toHaveProperty('.aa')
 })
