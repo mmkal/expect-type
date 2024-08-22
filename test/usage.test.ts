@@ -138,9 +138,9 @@ test('Use `.inspect` to find badly-defined paths', () => {
   })
 
   expectTypeOf(bad).returns.inspect({
-    // badlyDefinedPaths: ['.meta.parsed: any', '.exitCode: never'],
-    badProps: {
-      '': '',
+    flaggedProps: {
+      '.exitCode': 'never',
+      '.meta.parsed': 'any',
     },
   })
 
@@ -155,7 +155,7 @@ test('Use `.inspect` to find badly-defined paths', () => {
   })
 
   expectTypeOf(good).returns.inspect({
-    badlyDefinedPaths: [],
+    flaggedProps: {},
   })
 })
 

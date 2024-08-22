@@ -1,4 +1,4 @@
-import {DeepBrand} from './branding'
+import {DeepBrand, DeepBrandOptions, DefaultDeepBrandOptions} from './branding'
 
 /**
  * Negates a boolean type.
@@ -310,14 +310,19 @@ type _DeepPropTypesOfBranded<T, PathTo extends string, TypeName extends string> 
                 }[keyof T]
               >
 
-export type DeepPropTypes<T, TypeName extends string> =
-  _DeepPropTypesOfBranded<DeepBrand<T>, '', TypeName> extends infer X
-    ? {
-        [K in Exclude<keyof X, 'gotem'>]: X[K]
-      }
+export type DeepPropTypes<T, Options extends DeepBrandOptions & {typeName: string}> =
+  _DeepPropTypesOfBranded<DeepBrand<T, Options>, '', Options['typeName']> extends infer X
+    ? {} extends X
+      ? Record<string | number | symbol, 'No flagged props found!'> // avoid letting `{'.propThatUsedToBeAny': 'any'}` still being accpeted after it's fixed
+      : {[K in Exclude<keyof X, 'gotem'>]: X[K]}
     : never
 
-type t2 = DeepPropTypes<X, 'any' | 'never'>
+type t2 = DeepPropTypes<
+  X,
+  DefaultDeepBrandOptions & {
+    typeName: 'any' | 'never'
+  }
+>
 
 type Prop<K> = K extends string | number ? K : 'UNEXPECTED_NON_LITERAL_PROP'
 type PropPathSuffix<K> = K extends 'items'
