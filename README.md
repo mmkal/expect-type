@@ -247,7 +247,7 @@ expectTypeOf(good).returns.branded.inspect({
   foundProps: {},
 })
 
-expectTypeOf(good).returns.branded.inspect<{notable: 'unknown'}>({
+expectTypeOf(good).returns.branded.inspect<{findType: 'unknown'}>({
   foundProps: {
     '.meta.parsed': 'unknown',
   },
