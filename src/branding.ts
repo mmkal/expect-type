@@ -115,7 +115,3 @@ export type StrictEqualUsingBranding<Left, Right, Options extends DeepBrandOptio
   DeepBrand<Left, Options>,
   DeepBrand<Right, Options>
 >
-
-type tt = DeepBrand<{d: Date}, DeepBrandOptionsDefaults>
-
-type tn = NominalType<{d: Date}, DeepBrandOptionsDefaults> // extends string ? [] : 1

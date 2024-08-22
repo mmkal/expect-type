@@ -931,13 +931,20 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     'instance',
     'guards',
     'asserts',
-    'branded',
   ] as const
   type Keys = keyof PositiveExpectTypeOf<any> | keyof NegativeExpectTypeOf<any>
 
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+  function createBranded(): Branded<{}, any> {
+    return {
+      inspect: () => true,
+      configure: () => createBranded(),
+      toEqualTypeOf: fn,
+    }
+  }
+
   type FunctionsDict = Record<Exclude<Keys, (typeof nonFunctionProperties)[number]>, any>
   const obj: FunctionsDict = {
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     toBeAny: fn,
     toBeUnknown: fn,
     toBeNever: fn,
@@ -962,7 +969,11 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     omit: expectTypeOf,
     toHaveProperty: expectTypeOf,
     parameter: expectTypeOf,
+    get branded() {
+      return createBranded()
+    },
   }
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
   const getterProperties: readonly Keys[] = nonFunctionProperties
   getterProperties.forEach((prop: Keys) => Object.defineProperty(obj, prop, {get: () => expectTypeOf({})}))

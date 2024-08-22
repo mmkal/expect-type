@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import {test} from 'vitest'
+import {expect, test} from 'vitest'
 import * as a from '../src'
 import {UnionToIntersection} from '../src'
 import {
@@ -690,10 +690,16 @@ test('Works arounds tsc bug not handling intersected types for this form of equi
   // The workaround is the new optional .branded modifier.
   expectTypeOf<{foo: number} & {bar: string}>().branded.toEqualTypeOf<{foo: number; bar: string}>()
   expectTypeOf(one).branded.toEqualTypeOf<typeof two>()
-  // @ts-expect-error
-  expectTypeOf<{foo: number} & {bar: string}>().branded.not.toEqualTypeOf<{foo: number; bar: string}>()
-  // @ts-expect-error
-  expectTypeOf(one).branded.not.toEqualTypeOf(two)
+  const tryUseBrandedDotNot = () =>
+    // @ts-expect-error
+    expectTypeOf<{foo: number} & {bar: string}>().branded.not.toEqualTypeOf<{foo: number; bar: string}>()
+
+  expect(tryUseBrandedDotNot).toThrow()
+  const tryUseBrandedDotNot2 = () =>
+    // @ts-expect-error
+    expectTypeOf(one).branded.not.toEqualTypeOf(two)
+
+  expect(tryUseBrandedDotNot2).toThrow()
 })
 
 test(".branded doesn't get tripped up by overloaded functions", () => {

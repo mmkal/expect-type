@@ -3,7 +3,7 @@
 /* eslint prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
 
 import {test} from 'vitest'
-import {DeepBrandOptionsDefaults, expectTypeOf} from '../src'
+import {expectTypeOf} from '../src'
 
 test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
