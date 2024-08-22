@@ -1,3 +1,5 @@
+import {DeepBrand} from './branding'
+
 /**
  * Negates a boolean type.
  */
@@ -227,3 +229,129 @@ export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
  * Convert a union like `1 | 2 | 3` to a tuple like `[1, 2, 3]`.
  */
 export type UnionToTuple<Union> = TuplifyUnion<Union>
+
+export type IsPrimitive<T> = [T] extends [string] | [number] | [boolean] | [null] | [undefined] | [void] | [bigint]
+  ? true
+  : false
+
+type Entries<T> =
+  IsNever<T> extends true
+    ? []
+    : IsNever<keyof T> extends true
+      ? []
+      : UnionToTuple<
+          {
+            [K in keyof T]: [K, T[K]]
+          }[keyof T]
+        >
+
+export type TupleEntries<T extends any[]> = {
+  [K in keyof T]: [K, T[K]]
+}
+
+export type ConcatTupleEntries<E> = E extends [infer Head, ...infer Tail]
+  ? Head extends [string | number, string[]]
+    ? [...Head[1], ...ConcatTupleEntries<Tail>]
+    : []
+  : []
+
+export type IsTuple<T extends readonly any[]> = number extends T['length'] ? false : true
+
+export type BadlyDefinedPaths<T, PathTo extends string = ''> =
+  IsNever<T> extends true
+    ? [`${PathTo}: never`]
+    : IsAny<T> extends true
+      ? [`${PathTo}: any`]
+      : T extends any[]
+        ? IsTuple<T> extends true
+          ? ConcatTupleEntries<{
+              [K in keyof T]: [K, BadlyDefinedPaths<T[K], `${PathTo}.${Extract<K, string | number>}`>]
+            }>
+          : BadlyDefinedPaths<T[number], `${PathTo}[number]`>
+        : Entries<T> extends [[infer K, infer V], ...infer _Tail]
+          ? [
+              ...BadlyDefinedPaths<V, `${PathTo}.${Extract<K, string | number>}`>,
+              ...BadlyDefinedPaths<Omit<T, Extract<K, string | number | symbol>>, PathTo>,
+            ]
+          : []
+
+export type BadlyDefinedDeepBrand<T, PathTo extends string = ''> = T extends {type: 'any' | 'never'}
+  ? [`${PathTo}: ${T['type']}`]
+  : never
+
+type OmitNever<T> = {
+  [K in keyof T as IsNever<T[K]> extends true ? never : K]: T[K]
+}
+
+export type DeepPropTypes<T, PathTo extends string = '', TypeName extends string = 'any' | 'never'> =
+  IsNever<T> extends true
+    ? []
+    : T extends string
+      ? []
+      : T extends {type: TypeName}
+        ? [`${PathTo}: ${T['type']}`]
+        : T extends {type: string} // an object like `{type: string}` gets "branded" to `{type: 'object', properties: {type: {type: 'string'}}}`
+          ? Entries<Omit<T, 'type'>> extends [[infer K, infer V], ...infer _Tail]
+            ? [
+                ...DeepPropTypes<V, `${PathTo}${PropPathSuffix<K>}`, TypeName>,
+                ...DeepPropTypes<Omit<T, Extract<K, string | number>>, PathTo, TypeName>,
+              ]
+            : []
+          : T extends any[]
+            ? ConcatTupleEntries<{
+                [K in keyof T]: [K, DeepPropTypes<T[K], `${PathTo}[${Extract<K, string | number>}]`, TypeName>]
+              }>
+            : Entries<T> extends [[infer K, infer V], ...infer _Tail]
+              ? [
+                  ...DeepPropTypes<V, `${PathTo}.${Extract<K, string | number>}`, TypeName>,
+                  ...DeepPropTypes<Omit<T, Extract<K, string | number>>, PathTo, TypeName>,
+                ]
+              : []
+
+type PropPathSuffix<K> = K extends 'properties' | 'items' ? `` : `(${Extract<K, string | number>})`
+
+// type I2<T, PathTo extends string = ''> =
+
+type X = {
+  aa: any
+  bb: boolean
+  aa1: number[]
+  aa2: Array<{x: number; y: any; z: never}>
+  nn: never
+  tt: [0, any, 2, never, 3]
+  oo: {
+    (a: any, b: any): any[]
+    (b: unknown[]): never
+  }
+  ff: (this: any, x: 1) => 2
+}
+type Dreal = DeepBrand<X> //['properties']['foo']['overloads']
+type D = {
+  type: 'object'
+  properties: {
+    a: {
+      type: 'any'
+    }
+  }
+}
+type t = DeepPropTypes<Dreal>
+
+const f = <Tt extends t[number] = t[number]>(tt: Tt) => {}
+
+f('.properties.foo.overloads[0].params.items[0]: any')
+
+type e = Entries<Dreal>
+
+type T = D
+type PathTo = ''
+
+type x =
+  Entries<T> extends [[infer K, infer V], ...infer _Tail]
+    ? // ? [
+      //     // `${PathTo}.${K}`, //
+      //     ...InstancesOf<V, `${PathTo}.${K}`>,
+      //     // keyof V,
+      //     ...InstancesOf<Omit<T, K>, PathTo>,
+      //   ]
+      'yes'
+    : 'no'

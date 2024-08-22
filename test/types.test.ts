@@ -762,6 +762,14 @@ test('Distinguish between identical types that are AND`d together', () => {
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
 })
 
+test('.branded with tuples', () => {
+  type A = {tuple: [1, unknown]}
+  type B = {tuple: [1, any]}
+
+  // @ts-expect-error any vs unknown inside tuple
+  expectTypeOf<A>().branded.toEqualTypeOf<B>()
+})
+
 test('limitations', () => {
   // these *shouldn't* fail, but kept here to document missing behaviours. Once fixed, remove the expect-error comments to make sure they can't regress
   // @ts-expect-error TypeScript can't handle the truth: https://github.com/expect-type/issues/5 https://github.com/microsoft/TypeScript/issues/50670
@@ -846,4 +854,50 @@ test('Overload edge cases', () => {
 
   expectTypeOf<NoArgOverload>().parameters.toEqualTypeOf<[] | [1]>()
   expectTypeOf<NoArgOverload>().returns.toEqualTypeOf<1>()
+})
+
+test('BadlyDefinedPaths', () => {
+  const badPaths: a.BadlyDefinedPaths<{
+    any: any
+    b: boolean
+    goodArray: number[]
+    badArray: Array<{x: number; y: any; z: never}>
+    n: never
+    tuple: [0, any, 2, never, 3]
+  }> = [
+    '.any: any',
+    '.badArray[number].y: any',
+    '.badArray[number].z: never',
+    '.n: never',
+    '.tuple.1: any',
+    '.tuple.3: never',
+  ]
+
+  expectTypeOf(badPaths).toBeArray()
+})
+
+test('InstancesOf', () => {
+  type X = {
+    any: any
+    b: boolean
+    goodArray: number[]
+    badArray: Array<{x: number; y: any; z: never}>
+    n: never
+    tuple: [0, any, 2, never, 3]
+  }
+
+  const instancesOfAnyAndNever: a.DeepPropTypes<X> = [
+    '.any: any',
+    '.badArray[number].y: any',
+    '.badArray[number].z: never',
+    '.n: never',
+    '.tuple.1: any',
+    '.tuple.3: never',
+    // '.any: any',
+    // '.badArray[number].y: any',
+    // '.badArray[number].z: never',
+    // '.n: never',
+    // '.tuple.1: any',
+    // '.tuple.3: never',
+  ]
 })

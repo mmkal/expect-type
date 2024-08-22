@@ -23,7 +23,7 @@ import {
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends} from './utils'
+import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends, BadlyDefinedPaths} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
@@ -258,6 +258,34 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
       ...MISMATCH: MismatchArgs<StrictEqualUsingBranding<Actual, Expected>, true>
     ) => true
   }
+
+  /**
+   * Walk an object to find all paths that are badly-defined - meaning, have `any` or `never` types.
+   *
+   * In most cases, this should be passed `{badlyDefinedPaths: []}`, and a type error will appear if there are any badly-deifned paths.
+   *
+   * @param params Explicitly supplied "badly-defined" paths. For a well-defined type with no issues, pass an empty list. The compiler will tell you if you're wrong!
+   * @returns true
+   *
+   * @example
+   * ```ts
+   * type BadType = {a: any; b: boolean; c: never; d: [0, any]; e: Array<{f: any; g: number}>}
+   *
+   * // \@ts-expect-error lots of `any`/`never` in this type, so you're not allowed to claim there are no badly-defined paths.
+   * expectTypeOf<BadType>().inspect({badlyDefinedPaths: []})
+   * expectTypeOf<BadType>().inspect({
+   *   badlyDefinePaths: ['.a: any', '.c: never', '.d[1]: any', 'e[number].f: any'],
+   * })
+   * ```
+   *
+   * @example
+   * ```ts
+   * type GoodType = {b: boolean: c: string}
+   *
+   * expectTypeOf<GoodType>().inspect({badlyDefinedPaths: []})
+   * ```
+   */
+  inspect: (params: {badlyDefinedPaths: BadlyDefinedPaths<Actual>}) => true
 }
 
 /**
@@ -911,6 +939,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeConstructibleWith: fn,
+    inspect: fn,
     toBeCallableWith: expectTypeOf,
     extract: expectTypeOf,
     exclude: expectTypeOf,

@@ -8,6 +8,7 @@ import {
   OptionalKeys,
   MutuallyExtends,
   UnionToTuple,
+  IsTuple,
 } from './utils'
 
 /**
@@ -62,12 +63,17 @@ export type DeepBrand<T> =
                     }
                   : never
               : T extends any[]
-                ? {
-                    type: 'array'
-                    items: {
-                      [K in keyof T]: T[K]
+                ? IsTuple<T> extends true
+                  ? {
+                      type: 'tuple'
+                      items: {
+                        [K in keyof T]: DeepBrand<T[K]>
+                      }
                     }
-                  }
+                  : {
+                      type: 'array'
+                      items: DeepBrand<T[number]>
+                    }
                 : {
                     type: 'object'
                     properties: {
@@ -76,7 +82,11 @@ export type DeepBrand<T> =
                     readonly: ReadonlyKeys<T>
                     required: RequiredKeys<T>
                     optional: OptionalKeys<T>
-                    constructorParams: DeepBrand<ConstructorOverloadParameters<T>>
+                    constructorParams: ConstructorOverloadParameters<T> extends infer P
+                      ? IsNever<P> extends true
+                        ? never
+                        : DeepBrand<P>
+                      : never
                   }
 
 /**

@@ -211,6 +211,44 @@ expectTypeOf<1 | null>().toBeNullable()
 expectTypeOf<1 | undefined | null>().toBeNullable()
 ```
 
+Use `.inspect` to find badly-defined paths:
+
+This finds `any` and `never` types deep within objects. This can be useful for debugging, since you will get autocomplete for the bad paths, but is a fairly heavy operation, so use with caution for large/complex types.
+
+```typescript
+expectTypeOf<{x: any}>().inspect({
+  badlyDefinedPaths: ['.x: any'],
+})
+
+const bad = (metadata: string) => ({
+  name: 'Bob',
+  dob: new Date('1970-01-01'),
+  meta: {
+    raw: metadata,
+    parsed: JSON.parse(metadata), // whoops, any!
+  },
+  exitCode: process.exit(), // whoops, never!
+})
+
+expectTypeOf(bad).returns.inspect({
+  badlyDefinedPaths: ['.meta.parsed: any', '.exitCode: never'],
+})
+
+const good = (metadata: string) => ({
+  name: 'Bob',
+  dob: new Date('1970-01-01'),
+  meta: {
+    raw: metadata,
+    parsed: JSON.parse(metadata) as {foo: string}, // here we just cast, but you should use zod/similar validation libraries
+  },
+  exitCode: 0,
+})
+
+expectTypeOf(good).returns.inspect({
+  badlyDefinedPaths: [],
+})
+```
+
 More `.not` examples:
 
 ```typescript
