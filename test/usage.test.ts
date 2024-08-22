@@ -126,7 +126,7 @@ test('Nullable types', () => {
  * This finds `any` and `never` types deep within objects.
  * This can be useful for debugging, since you will get autocomplete for the bad paths, but is a fairly heavy operation, so use with caution for large/complex types.
  */
-test('Use `.inspect` to find badly-defined paths', () => {
+test('Use `.branded.inspect` to find badly-defined paths', () => {
   const bad = (metadata: string) => ({
     name: 'Bob',
     dob: new Date('1970-01-01'),

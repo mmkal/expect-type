@@ -211,7 +211,7 @@ expectTypeOf<1 | null>().toBeNullable()
 expectTypeOf<1 | undefined | null>().toBeNullable()
 ```
 
-Use `.inspect` to find badly-defined paths:
+Use `.branded.inspect` to find badly-defined paths:
 
 This finds `any` and `never` types deep within objects. This can be useful for debugging, since you will get autocomplete for the bad paths, but is a fairly heavy operation, so use with caution for large/complex types.
 
