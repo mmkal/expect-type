@@ -3,7 +3,7 @@
 /* eslint prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
 
 import {test} from 'vitest'
-import {expectTypeOf} from '../src'
+import {DeepBrandOptionsDefaults, expectTypeOf} from '../src'
 
 test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
@@ -137,10 +137,10 @@ test('Use `.inspect` to find badly-defined paths', () => {
     exitCode: process.exit(), // whoops, never!
   })
 
-  expectTypeOf(bad).returns.inspect({
-    flaggedProps: {
-      '.exitCode': 'never',
+  expectTypeOf(bad).returns.branded.inspect({
+    notableProps: {
       '.meta.parsed': 'any',
+      '.exitCode': 'never',
     },
   })
 
@@ -149,13 +149,19 @@ test('Use `.inspect` to find badly-defined paths', () => {
     dob: new Date('1970-01-01'),
     meta: {
       raw: metadata,
-      parsed: JSON.parse(metadata) as {foo: string}, // here we just cast, but you should use zod/similar validation libraries
+      parsed: JSON.parse(metadata) as unknown, // here we just cast, but you should use zod/similar validation libraries
     },
     exitCode: 0,
   })
 
-  expectTypeOf(good).returns.inspect({
-    flaggedProps: {},
+  expectTypeOf(good).returns.branded.inspect({
+    notableProps: {},
+  })
+
+  expectTypeOf(good).returns.branded.inspect<{notable: 'unknown'}>({
+    notableProps: {
+      '.meta.parsed': 'unknown',
+    },
   })
 })
 

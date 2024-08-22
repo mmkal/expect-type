@@ -1,4 +1,4 @@
-import {DeepBrandOptions, DefaultDeepBrandOptions, StrictEqualUsingBranding} from './branding'
+import {DeepBrandOptions, DeepBrandOptionsDefaults, StrictEqualUsingBranding} from './branding'
 import {
   MismatchInfo,
   Scolder,
@@ -23,7 +23,15 @@ import {
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends, DeepPropTypes} from './utils'
+import {
+  StrictEqualUsingTSInternalIdenticalToOperator,
+  AValue,
+  MismatchArgs,
+  Extends,
+  DeepBrandPropNotes,
+  DeepBrandPropNotesOptions,
+  DeepBrandPropNotesOptionsDefaults,
+} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
@@ -218,46 +226,48 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    *
    * @see {@link https://github.com/mmkal/expect-type/pull/21 | Reference}
    */
-  branded: {
-    /**
-     * Uses TypeScript's internal technique to check for type "identicalness".
-     *
-     * It will check if the types are fully equal to each other.
-     * It will not fail if two objects have different values, but the same type.
-     * It will fail however if an object is missing a property.
-     *
-     * **_Unexpected failure_**? For a more permissive but less performant
-     * check that accommodates for equivalent intersection types,
-     * use {@linkcode PositiveExpectTypeOf.branded | .branded.toEqualTypeOf()}.
-     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing | The documentation for details}.
-     *
-     * @example
-     * <caption>Using generic type argument syntax</caption>
-     * ```ts
-     * expectTypeOf({ a: 1 }).toEqualTypeOf<{ a: number }>()
-     *
-     * expectTypeOf({ a: 1, b: 1 }).not.toEqualTypeOf<{ a: number }>()
-     * ```
-     *
-     * @example
-     * <caption>Using inferred type syntax by passing a value</caption>
-     * ```ts
-     * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 1 })
-     *
-     * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 2 })
-     * ```
-     *
-     * @param MISMATCH - The mismatch arguments.
-     * @returns `true`.
-     */
-    toEqualTypeOf: <
-      Expected extends StrictEqualUsingBranding<Actual, Expected> extends true
-        ? unknown
-        : MismatchInfo<Actual, Expected>,
-    >(
-      ...MISMATCH: MismatchArgs<StrictEqualUsingBranding<Actual, Expected>, true>
-    ) => true
-  }
+  branded: Branded<Actual, DeepBrandOptionsDefaults>
+}
+
+export interface Branded<Actual, Options extends DeepBrandOptions> {
+  /**
+   * Uses TypeScript's internal technique to check for type "identicalness".
+   *
+   * It will check if the types are fully equal to each other.
+   * It will not fail if two objects have different values, but the same type.
+   * It will fail however if an object is missing a property.
+   *
+   * **_Unexpected failure_**? For a more permissive but less performant
+   * check that accommodates for equivalent intersection types,
+   * use {@linkcode PositiveExpectTypeOf.branded | .branded.toEqualTypeOf()}.
+   * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing | The documentation for details}.
+   *
+   * @example
+   * <caption>Using generic type argument syntax</caption>
+   * ```ts
+   * expectTypeOf({ a: 1 }).toEqualTypeOf<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1, b: 1 }).not.toEqualTypeOf<{ a: number }>()
+   * ```
+   *
+   * @example
+   * <caption>Using inferred type syntax by passing a value</caption>
+   * ```ts
+   * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 1 })
+   *
+   * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 2 })
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
+  toEqualTypeOf: <
+    Expected extends StrictEqualUsingBranding<Actual, Expected, Options> extends true
+      ? unknown
+      : MismatchInfo<Actual, Expected>,
+  >(
+    ...MISMATCH: MismatchArgs<StrictEqualUsingBranding<Actual, Expected, Options>, true>
+  ) => true
 
   /**
    * Walk an object to find all paths that are badly-defined - meaning, have `any` or `never` types.
@@ -286,12 +296,12 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * ```
    */
   inspect: <
-    Options extends DeepBrandOptions & {typeName: string} = DefaultDeepBrandOptions & {
-      typeName: 'any' | 'never'
-    },
+    PropNoteOptions extends Exclude<DeepBrandPropNotesOptions, DeepBrandOptions> = DeepBrandPropNotesOptionsDefaults,
   >(params: {
-    flaggedProps: DeepPropTypes<Actual, Options>
+    notableProps: DeepBrandPropNotes<Actual, Options & PropNoteOptions>
   }) => true
+
+  configure<O extends DeepBrandOptions>(): Branded<Actual, O>
 }
 
 /**

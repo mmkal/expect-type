@@ -16,7 +16,7 @@ export type DeepBrandOptions = {
   nominalTypes: {}
 }
 
-export type DefaultDeepBrandOptions = {
+export type DeepBrandOptionsDefaults = {
   nominalTypes: {
     Date: Date
   }
@@ -111,12 +111,11 @@ export type DeepBrand<T, Options extends DeepBrandOptions> =
 /**
  * Checks if two types are strictly equal using branding.
  */
-export type StrictEqualUsingBranding<
-  Left,
-  Right,
-  Options extends DefaultDeepBrandOptions = DefaultDeepBrandOptions,
-> = MutuallyExtends<DeepBrand<Left, Options>, DeepBrand<Right, Options>>
+export type StrictEqualUsingBranding<Left, Right, Options extends DeepBrandOptions> = MutuallyExtends<
+  DeepBrand<Left, Options>,
+  DeepBrand<Right, Options>
+>
 
-type tt = DeepBrand<{d: Date}, DefaultDeepBrandOptions>
+type tt = DeepBrand<{d: Date}, DeepBrandOptionsDefaults>
 
-type tn = NominalType<{d: Date}, DefaultDeepBrandOptions> // extends string ? [] : 1
+type tn = NominalType<{d: Date}, DeepBrandOptionsDefaults> // extends string ? [] : 1

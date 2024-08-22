@@ -1,4 +1,4 @@
-import {DeepBrand, DeepBrandOptions, DefaultDeepBrandOptions} from './branding'
+import {DeepBrand, DeepBrandOptions, DeepBrandOptionsDefaults as DeepBrandOptionsDefaults} from './branding'
 
 /**
  * Negates a boolean type.
@@ -278,23 +278,23 @@ export type IsTuple<T extends readonly any[]> = number extends T['length'] ? fal
 //   ? [`${PathTo}: ${T['type']}`]
 //   : never
 
-type _DeepPropTypesOfBranded<T, PathTo extends string, TypeName extends string> =
+type _DeepPropTypesOfBranded<T, PathTo extends string, NotableType extends string> =
   IsNever<T> extends true
     ? {}
     : T extends string
       ? {}
-      : T extends {type: TypeName}
+      : T extends {type: NotableType}
         ? {[K in PathTo]: T['type']} & {gotem: true}
         : T extends {type: string} // an object like `{type: string}` gets "branded" to `{type: 'object', properties: {type: {type: 'string'}}}`
           ? Entries<Omit<T, 'type'>> extends [[infer K, infer V], ...infer _Tail]
-            ? _DeepPropTypesOfBranded<V, `${PathTo}${PropPathSuffix<K>}`, TypeName> &
-                _DeepPropTypesOfBranded<Omit<T, Extract<K, string | number>>, PathTo, TypeName>
+            ? _DeepPropTypesOfBranded<V, `${PathTo}${PropPathSuffix<K>}`, NotableType> &
+                _DeepPropTypesOfBranded<Omit<T, Extract<K, string | number>>, PathTo, NotableType>
             : {}
           : T extends any[]
             ? // ? ConcatTupleEntries<{
               //     [K in keyof T]: [K, DeepPropTypes<T[K], `${PathTo}[${Extract<K, string | number>}]`, TypeName>]
               //   }>
-              _DeepPropTypesOfBranded<TupleToRecord<T>, PathTo, TypeName>
+              _DeepPropTypesOfBranded<TupleToRecord<T>, PathTo, NotableType>
             : // UnionToIntersection<{
               //   [K in Extract<keyof T, number>]: Extract<
               //     DeepPropTypes<T[K], `${PathTo}.${Prop<K>}`, TypeName>,
@@ -304,23 +304,26 @@ type _DeepPropTypesOfBranded<T, PathTo extends string, TypeName extends string> 
               UnionToIntersection<
                 {
                   [K in keyof T]: Extract<
-                    _DeepPropTypesOfBranded<T[K], `${PathTo}.${Prop<K>}`, TypeName>,
+                    _DeepPropTypesOfBranded<T[K], `${PathTo}.${Prop<K>}`, NotableType>,
                     {gotem: true}
                   >
                 }[keyof T]
               >
 
-export type DeepPropTypes<T, Options extends DeepBrandOptions & {typeName: string}> =
-  _DeepPropTypesOfBranded<DeepBrand<T, Options>, '', Options['typeName']> extends infer X
+export type DeepBrandPropNotesOptions = Partial<DeepBrandOptions> & {notable: string}
+export type DeepBrandPropNotesOptionsDefaults = {notable: 'any' | 'never'}
+
+export type DeepBrandPropNotes<T, Options extends DeepBrandPropNotesOptions> =
+  _DeepPropTypesOfBranded<DeepBrand<T, DeepBrandOptionsDefaults & Options>, '', Options['notable']> extends infer X
     ? {} extends X
-      ? Record<string | number | symbol, 'No flagged props found!'> // avoid letting `{'.propThatUsedToBeAny': 'any'}` still being accpeted after it's fixed
+      ? Record<string | number | symbol, 'No flagged props found!'> // avoid letting `{'.propThatUsedToBeAny': 'any'}` still being accepted after it's fixed
       : {[K in Exclude<keyof X, 'gotem'>]: X[K]}
     : never
 
-type t2 = DeepPropTypes<
+type t2 = DeepBrandPropNotes<
   X,
-  DefaultDeepBrandOptions & {
-    typeName: 'any' | 'never'
+  DeepBrandOptionsDefaults & {
+    notable: 'any' | 'never'
   }
 >
 
@@ -365,7 +368,7 @@ type X = {
   }
   ff: (this: any, x: 1) => 2
 }
-type Dreal = DeepBrand<X> //['properties']['foo']['overloads']
+type Dreal = DeepBrand<X, DeepBrandOptionsDefaults> //['properties']['foo']['overloads']
 
 export type GetEm<T> = {
   [K in Exclude<keyof T, 'gotem'>]: T[K]

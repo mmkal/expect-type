@@ -886,7 +886,7 @@ test('InstancesOf', () => {
     tuple: [0, any, 2, never, 3]
   }
 
-  const instancesOfAnyAndNever: a.DeepPropTypes<X> = [
+  const instancesOfAnyAndNever: a.DeepBrandPropNotes<X> = [
     '.any: any',
     '.badArray[number].y: any',
     '.badArray[number].z: never',
