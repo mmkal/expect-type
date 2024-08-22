@@ -11,7 +11,6 @@ import {
   IsTuple,
   Not,
   UnionToIntersection,
-  Entries,
   TupleToRecord,
 } from './utils'
 
@@ -125,7 +124,7 @@ export type StrictEqualUsingBranding<Left, Right, Options extends DeepBrandOptio
  * Walks over a type `T`, assuming that it's the output of the {@linkcode DeepBrand} utility. It looks for leaf nodes looking like `{type: FindType}`.
  * When it finds them, it merges them into a string->string record, keeping track of a rough representation of the path-location.
  * For simple objects, this path will roughly match dot-prop notation but it also traverses into all the structures that `DeepBrand` can emit.
- * But it also goes into overloads, function parameters, return types, etc. The output is an ugly intersection of objects along with a marker `{gotem: true}`
+ * But it also goes into overloads, function parameters, return types, etc. The output is an ugly intersection of objects along with a marker `{deepBrandLeafNode: true}`
  * which is purely for internal use. The output should not be shown to end-users!
  */
 type _DeepPropTypesOfBranded<T, PathTo extends string, FindType extends string> =
@@ -134,22 +133,17 @@ type _DeepPropTypesOfBranded<T, PathTo extends string, FindType extends string> 
     : T extends string
       ? {}
       : T extends {type: FindType}
-        ? {[K in PathTo]: T['type']} & {gotem: true}
-        : T extends {type: string} // an object like `{type: string}` gets "branded" to `{type: 'object', properties: {type: {type: 'string'}}}`
-          ? Entries<Omit<T, 'type'>> extends [[infer K, infer V], ...infer _Tail]
-            ? _DeepPropTypesOfBranded<V, `${PathTo}${DeepBrandPropPathSuffix<K>}`, FindType> &
-                _DeepPropTypesOfBranded<Omit<T, Extract<K, string | number>>, PathTo, FindType>
-            : {}
-          : T extends any[]
-            ? _DeepPropTypesOfBranded<TupleToRecord<T>, PathTo, FindType>
-            : UnionToIntersection<
-                {
-                  [K in keyof T]: Extract<
-                    _DeepPropTypesOfBranded<T[K], `${PathTo}.${Prop<K>}`, FindType>,
-                    {gotem: true}
-                  >
-                }[keyof T]
-              >
+        ? {[K in PathTo]: T['type']} & {deepBrandLeafNode: true} // deepBrandLeafNode marker helps us throw out lots of array props which we don't want to include
+        : T extends any[]
+          ? _DeepPropTypesOfBranded<TupleToRecord<T>, PathTo, FindType>
+          : UnionToIntersection<
+              {
+                [K in keyof T]: Extract<
+                  _DeepPropTypesOfBranded<T[K], `${PathTo}${DeepBrandPropPathSuffix<T, Prop<K>>}`, FindType>,
+                  {deepBrandLeafNode: true}
+                >
+              }[keyof T]
+            >
 
 /** Required options for for {@linkcode DeepBrandPropNotes}. */
 export type DeepBrandPropNotesOptions = Partial<DeepBrandOptions> & {findType: string}
@@ -173,7 +167,7 @@ export type DeepBrandPropNotes<T, Options extends DeepBrandPropNotesOptions> =
   _DeepPropTypesOfBranded<DeepBrand<T, DeepBrandOptionsDefaults & Options>, '', Options['findType']> extends infer X
     ? {} extends X
       ? Record<string | number | symbol, 'No flagged props found!'> // avoid letting `{'.propThatUsedToBeAny': 'any'}` still being accepted after it's fixed
-      : {[K in Exclude<keyof X, 'gotem'>]: X[K]}
+      : {[K in Exclude<keyof X, 'deepBrandLeafNode'>]: X[K]}
     : never
 
 /**
@@ -189,8 +183,10 @@ export type Prop<K> = K extends string | number ? K : 'UNEXPECTED_NON_LITERAL_PR
  * Gets a sensible suffix to a property path for a {@linkcode DeepBrand} output type.
  * `[number]` for arrays, empty string for objects, and parenthesised-input for anything else.
  */
-type DeepBrandPropPathSuffix<K> = K extends 'items'
-  ? '[number]'
-  : K extends 'properties'
-    ? ''
-    : `(${Extract<K, string | number>})`
+type DeepBrandPropPathSuffix<T, K> = T extends {type: string}
+  ? K extends 'items'
+    ? '[number]'
+    : K extends 'properties'
+      ? ''
+      : `(${Prop<K>})`
+  : `.${Prop<K>}`

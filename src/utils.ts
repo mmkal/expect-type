@@ -228,21 +228,6 @@ export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
  */
 export type UnionToTuple<Union> = TuplifyUnion<Union>
 
-export type IsPrimitive<T> = [T] extends [string] | [number] | [boolean] | [null] | [undefined] | [void] | [bigint]
-  ? true
-  : false
-
-export type Entries<T> =
-  IsNever<T> extends true
-    ? []
-    : IsNever<keyof T> extends true
-      ? []
-      : UnionToTuple<
-          {
-            [K in keyof T]: [K, T[K]]
-          }[keyof T]
-        >
-
 /** `true` iff `T` is a tuple, as opposed to an indeterminate-length array */
 export type IsTuple<T extends readonly any[]> = number extends T['length'] ? false : true
 
