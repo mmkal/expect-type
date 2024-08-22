@@ -1,4 +1,4 @@
-import {StrictEqualUsingBranding} from './branding'
+import {DeepBrand, StrictEqualUsingBranding} from './branding'
 import {
   MismatchInfo,
   Scolder,
@@ -23,7 +23,14 @@ import {
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends, BadlyDefinedPaths} from './utils'
+import {
+  StrictEqualUsingTSInternalIdenticalToOperator,
+  AValue,
+  MismatchArgs,
+  Extends,
+  BadlyDefinedPaths,
+  DeepPropTypes,
+} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
@@ -285,7 +292,9 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * expectTypeOf<GoodType>().inspect({badlyDefinedPaths: []})
    * ```
    */
-  inspect: (params: {badlyDefinedPaths: BadlyDefinedPaths<Actual>}) => true
+  inspect: <Problematic extends string = 'any' | 'never'>(params: {
+    badProps: DeepPropTypes<Actual, Problematic>
+  }) => true
 }
 
 /**

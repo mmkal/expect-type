@@ -251,64 +251,95 @@ export type TupleEntries<T extends any[]> = {
 
 export type ConcatTupleEntries<E> = E extends [infer Head, ...infer Tail]
   ? Head extends [string | number, string[]]
-    ? [...Head[1], ...ConcatTupleEntries<Tail>]
-    : []
-  : []
+    ? {'0': Head[1]} & ConcatTupleEntries<Tail>
+    : {}
+  : {}
 
 export type IsTuple<T extends readonly any[]> = number extends T['length'] ? false : true
 
-export type BadlyDefinedPaths<T, PathTo extends string = ''> =
+// export type BadlyDefinedPaths<T, PathTo extends string = ''> =
+//   IsNever<T> extends true
+//     ? [`${PathTo}: never`]
+//     : IsAny<T> extends true
+//       ? [`${PathTo}: any`]
+//       : T extends any[]
+//         ? IsTuple<T> extends true
+//           ? ConcatTupleEntries<{
+//               [K in keyof T]: [K, BadlyDefinedPaths<T[K], `${PathTo}.${Extract<K, string | number>}`>]
+//             }>
+//           : BadlyDefinedPaths<T[number], `${PathTo}[number]`>
+//         : Entries<T> extends [[infer K, infer V], ...infer _Tail]
+//           ? BadlyDefinedPaths<V, `${PathTo}.${Extract<K, string | number>}`> &
+//               ...BadlyDefinedPaths<Omit<T, Extract<K, string | number | symbol>>, PathTo>,
+//             ]
+//           : []
+
+// export type BadlyDefinedDeepBrand<T, PathTo extends string = ''> = T extends {type: 'any' | 'never'}
+//   ? [`${PathTo}: ${T['type']}`]
+//   : never
+
+type _DeepPropTypesOfBranded<T, PathTo extends string, TypeName extends string> =
   IsNever<T> extends true
-    ? [`${PathTo}: never`]
-    : IsAny<T> extends true
-      ? [`${PathTo}: any`]
-      : T extends any[]
-        ? IsTuple<T> extends true
-          ? ConcatTupleEntries<{
-              [K in keyof T]: [K, BadlyDefinedPaths<T[K], `${PathTo}.${Extract<K, string | number>}`>]
-            }>
-          : BadlyDefinedPaths<T[number], `${PathTo}[number]`>
-        : Entries<T> extends [[infer K, infer V], ...infer _Tail]
-          ? [
-              ...BadlyDefinedPaths<V, `${PathTo}.${Extract<K, string | number>}`>,
-              ...BadlyDefinedPaths<Omit<T, Extract<K, string | number | symbol>>, PathTo>,
-            ]
-          : []
-
-export type BadlyDefinedDeepBrand<T, PathTo extends string = ''> = T extends {type: 'any' | 'never'}
-  ? [`${PathTo}: ${T['type']}`]
-  : never
-
-type OmitNever<T> = {
-  [K in keyof T as IsNever<T[K]> extends true ? never : K]: T[K]
-}
-
-export type DeepPropTypes<T, PathTo extends string = '', TypeName extends string = 'any' | 'never'> =
-  IsNever<T> extends true
-    ? []
+    ? {}
     : T extends string
-      ? []
+      ? {}
       : T extends {type: TypeName}
-        ? [`${PathTo}: ${T['type']}`]
+        ? {[K in PathTo]: T['type']} & {gotem: true}
         : T extends {type: string} // an object like `{type: string}` gets "branded" to `{type: 'object', properties: {type: {type: 'string'}}}`
           ? Entries<Omit<T, 'type'>> extends [[infer K, infer V], ...infer _Tail]
-            ? [
-                ...DeepPropTypes<V, `${PathTo}${PropPathSuffix<K>}`, TypeName>,
-                ...DeepPropTypes<Omit<T, Extract<K, string | number>>, PathTo, TypeName>,
-              ]
-            : []
+            ? _DeepPropTypesOfBranded<V, `${PathTo}${PropPathSuffix<K>}`, TypeName> &
+                _DeepPropTypesOfBranded<Omit<T, Extract<K, string | number>>, PathTo, TypeName>
+            : {}
           : T extends any[]
-            ? ConcatTupleEntries<{
-                [K in keyof T]: [K, DeepPropTypes<T[K], `${PathTo}[${Extract<K, string | number>}]`, TypeName>]
-              }>
-            : Entries<T> extends [[infer K, infer V], ...infer _Tail]
-              ? [
-                  ...DeepPropTypes<V, `${PathTo}.${Extract<K, string | number>}`, TypeName>,
-                  ...DeepPropTypes<Omit<T, Extract<K, string | number>>, PathTo, TypeName>,
-                ]
-              : []
+            ? // ? ConcatTupleEntries<{
+              //     [K in keyof T]: [K, DeepPropTypes<T[K], `${PathTo}[${Extract<K, string | number>}]`, TypeName>]
+              //   }>
+              _DeepPropTypesOfBranded<TupleToRecord<T>, PathTo, TypeName>
+            : // UnionToIntersection<{
+              //   [K in Extract<keyof T, number>]: Extract<
+              //     DeepPropTypes<T[K], `${PathTo}.${Prop<K>}`, TypeName>,
+              //     {gotem: true}
+              //   >
+              // }>
+              UnionToIntersection<
+                {
+                  [K in keyof T]: Extract<
+                    _DeepPropTypesOfBranded<T[K], `${PathTo}.${Prop<K>}`, TypeName>,
+                    {gotem: true}
+                  >
+                }[keyof T]
+              >
 
-type PropPathSuffix<K> = K extends 'properties' | 'items' ? `` : `(${Extract<K, string | number>})`
+export type DeepPropTypes<T, TypeName extends string> =
+  _DeepPropTypesOfBranded<DeepBrand<T>, '', TypeName> extends X
+    ? {
+        [K in Exclude<keyof X, 'gotem'>]: X[K]
+      }
+    : never
+
+type t2 = DeepPropTypes<X, 'any' | 'never'>
+
+type Prop<K> = K extends string | number ? K : 'UNEXPECTED_NON_LITERAL_PROP'
+type PropPathSuffix<K> = K extends 'items'
+  ? '[number]'
+  : K extends 'properties'
+    ? ''
+    : `(${Extract<K, string | number>})`
+
+type mytuple = [1, any, 2, never]
+
+export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+
+/**
+ * e.g. `['a', 'b']` -> `{ 0: 'a', 1: 'b' }`
+ * Looks at the keys to see which look digit-like, so could do the wrong thing for types like
+ * `['a', 'b'] & {'1foo': string}`
+ */
+export type TupleToRecord<T extends any[]> = {
+  [K in keyof T as `${Extract<K, `${Digit}${string}`>}`]: T[K]
+}
+
+type mytuplerecord = TupleToRecord<mytuple>
 
 // type I2<T, PathTo extends string = ''> =
 
@@ -316,6 +347,10 @@ type X = {
   aa: any
   bb: boolean
   aa1: number[]
+  obj: {
+    oa: any
+    ob: boolean
+  }
   aa2: Array<{x: number; y: any; z: never}>
   nn: never
   tt: [0, any, 2, never, 3]
@@ -326,6 +361,13 @@ type X = {
   ff: (this: any, x: 1) => 2
 }
 type Dreal = DeepBrand<X> //['properties']['foo']['overloads']
+
+export type GetEm<T> = {
+  [K in Exclude<keyof T, 'gotem'>]: T[K]
+}
+
+type t = GetEm<_DeepPropTypesOfBranded<Dreal, '', 'any' | 'never'>>
+
 type D = {
   type: 'object'
   properties: {
@@ -334,7 +376,6 @@ type D = {
     }
   }
 }
-type t = DeepPropTypes<Dreal>
 
 const f = <Tt extends t[number] = t[number]>(tt: Tt) => {}
 
