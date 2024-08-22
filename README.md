@@ -227,7 +227,7 @@ const bad = (metadata: string) => ({
 })
 
 expectTypeOf(bad).returns.branded.inspect({
-  notableProps: {
+  foundProps: {
     '.meta.parsed': 'any',
     '.exitCode': 'never',
   },
@@ -244,11 +244,11 @@ const good = (metadata: string) => ({
 })
 
 expectTypeOf(good).returns.branded.inspect({
-  notableProps: {},
+  foundProps: {},
 })
 
 expectTypeOf(good).returns.branded.inspect<{notable: 'unknown'}>({
-  notableProps: {
+  foundProps: {
     '.meta.parsed': 'unknown',
   },
 })

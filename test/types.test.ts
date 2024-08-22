@@ -48,16 +48,16 @@ test('boolean type logic', () => {
   expectTypeOf<a.Extends<1, number>>().toEqualTypeOf<true>()
   expectTypeOf<a.Extends<number, 1>>().toEqualTypeOf<false>()
 
-  expectTypeOf<a.StrictEqualUsingBranding<1, 1>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<1, number>>().toEqualTypeOf<false>()
-  expectTypeOf<a.StrictEqualUsingBranding<{a: 1}, {a: 1}>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<[{a: 1}], [{a: 1}]>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<never, never>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<any, any>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<unknown, unknown>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<any, never>>().toEqualTypeOf<false>()
-  expectTypeOf<a.StrictEqualUsingBranding<any, unknown>>().toEqualTypeOf<false>()
-  expectTypeOf<a.StrictEqualUsingBranding<never, unknown>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<1, 1, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<1, number, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<{a: 1}, {a: 1}, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<[{a: 1}], [{a: 1}], a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<never, never, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<any, any, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<unknown, unknown, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<any, never, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<any, unknown, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<never, unknown, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<false>()
 })
 
 test(`never types don't sneak by`, () => {
@@ -166,7 +166,7 @@ test('parity with IsExact from conditional-type-checks', () => {
   /** shim conditional-type-check's `assert` */
   const assert = <T extends boolean>(_result: T) => true
   /** shim conditional-type-check's `IsExact` using `Equal` */
-  type IsExact<T, U> = a.StrictEqualUsingBranding<T, U>
+  type IsExact<T, U> = a.StrictEqualUsingBranding<T, U, a.DeepBrandOptionsDefaults>
 
   // basic test for `assert` shim:
   expectTypeOf(assert).toBeCallableWith(true)
@@ -236,10 +236,14 @@ test('parity with IsExact from conditional-type-checks', () => {
 })
 
 test('Equal works with functions', () => {
-  expectTypeOf<a.StrictEqualUsingBranding<() => void, () => string>>().toEqualTypeOf<false>()
-  expectTypeOf<a.StrictEqualUsingBranding<() => void, (s: string) => void>>().toEqualTypeOf<false>()
   expectTypeOf<
-    a.StrictEqualUsingBranding<() => () => () => void, () => (s: string) => () => void>
+    a.StrictEqualUsingBranding<() => void, () => string, a.DeepBrandOptionsDefaults>
+  >().toEqualTypeOf<false>()
+  expectTypeOf<
+    a.StrictEqualUsingBranding<() => void, (s: string) => void, a.DeepBrandOptionsDefaults>
+  >().toEqualTypeOf<false>()
+  expectTypeOf<
+    a.StrictEqualUsingBranding<() => () => () => void, () => (s: string) => () => void, a.DeepBrandOptionsDefaults>
   >().toEqualTypeOf<false>()
 })
 
@@ -875,7 +879,7 @@ test('prop notes', () => {
     ff: (this: any, x: 1) => 2
   }
 
-  const notes: a.DeepBrandPropNotes<X, a.DeepBrandOptionsDefaults & {notable: 'any' | 'never'}> = {
+  const notes: a.DeepBrandPropNotes<X, a.DeepBrandOptionsDefaults & {findType: 'any' | 'never'}> = {
     '.aa': 'any',
     '.obj.oa': 'any',
     '.aa2[number].y': 'any',
@@ -891,4 +895,10 @@ test('prop notes', () => {
   }
 
   expectTypeOf(notes).toHaveProperty('.aa')
+})
+
+test('inspect', () => {
+  expectTypeOf<{u: unknown}>().branded.inspect({foundProps: {}})
+  // make sure if you do accidentally supply some, you're only allowed to supply an obvious error message
+  expectTypeOf<{u: unknown}>().branded.inspect({foundProps: {'.u': 'No flagged props found!'}})
 })

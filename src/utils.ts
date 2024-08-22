@@ -301,11 +301,11 @@ type _DeepPropTypesOfBranded<T, PathTo extends string, FindType extends string> 
                 }[keyof T]
               >
 
-export type DeepBrandPropNotesOptions = Partial<DeepBrandOptions> & {notable: string}
-export type DeepBrandPropNotesOptionsDefaults = {notable: 'any' | 'never'}
+export type DeepBrandPropNotesOptions = Partial<DeepBrandOptions> & {findType: string}
+export type DeepBrandPropNotesOptionsDefaults = {findType: 'any' | 'never'}
 
 export type DeepBrandPropNotes<T, Options extends DeepBrandPropNotesOptions> =
-  _DeepPropTypesOfBranded<DeepBrand<T, DeepBrandOptionsDefaults & Options>, '', Options['notable']> extends infer X
+  _DeepPropTypesOfBranded<DeepBrand<T, DeepBrandOptionsDefaults & Options>, '', Options['findType']> extends infer X
     ? {} extends X
       ? Record<string | number | symbol, 'No flagged props found!'> // avoid letting `{'.propThatUsedToBeAny': 'any'}` still being accepted after it's fixed
       : {[K in Exclude<keyof X, 'gotem'>]: X[K]}

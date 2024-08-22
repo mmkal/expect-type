@@ -1,4 +1,4 @@
-import {StrictEqualUsingBranding} from './branding'
+import {DeepBrandOptionsDefaults, StrictEqualUsingBranding} from './branding'
 import {And, Extends, Not, IsAny, UsefulKeys, ExtendsExcludingAnyOrNever, IsUnknown, IsNever} from './utils'
 
 /**
@@ -47,7 +47,7 @@ export type MismatchInfo<Actual, Expected> =
             K extends keyof Expected ? Expected[K] : never
           >
         }
-    : StrictEqualUsingBranding<Actual, Expected> extends true
+    : StrictEqualUsingBranding<Actual, Expected, DeepBrandOptionsDefaults> extends true
       ? Actual
       : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
 
@@ -143,7 +143,10 @@ export type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
  * @internal
  */
 const expectNullable = Symbol('expectNullable')
-export type ExpectNullable<T> = {[expectNullable]: T; result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>}
+export type ExpectNullable<T> = {
+  [expectNullable]: T
+  result: Not<StrictEqualUsingBranding<T, NonNullable<T>, DeepBrandOptionsDefaults>>
+}
 
 /**
  * Checks if the result of an expecter matches the specified options, and

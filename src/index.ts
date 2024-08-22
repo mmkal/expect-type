@@ -298,7 +298,7 @@ export interface Branded<Actual, Options extends DeepBrandOptions> {
   inspect: <
     PropNoteOptions extends Exclude<DeepBrandPropNotesOptions, DeepBrandOptions> = DeepBrandPropNotesOptionsDefaults,
   >(params: {
-    notableProps: DeepBrandPropNotes<Actual, Options & PropNoteOptions>
+    foundProps: DeepBrandPropNotes<Actual, Options & PropNoteOptions>
   }) => true
 
   configure<O extends DeepBrandOptions>(): Branded<Actual, O>
@@ -955,7 +955,6 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeConstructibleWith: fn,
-    inspect: fn,
     toBeCallableWith: expectTypeOf,
     extract: expectTypeOf,
     exclude: expectTypeOf,

@@ -138,7 +138,7 @@ test('Use `.inspect` to find badly-defined paths', () => {
   })
 
   expectTypeOf(bad).returns.branded.inspect({
-    notableProps: {
+    foundProps: {
       '.meta.parsed': 'any',
       '.exitCode': 'never',
     },
@@ -155,11 +155,11 @@ test('Use `.inspect` to find badly-defined paths', () => {
   })
 
   expectTypeOf(good).returns.branded.inspect({
-    notableProps: {},
+    foundProps: {},
   })
 
-  expectTypeOf(good).returns.branded.inspect<{notable: 'unknown'}>({
-    notableProps: {
+  expectTypeOf(good).returns.branded.inspect<{findType: 'unknown'}>({
+    foundProps: {
       '.meta.parsed': 'unknown',
     },
   })
