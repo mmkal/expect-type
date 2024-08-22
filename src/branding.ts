@@ -146,7 +146,9 @@ type _DeepPropTypesOfBranded<T, PathTo extends string, FindType extends string> 
             >
 
 /** Required options for for {@linkcode DeepBrandPropNotes}. */
-export type DeepBrandPropNotesOptions = Partial<DeepBrandOptions> & {findType: string}
+export type DeepBrandPropNotesOptions = Partial<DeepBrandOptions> & {
+  findType: 'any' | 'never' | 'unknown'
+}
 /** Default options for for {@linkcode DeepBrandPropNotes}. */
 export type DeepBrandPropNotesOptionsDefaults = {findType: 'any' | 'never'}
 
