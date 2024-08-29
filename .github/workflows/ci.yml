@@ -10,7 +10,7 @@ jobs:
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run lint
-      - run: pnpm test
+      - run: pnpm test -- --reporter html
 
   test-types:
     runs-on: ubuntu-latest
