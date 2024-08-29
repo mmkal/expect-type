@@ -908,12 +908,16 @@ test('inspect', () => {
   // make sure if you do accidentally supply some, you're only allowed to supply an obvious error message
   expectTypeOf<{u: unknown}>().branded.inspect({foundProps: {'.u': 'No flagged props found!'}})
 
-  // @ts-expect-error we should be forced to say that a record has any in its RHS
   expectTypeOf<{
     r: Record<string, any>
   }>().branded.inspect({
+    // @ts-expect-error we should be forced to say that a record has any in its RHS
     foundProps: {
-      // '.r.foo': 'any',
+      // '.r(values)': 'any', // uncommenting this would remove the error
     },
   })
+
+  expectTypeOf<{a: Record<string, unknown>}>().branded.toEqualTypeOf<{
+    a: {[K in string]: unknown
+  }>()
 })

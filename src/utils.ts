@@ -242,3 +242,6 @@ export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 export type TupleToRecord<T extends any[]> = {
   [K in keyof T as `${Extract<K, `${Digit}${string}`>}`]: T[K]
 }
+
+/** `true` iff `T` is a record accepting any string keys, or accepting any number keys */
+export type IsRecord<T> = Or<[Extends<string, keyof T>, Extends<number, keyof T>]>

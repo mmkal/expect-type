@@ -12,6 +12,7 @@ import {
   Not,
   UnionToIntersection,
   TupleToRecord,
+  IsRecord,
 } from './utils'
 
 export type DeepBrandOptions = {
@@ -95,20 +96,26 @@ export type DeepBrand<T, Options extends DeepBrandOptions> =
                         type: 'array'
                         items: DeepBrand<T[number], Options>
                       }
-                  : {
-                      type: 'object'
-                      properties: {
-                        [K in keyof T]: DeepBrand<T[K], Options>
+                  : IsRecord<T> extends true
+                    ? {
+                        type: 'record'
+                        keys: keyof T
+                        values: DeepBrand<T[keyof T], Options>
                       }
-                      readonly: ReadonlyKeys<T>
-                      required: RequiredKeys<T>
-                      optional: OptionalKeys<T>
-                      constructorParams: ConstructorOverloadParameters<T> extends infer P
-                        ? IsNever<P> extends true
-                          ? never
-                          : DeepBrand<P, Options>
-                        : never
-                    }
+                    : {
+                        type: 'object'
+                        properties: {
+                          [K in keyof T]: DeepBrand<T[K], Options>
+                        }
+                        readonly: ReadonlyKeys<T>
+                        required: RequiredKeys<T>
+                        optional: OptionalKeys<T>
+                        constructorParams: ConstructorOverloadParameters<T> extends infer P
+                          ? IsNever<P> extends true
+                            ? never
+                            : DeepBrand<P, Options>
+                          : never
+                      }
 
 /**
  * Checks if two types are strictly equal using branding.
