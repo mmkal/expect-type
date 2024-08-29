@@ -124,7 +124,10 @@ test('Nullable types', () => {
 
 /**
  * This finds `any` and `never` types deep within objects.
- * This can be useful for debugging, since you will get autocomplete for the bad paths, but is a fairly heavy operation, so use with caution for large/complex types.
+ * This can be useful for debugging, or for validating large or complex types. If there are `any` or `never` types
+ * lurking deep within the type, your IDE will highlight the bad paths.
+ *
+ * Note: this is a fairly heavy operation, so you might not want to actually commit the assertions to source control.
  */
 test('Use `.branded.inspect` to find badly-defined paths', () => {
   const bad = (metadata: string) => ({
