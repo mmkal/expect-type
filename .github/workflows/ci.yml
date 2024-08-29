@@ -11,6 +11,10 @@ jobs:
       - run: pnpm run build
       - run: pnpm run lint
       - run: pnpm test -- --reporter html
+      - uses: mmkal/artifact.ci/upload@3117897926e34ee51ee8dfd35aaccb4bcac0a406
+        with:
+          name: test-report
+          path: html
 
   test-types:
     runs-on: ubuntu-latest
