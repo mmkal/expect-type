@@ -11,7 +11,7 @@ jobs:
       - run: pnpm run build
       - run: pnpm run lint
       - run: pnpm test -- --reporter html
-      - uses: mmkal/artifact.ci/upload@e2e062c00ef375b08a55499fc53c449356e11c12
+      - uses: mmkal/artifact.ci/upload@main
         with:
           name: test-report
           path: html
