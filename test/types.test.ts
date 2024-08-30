@@ -918,6 +918,6 @@ test('inspect', () => {
   })
 
   expectTypeOf<{a: Record<string, unknown>}>().branded.toEqualTypeOf<{
-    a: {[K in string]: unknown
+    a: {[K in string]: unknown}
   }>()
 })
