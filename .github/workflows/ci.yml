@@ -5,21 +5,13 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      # - run: |
-      #     mkdir -p html/assets
-      #     echo 'alert("hi")' > html/assets/foo.js
-      #     echo '<html><script src="foo.js"></script><div>hi</div></html>' > html/assets/index.html
-      # - uses: mmkal/artifact.ci/upload@6546f72b3709cc247e08a0efaa0692762fcefdea
-      #   with:
-      #     name: fakehtml
-      #     path: html
       - uses: actions/checkout@v4
       - run: corepack enable
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run lint
       - run: pnpm test -- --reporter html
-      - uses: mmkal/artifact.ci/upload@5b26cd4f70a2ca1650e44bb7f18d8f302e90abe2
+      - uses: mmkal/artifact.ci/upload@e2e062c00ef375b08a55499fc53c449356e11c12
         with:
           name: test-report
           path: html
