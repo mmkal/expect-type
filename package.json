@@ -4,7 +4,7 @@
   "engines": {
     "node": ">=12.0.0"
   },
-  "packageManager": "pnpm@9.7.1",
+  "packageManager": "pnpm@9.9.0",
   "keywords": [
     "typescript",
     "type-check",
@@ -40,9 +40,9 @@
     "@types/node": "^20.0.0",
     "@vitest/ui": "^2.0.5",
     "eslint": "^8.57.0",
-    "eslint-plugin-mmkal": "0.8.0",
+    "eslint-plugin-mmkal": "0.9.0",
     "np": "^10.0.0",
-    "pkg-pr-new": "0.0.20",
+    "pkg-pr-new": "0.0.24",
     "strip-ansi": "7.1.0",
     "ts-morph": "23.0.0",
     "typescript": "5.5.4",
