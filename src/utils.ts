@@ -228,10 +228,128 @@ export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
  */
 export type UnionToTuple<Union> = TuplifyUnion<Union>
 
-export type Simplify<T> = {[KeyType in keyof T]: T[KeyType]} & {}
+/**
+ * An alias for type `{}`. Represents any value that is
+ * not `null` or `undefined`. It is mostly used for semantic purposes
+ * to help distinguish between an empty object type and `{}` as
+ * they are not the same.
+ *
+ * @example
+ *
+ * ```ts
+ * import { expectTypeOf } from 'expect-type'
+ *
+ * expectTypeOf(42).toMatchTypeOf<AnyNonNullishValue>()
+ *
+ * expectTypeOf('Hello').toMatchTypeOf<AnyNonNullishValue>()
+ *
+ * // Results in [TS2322 Error]: Type 'null' is not assignable to type '{}'.
+ * expectTypeOf(null).not.toMatchTypeOf<AnyNonNullishValue>()
+ *
+ * // Results in [TS2322 Error]: Type 'undefined' is not assignable to type '{}'.
+ * expectTypeOf(undefined).not.toMatchTypeOf<AnyNonNullishValue>()
+ * ```
+ *
+ * @since 1.0.0
+ * @internal
+ */
+type AnyNonNullishValue = NonNullable<unknown>
 
-export type SetReadonly<BaseType, Keys extends keyof BaseType> =
-  // `extends unknown` is always going to be the case and is used to convert any
-  // union into a [distributive conditional
-  // type](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#distributive-conditional-types).
-  BaseType extends unknown ? Simplify<Omit<BaseType, Keys> & Readonly<Pick<BaseType, Keys>>> : never
+/**
+ * A utility type that represents any function with any number of arguments
+ * and any return type.
+ *
+ * @example
+ *
+ * ```ts
+ * const log: AnyFunction = (...args: any[]) => console.log(...args)
+ *
+ * const sum = ((a: number, b: number): number => a + b) satisfies AnyFunction
+ * ```
+ *
+ * @since 1.0.0
+ * @internal
+ */
+type AnyFunction = (...args: any[]) => any
+
+/**
+ * Useful to flatten the type output to improve type hints shown in editors.
+ * And also to transform an `interface` into a `type` alias to aide
+ * with assignability and portability.
+ *
+ * @example
+ * <caption>#### Flattening intersected types</caption>
+ *
+ * ```ts
+ * import { expectTypeOf } from 'expect-type'
+ *
+ * type PositionProps = {
+ *   top: number
+ *   left: number
+ * }
+ *
+ * type SizeProps = {
+ *   width: number
+ *   height: number
+ * }
+ *
+ * expectTypeOf<PositionProps & SizeProps>().not.toEqualTypeOf<{
+ *   top: number
+ *   left: number
+ *   width: number
+ *   height: number
+ * }>()
+ *
+ * expectTypeOf<Simplify<PositionProps & SizeProps>>().toEqualTypeOf<{
+ *   top: number
+ *   left: number
+ *   width: number
+ *   height: number
+ * }>()
+ * ```
+ *
+ * @since 1.0.0
+ * @internal
+ * @see {@link https://github.com/sindresorhus/type-fest/blob/main/source/simplify.d.ts | Source}
+ */
+type Simplify<TypeToFlatten> = TypeToFlatten extends AnyFunction
+  ? TypeToFlatten
+  : {
+      [KeyType in keyof TypeToFlatten]: TypeToFlatten[KeyType]
+    } & AnyNonNullishValue
+
+/**
+ * A utility type that makes specific properties of a given type `readonly`.
+ * It takes two type parameters: {@linkcode BaseType | the base type} and
+ * {@linkcode KeysToBecomeReadonly | the keys of the properties}
+ * that should be made `readonly`. The properties specified by the
+ * {@linkcode KeysToBecomeReadonly | keys} parameter will become
+ * `readonly`, while the rest of the type remains unchanged.
+ *
+ * @example
+ * <caption>#### Set specific properties to `readonly`</caption>
+ *
+ * ```ts
+ * import { expectTypeOf } from 'expect-type'
+ *
+ * type Post = {
+ *   author: string
+ *   content: string
+ *   title: string
+ * }
+ *
+ * expectTypeOf<SetReadonly<Post, 'title' | 'author'>>().toEqualTypeOf<{
+ *   readonly author: string
+ *   content: string
+ *   readonly title: string
+ * }>()
+ * ```
+ *
+ * @template BaseType - The base type whose properties will be transformed to `readonly`.
+ * @template KeysToBecomeReadonly - The keys of the __`BaseType`__ to be made `readonly`.
+ *
+ * @since 1.0.0
+ */
+export type SetReadonly<BaseType, KeysToBecomeReadonly extends keyof BaseType> = BaseType extends unknown
+  ? Simplify<Omit<BaseType, KeysToBecomeReadonly> & Readonly<Pick<BaseType, KeysToBecomeReadonly>>>
+  : never
