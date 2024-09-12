@@ -320,6 +320,14 @@ type Person = {name: string; age: number}
 expectTypeOf<Person>().omit<'name'>().toEqualTypeOf<{age: number}>()
 ```
 
+Use `.readonly` to create a `readonly` version of a type:
+
+```typescript
+type Post = {title: string; content: string}
+
+expectTypeOf<Post>().readonly().toEqualTypeOf<Readonly<Post>>()
+```
+
 Make assertions about object properties:
 
 ```typescript
