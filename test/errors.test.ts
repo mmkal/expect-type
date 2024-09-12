@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import * as fs from 'node:fs'
 import {test, expect} from 'vitest'
 import {tsErrors, tsFileErrors} from './ts-output'
 
