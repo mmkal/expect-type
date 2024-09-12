@@ -120,7 +120,7 @@ type ReadonlyEquivalent<X, Y> = Extends<
 /**
  * Checks if one type extends another. Note: this is not quite the same as `Left extends Right` because:
  * 1. If either type is `never`, the result is `true` iff the other type is also `never`.
- * 2. Types are wrapped in a 1-tuple so that union types are not distributed - instead we consider `string | number` to _not_ extend `number`. If we used `Left extends Right` directly you would get `Extends<string | number, number>` => `false | true` => `boolean`.
+ * 2. Types are wrapped in a 1-tuple so that union types are not distributed - instead we consider `string | number` to _not_ extend `number`. If we used `Left extends Right` directly you would get `Extends<string | number, number>` =\> `false | true` =\> `boolean`.
  */
 export type Extends<Left, Right> = IsNever<Left> extends true ? IsNever<Right> : [Left] extends [Right] ? true : false
 
