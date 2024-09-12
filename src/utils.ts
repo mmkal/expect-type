@@ -227,3 +227,11 @@ export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
  * Convert a union like `1 | 2 | 3` to a tuple like `[1, 2, 3]`.
  */
 export type UnionToTuple<Union> = TuplifyUnion<Union>
+
+export type Simplify<T> = {[KeyType in keyof T]: T[KeyType]} & {}
+
+export type SetReadonly<BaseType, Keys extends keyof BaseType> =
+  // `extends unknown` is always going to be the case and is used to convert any
+  // union into a [distributive conditional
+  // type](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#distributive-conditional-types).
+  BaseType extends unknown ? Simplify<Omit<BaseType, Keys> & Readonly<Pick<BaseType, Keys>>> : never
