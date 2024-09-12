@@ -675,9 +675,52 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
     keyToOmit?: KeyToOmit,
   ) => ExpectTypeOf<Omit<Actual, KeyToOmit>, Options>
 
-  readonly: <PropertiesToMakeReadonly extends keyof Actual = never>(
+  /**
+   * Converts specified properties of an object to `readonly`.
+   * If no properties are specified, it defaults
+   * to making all properties `readonly`, similar to the native
+   * TypeScript {@linkcode Readonly} utility type.
+   *
+   * @example
+   * <caption>#### Make all properties `readonly` (default behavior)</caption>
+   *
+   * ```ts
+   * import { expectTypeOf } from 'expect-type'
+   *
+   * type Post = {
+   *   title: string
+   *   content: string
+   * }
+   *
+   * expectTypeOf<Post>().readonly().toEqualTypeOf<Readonly<Post>>()
+   * ```
+   *
+   * @example
+   * <caption>#### Make specific properties `readonly`</caption>
+   *
+   * ```ts
+   * import { expectTypeOf } from 'expect-type'
+   *
+   * type Post = {
+   *   title: string
+   *   content: string
+   * }
+   *
+   * expectTypeOf<Post>()
+   *   .readonly('title')
+   *   .toEqualTypeOf<{ readonly title: string; content: string }>()
+   * ```
+   *
+   * @param propertiesToMakeReadonly - The specific properties of the {@linkcode Actual} type to be made `readonly`. If omitted, all properties will be made `readonly`, behaving like the TypeScript {@linkcode Readonly} utility type.
+   * @returns the type with the specified properties made `readonly`. If no properties are specified, all properties will be made `readonly`, behaving like the TypeScript {@linkcode Readonly} utility.
+   *
+   * @template PropertiesToMakeReadonly - The keys of the __`Actual`__ type to be made `readonly`. Defaults to `never`, meaning no specific properties are targeted unless explicitly defined.
+   *
+   * @since 1.0.0
+   */
+  readonly<PropertiesToMakeReadonly extends keyof Actual = never>(
     propertiesToMakeReadonly?: PropertiesToMakeReadonly,
-  ) => ExpectTypeOf<
+  ): ExpectTypeOf<
     IsNever<PropertiesToMakeReadonly> extends true ? Readonly<Actual> : SetReadonly<Actual, PropertiesToMakeReadonly>,
     Options
   >
