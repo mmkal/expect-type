@@ -185,6 +185,18 @@ test('Use `.omit` to remove a set of properties from an object', () => {
   expectTypeOf<Person>().omit<'name'>().toEqualTypeOf<{age: number}>()
 })
 
+test('Use `.readonly` to create a `readonly` version of a type', () => {
+  type Post = {title: string; content: string}
+
+  expectTypeOf<Post>().readonly().toEqualTypeOf<Readonly<Post>>()
+})
+
+test('`.readonly` can make specific properties `readonly`', () => {
+  type Post = {title: string; content: string}
+
+  expectTypeOf<Post>().readonly('title').toEqualTypeOf<{readonly title: string; content: string}>()
+})
+
 test('Make assertions about object properties', () => {
   const obj = {a: 1, b: ''}
 
