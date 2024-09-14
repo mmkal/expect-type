@@ -676,13 +676,11 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   ) => ExpectTypeOf<Omit<Actual, KeyToOmit>, Options>
 
   /**
-   * Converts specified properties of an object to `readonly`.
-   * If no properties are specified, it defaults
-   * to making all properties `readonly`, similar to the native
-   * TypeScript {@linkcode Readonly} utility type.
+   * Converts all properties of a type to **`readonly`**,
+   * behaving exactly like the TypeScript {@linkcode Readonly} utility type.
    *
    * @example
-   * <caption>#### Make all properties `readonly` (default behavior)</caption>
+   * <caption>#### Create a **`readonly`** version of a type</caption>
    *
    * ```ts
    * import { expectTypeOf } from 'expect-type'
@@ -695,35 +693,11 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * expectTypeOf<Post>().readonly().toEqualTypeOf<Readonly<Post>>()
    * ```
    *
-   * @example
-   * <caption>#### Make specific properties `readonly`</caption>
+   * @returns The type with all properties made **`readonly`**, mirroring the behavior of TypeScript's {@linkcode Readonly} utility.
    *
-   * ```ts
-   * import { expectTypeOf } from 'expect-type'
-   *
-   * type Post = {
-   *   title: string
-   *   content: string
-   * }
-   *
-   * expectTypeOf<Post>()
-   *   .readonly('title')
-   *   .toEqualTypeOf<{ readonly title: string; content: string }>()
-   * ```
-   *
-   * @param propertiesToMakeReadonly - The specific properties of the {@linkcode Actual} type to be made `readonly`. If omitted, all properties will be made `readonly`, behaving like the TypeScript {@linkcode Readonly} utility type.
-   * @returns the type with the specified properties made `readonly`. If no properties are specified, all properties will be made `readonly`, behaving like the TypeScript {@linkcode Readonly} utility.
-   *
-   * @template PropertiesToMakeReadonly - The keys of the __`Actual`__ type to be made `readonly`. Defaults to `never`, meaning no specific properties are targeted unless explicitly defined.
-   *
-   * @since 1.0.0
+   * @since 1.2.0
    */
-  readonly<PropertiesToMakeReadonly extends keyof Actual = never>(
-    propertiesToMakeReadonly?: PropertiesToMakeReadonly,
-  ): ExpectTypeOf<
-    IsNever<PropertiesToMakeReadonly> extends true ? Readonly<Actual> : SetReadonly<Actual, PropertiesToMakeReadonly>,
-    Options
-  >
+  readonly(): ExpectTypeOf<Readonly<Actual>, Options>
 
   /**
    * Extracts a certain function argument with `.parameter(number)` call to

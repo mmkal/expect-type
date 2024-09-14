@@ -295,14 +295,6 @@ type Post = {title: string; content: string}
 expectTypeOf<Post>().readonly().toEqualTypeOf<Readonly<Post>>()
 ```
 
-`.readonly` can make specific properties `readonly`:
-
-```typescript
-type Post = {title: string; content: string}
-
-expectTypeOf<Post>().readonly('title').toEqualTypeOf<{readonly title: string; content: string}>()
-```
-
 Make assertions about object properties:
 
 ```typescript
