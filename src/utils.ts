@@ -250,7 +250,7 @@ export type UnionToTuple<Union> = TuplifyUnion<Union>
  * expectTypeOf(undefined).not.toMatchTypeOf<AnyNonNullishValue>()
  * ```
  *
- * @since 1.0.0
+ * @since 1.2.0
  * @internal
  */
 type AnyNonNullishValue = NonNullable<unknown>
@@ -267,7 +267,7 @@ type AnyNonNullishValue = NonNullable<unknown>
  * const sum = ((a: number, b: number): number => a + b) satisfies AnyFunction
  * ```
  *
- * @since 1.0.0
+ * @since 1.2.0
  * @internal
  */
 type AnyFunction = (...args: any[]) => any
@@ -308,7 +308,7 @@ type AnyFunction = (...args: any[]) => any
  * }>()
  * ```
  *
- * @since 1.0.0
+ * @since 1.2.0
  * @internal
  * @see {@link https://github.com/sindresorhus/type-fest/blob/main/source/simplify.d.ts | Source}
  */
@@ -348,7 +348,7 @@ type Simplify<TypeToFlatten> = TypeToFlatten extends AnyFunction
  * @template BaseType - The base type whose properties will be transformed to `readonly`.
  * @template KeysToBecomeReadonly - The keys of the __`BaseType`__ to be made `readonly`.
  *
- * @since 1.0.0
+ * @since 1.2.0
  */
 export type SetReadonly<BaseType, KeysToBecomeReadonly extends keyof BaseType> = BaseType extends unknown
   ? Simplify<Omit<BaseType, KeysToBecomeReadonly> & Readonly<Pick<BaseType, KeysToBecomeReadonly>>>
