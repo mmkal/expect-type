@@ -24,8 +24,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.7(typescript@5.6.2)
       pkg-pr-new:
-        specifier: 0.0.24
-        version: 0.0.24
+        specifier: 0.0.25
+        version: 0.0.25
       strip-ansi:
         specifier: 7.1.0
         version: 7.1.0
@@ -1944,10 +1944,6 @@ packages:
     resolution: {integrity: sha512-VuuG0wCnjhnylG1ABXT3dAuIpTNDs/G8jlpmwXY03fXoXy/8ZK8/T+hMzt8L4WnrLCJgdybqgPagnF/f97cg3A==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  ignore@5.3.1:
-    resolution: {integrity: sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==}
-    engines: {node: '>= 4'}
-
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
@@ -2766,8 +2762,8 @@ packages:
     resolution: {integrity: sha512-4peoBq4Wks0riS0z8741NVv+/8IiTvqnZAr8QGgtdifrtpdXbNw/FxRS1l6NFqm4EMzuS0EDqNNx4XGaz8cuyQ==}
     engines: {node: '>=18'}
 
-  pkg-pr-new@0.0.24:
-    resolution: {integrity: sha512-jzHuU0HLHEh3jNHQD7yZhxXM8CV8W+qdR0Ii5cxwm+t73kAvyZ9DkcDP4X1ZarX6DGnoibuuSOgWKYtQbjWsRQ==}
+  pkg-pr-new@0.0.25:
+    resolution: {integrity: sha512-3BspB84BvGOpb5s0Bs49XQCyJ3pLmyFyAqqduWuhoj9h5YdaVOf4FuThBEOb81tjsqK0RitFbBm1fSp2qUnuBg==}
     hasBin: true
 
   pkg-types@1.1.1:
@@ -5777,8 +5773,6 @@ snapshots:
     dependencies:
       minimatch: 9.0.5
 
-  ignore@5.3.1: {}
-
   ignore@5.3.2: {}
 
   import-fresh@3.3.0:
@@ -6655,11 +6649,11 @@ snapshots:
     dependencies:
       find-up-simple: 1.0.0
 
-  pkg-pr-new@0.0.24:
+  pkg-pr-new@0.0.25:
     dependencies:
       '@jsdevtools/ez-spawn': 3.0.4
       '@octokit/action': 6.1.0
-      ignore: 5.3.1
+      ignore: 5.3.2
       isbinaryfile: 5.0.2
       package-manager-detector: 0.1.2
       pkg-types: 1.1.1
