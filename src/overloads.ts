@@ -1,4 +1,4 @@
-import {StrictEqualUsingTSInternalIdenticalToOperator, IsNever, UnionToIntersection, UnionToTuple} from './utils'
+import type {StrictEqualUsingTSInternalIdenticalToOperator, IsNever, UnionToIntersection, UnionToTuple} from './utils'
 
 // prettier-ignore
 /**

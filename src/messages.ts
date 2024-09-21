@@ -1,5 +1,5 @@
-import {StrictEqualUsingBranding} from './branding'
-import {And, Extends, Not, IsAny, UsefulKeys, ExtendsExcludingAnyOrNever, IsUnknown, IsNever} from './utils'
+import type {StrictEqualUsingBranding} from './branding'
+import type {And, Extends, Not, IsAny, UsefulKeys, ExtendsExcludingAnyOrNever, IsUnknown, IsNever} from './utils'
 
 /**
  * Determines the printable type representation for a given type.
