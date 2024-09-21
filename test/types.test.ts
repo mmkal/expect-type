@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {test} from 'vitest'
-import * as a from '../src'
-import {UnionToIntersection} from '../src'
-import {
+import * as a from '../src/index'
+import type {UnionToIntersection} from '../src/index'
+import type {
   ConstructorOverloadParameters,
   OverloadParameters,
   OverloadReturnTypes,

@@ -1,5 +1,5 @@
-import {StrictEqualUsingBranding} from './branding'
-import {
+import type {StrictEqualUsingBranding} from './branding'
+import type {
   MismatchInfo,
   Scolder,
   ExpectAny,
@@ -17,13 +17,13 @@ import {
   ExpectUndefined,
   ExpectNullable,
 } from './messages'
-import {
+import type {
   ConstructorOverloadParameters,
   OverloadParameters,
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends} from './utils'
+import type {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
 export * from './utils' // backcompat, consider removing in next major version
