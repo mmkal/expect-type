@@ -13,8 +13,8 @@ jobs:
       - run: pnpm test -- --reporter html
       - uses: mmkal/artifact.ci/upload@main
         with:
-          name: test-report
           path: html
+          name: test-report
 
   test-types:
     runs-on: ubuntu-latest
