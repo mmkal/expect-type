@@ -24,8 +24,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.7(typescript@5.6.2)
       pkg-pr-new:
-        specifier: 0.0.28
-        version: 0.0.28
+        specifier: 0.0.29
+        version: 0.0.29
       strip-ansi:
         specifier: 7.1.0
         version: 7.1.0
@@ -2762,8 +2762,8 @@ packages:
     resolution: {integrity: sha512-4peoBq4Wks0riS0z8741NVv+/8IiTvqnZAr8QGgtdifrtpdXbNw/FxRS1l6NFqm4EMzuS0EDqNNx4XGaz8cuyQ==}
     engines: {node: '>=18'}
 
-  pkg-pr-new@0.0.28:
-    resolution: {integrity: sha512-aPY6VAz60fIqee1i1kyMdI1ap+3xpVZBvnzMZ+1E1Lqz22XJEy9sgJTx62tzVpAWysDeVtfLAyX3JILDrp0TWg==}
+  pkg-pr-new@0.0.29:
+    resolution: {integrity: sha512-u7pN2RoycdAeTXcfJ0n+1C2+bZFZ+Jo95FFmhf0GKRQp7WCjnutBAC7906UsmJqb4KrReFbqRnPZ+MldvfDBMQ==}
     hasBin: true
 
   pkg-types@1.1.1:
@@ -3216,8 +3216,8 @@ packages:
   tinyexec@0.3.0:
     resolution: {integrity: sha512-tVGE0mVJPGb0chKhqmsoosjsS+qUnJVGJpZgsHYQcGoPlG3B51R3PouqTgEGH2Dc9jjFyOqOpix6ZHNMXp1FZg==}
 
-  tinyglobby@0.2.5:
-    resolution: {integrity: sha512-Dlqgt6h0QkoHttG53/WGADNh9QhcjCAIZMTERAVhdpmIBEejSuLI9ZmGKWzB7tweBjlk30+s/ofi4SLmBeTYhw==}
+  tinyglobby@0.2.6:
+    resolution: {integrity: sha512-NbBoFBpqfcgd1tCiO8Lkfdk+xrA7mlLR9zgvZcZWQQwU63XAfUePyd6wZBaU93Hqw347lHnwFzttAkemHzzz4g==}
     engines: {node: '>=12.0.0'}
 
   tinypool@1.0.1:
@@ -6649,7 +6649,7 @@ snapshots:
     dependencies:
       find-up-simple: 1.0.0
 
-  pkg-pr-new@0.0.28:
+  pkg-pr-new@0.0.29:
     dependencies:
       '@jsdevtools/ez-spawn': 3.0.4
       '@octokit/action': 6.1.0
@@ -6658,7 +6658,7 @@ snapshots:
       package-manager-detector: 0.1.2
       pkg-types: 1.1.1
       query-registry: 3.0.1
-      tinyglobby: 0.2.5
+      tinyglobby: 0.2.6
 
   pkg-types@1.1.1:
     dependencies:
@@ -7139,7 +7139,7 @@ snapshots:
 
   tinyexec@0.3.0: {}
 
-  tinyglobby@0.2.5:
+  tinyglobby@0.2.6:
     dependencies:
       fdir: 6.3.0(picomatch@4.0.2)
       picomatch: 4.0.2
