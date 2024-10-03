@@ -499,6 +499,14 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   toBeNullable: Scolder<ExpectNullable<Actual>, Options>
 
   /**
+   * Transform that type of the value via a callback.
+   *
+   * @param fn A callback that transforms the input value. Note that this function is not actually called - it's only used for type inference.
+   * @returns A new type which can be used for further assertions.
+   */
+  map: <T>(fn: (value: Actual) => T) => ExpectTypeOf<T, Options>
+
+  /**
    * Checks whether a function is callable with the given parameters.
    *
    * __Note__: You cannot negate this assertion with
@@ -911,6 +919,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeConstructibleWith: fn,
+    map: expectTypeOf,
     toBeCallableWith: expectTypeOf,
     extract: expectTypeOf,
     exclude: expectTypeOf,
