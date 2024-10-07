@@ -12,8 +12,8 @@ jobs:
       - run: pnpm run lint
       - run: pnpm test -- --reporter html
       - name: upload artifact
-        if: always()
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           path: html
           name: test-report
