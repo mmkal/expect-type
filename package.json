@@ -46,6 +46,6 @@
     "strip-ansi": "7.1.0",
     "ts-morph": "23.0.0",
     "typescript": "5.6.2",
-    "vitest": "^2.0.0"
+    "vitest": "^2.1.2"
   }
 }
