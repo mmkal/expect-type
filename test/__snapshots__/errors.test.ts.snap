@@ -9,8 +9,8 @@ exports[`usage.test.ts 1`] = `
 test/usage.test.ts:999:999 - error TS2344: Type '{ b: number; }' does not satisfy the constraint '{ a: "Expected: never, Actual: number"; b: "Expected: number, Actual: never"; }'.
   Property 'a' is missing in type '{ b: number; }' but required in type '{ a: "Expected: never, Actual: number"; b: "Expected: number, Actual: never"; }'.
 
-999   expectTypeOf<{a: number}>().toExtend<{b: number}>()
-                                           ~~~~~~~~~~~
+999   expectTypeOf({a: 1}).toExtend<{b: number}>()
+                                    ~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: "Expected: number, Actual: never"; }'.
   Types of property 'b' are incompatible.
     Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
@@ -29,18 +29,18 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does
 
 999   expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
                                     ~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
-  Types of property 'name' are incompatible.
-    Type '"Apple"' is not assignable to type '"Expected: literal string: Apple, Actual: never"'.
-
-999   expectTypeOf<Fruit>().toExtend<Apple>()
-                                     ~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
   Types of property 'edible' are incompatible.
     Type 'boolean' is not assignable to type '"Expected: boolean, Actual: never"'.
 
 999   expectTypeOf<Apple>().toMatchObjectType<Fruit>()
                                               ~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
+  Types of property 'name' are incompatible.
+    Type '"Apple"' is not assignable to type '"Expected: literal string: Apple, Actual: never"'.
+
+999   expectTypeOf<Fruit>().toExtend<Apple>()
+                                     ~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
   Property 'name' is missing in type 'Fruit' but required in type '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
 

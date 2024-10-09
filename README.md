@@ -31,7 +31,7 @@ See below for lots more examples.
 - [Documentation](#documentation)
    - [Features](#features)
    - [Why is my assertion failing?](#why-is-my-assertion-failing)
-   - [Where is `.toExtend`?](#where-is-toextend)
+   - [Where is `.toMatchTypeOf`?](#where-is-tomatchtypeof)
    - [Internal type helpers](#internal-type-helpers)
    - [Error messages](#error-messages)
       - [Concrete "expected" objects vs type arguments](#concrete-expected-objects-vs-type-arguments)
@@ -89,7 +89,7 @@ expectTypeOf({a: 1}).toEqualTypeOf({a: 2})
 expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
 ```
 
-To allow for extra properties on an object type, use `.toMatchObjectType`. This is a strict check, but only on the subset of keys that are in the expected type.:
+To allow for extra properties on an object type, use `.toMatchObjectType`. This is a strict check, but only on the subset of keys that are in the expected type:
 
 ```typescript
 expectTypeOf({a: 1, b: 1}).toMatchObjectType<{a: number}>()
@@ -98,11 +98,16 @@ expectTypeOf({a: 1, b: 1}).toMatchObjectType<{a: number}>()
 To check that a type extends another type, use `.toExtend`:
 
 ```typescript
-expectTypeOf<string>().toExtend<string | boolean>()
+expectTypeOf('some string').toExtend<string | boolean>()
 // @ts-expect-error
-expectTypeOf<{a: number}>().toExtend<{b: number}>()
+expectTypeOf({a: 1}).toExtend<{b: number}>()
+```
 
-expectTypeOf<{a: number; b: number}>().toExtend<{a: number}>() // this works, but you would be better off using `.toMatchObjectType` here
+`.toExtend` can be used with object types, but `.toMatchObjectType` is usually a better choice when dealing with objects, since it's stricter:
+
+```typescript
+expectTypeOf({a: 1, b: 2}).toExtend<{a: number}>() // avoid this
+expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: number}>() // prefer this
 ```
 
 `.toEqualTypeOf`, `.toMatchObjectType`, and `.toExtend` all fail on missing properties:
@@ -124,11 +129,11 @@ type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
 
 expectTypeOf<Apple>().toExtend<Fruit>()
 
+// @ts-expect-error - the `editable` property isn't an exact match. In `Apple`, it's `true`, which extends `boolean`, but they're not identical.
+expectTypeOf<Apple>().toMatchObjectType<Fruit>()
+
 // @ts-expect-error
 expectTypeOf<Fruit>().toExtend<Apple>()
-
-// @ts-expect-error - edible:boolean !== edible:true
-expectTypeOf<Apple>().toMatchObjectType<Fruit>()
 
 // @ts-expect-error
 expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
@@ -724,9 +729,9 @@ expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
 expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
 ```
 
-### Where is `.toExtend`?
+### Where is `.toMatchTypeOf`?
 
-A few people have asked for a method like `toExtend` - this is essentially what `toMatchTypeOf` is. There are some cases where it doesn't _precisely_ match the `extends` operator in TypeScript, but for most practical use cases, you can think of this as the same thing.
+The `.toMatchTypeOf` method is deprecated, in favour of `.toMatchObjectType` (when strictly checking against an object type with a subset of keys), or `.toExtend` (when checking for "is-a" relationships). There are no foreseeable plans to remove `.toMatchTypeOf`, but there's no reason to continue using it - `.toMatchObjectType` is stricter, and `.toExtend` is identical.
 
 ### Internal type helpers
 

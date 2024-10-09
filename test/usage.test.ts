@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
 
-import {expect, test} from 'vitest'
+import {test} from 'vitest'
 import {expectTypeOf} from '../src/index'
 
 test("Check an object's type with `.toEqualTypeOf`", () => {
@@ -21,16 +21,19 @@ test('`.toEqualTypeOf` fails on excess properties', () => {
   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('To allow for extra properties on an object type, use `.toMatchObjectType`. This is a strict check, but only on the subset of keys that are in the expected type.', () => {
+test('To allow for extra properties on an object type, use `.toMatchObjectType`. This is a strict check, but only on the subset of keys that are in the expected type', () => {
   expectTypeOf({a: 1, b: 1}).toMatchObjectType<{a: number}>()
 })
 
 test('To check that a type extends another type, use `.toExtend`', () => {
-  expectTypeOf<string>().toExtend<string | boolean>()
+  expectTypeOf('some string').toExtend<string | boolean>()
   // @ts-expect-error
-  expectTypeOf<{a: number}>().toExtend<{b: number}>()
+  expectTypeOf({a: 1}).toExtend<{b: number}>()
+})
 
-  expectTypeOf<{a: number; b: number}>().toExtend<{a: number}>() // this works, but you would be better off using `.toMatchObjectType` here
+test("`.toExtend` can be used with object types, but `.toMatchObjectType` is usually a better choice when dealing with objects, since it's stricter", () => {
+  expectTypeOf({a: 1, b: 2}).toExtend<{a: number}>() // avoid this
+  expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: number}>() // prefer this
 })
 
 test('`.toEqualTypeOf`, `.toMatchObjectType`, and `.toExtend` all fail on missing properties', () => {
@@ -48,11 +51,11 @@ test('Another example of the difference between `.toExtend`, `.toMatchObjectType
 
   expectTypeOf<Apple>().toExtend<Fruit>()
 
+  // @ts-expect-error - the `editable` property isn't an exact match. In `Apple`, it's `true`, which extends `boolean`, but they're not identical.
+  expectTypeOf<Apple>().toMatchObjectType<Fruit>()
+
   // @ts-expect-error
   expectTypeOf<Fruit>().toExtend<Apple>()
-
-  // @ts-expect-error - edible:boolean !== edible:true
-  expectTypeOf<Apple>().toMatchObjectType<Fruit>()
 
   // @ts-expect-error
   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
