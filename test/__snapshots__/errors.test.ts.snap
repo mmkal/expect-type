@@ -126,6 +126,12 @@ test/usage.test.ts:999:999 - error TS2344: Type 'HasParam' does not satisfy the 
 
 999   expectTypeOf<NoParam>().toEqualTypeOf<HasParam>()
                                             ~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '[number]' does not satisfy the constraint '{ 0: "Expected: number, Actual: bigint"; }'.
+  Types of property '0' are incompatible.
+    Type 'number' is not assignable to type '"Expected: number, Actual: bigint"'.
+
+999   expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number]>()
+                                                         ~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
   Type 'ExpectAny<(a: number) => number[]>' has no call signatures.
 
