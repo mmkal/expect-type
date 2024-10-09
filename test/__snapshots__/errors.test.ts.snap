@@ -6,6 +6,11 @@ exports[`usage.test.ts 1`] = `
 
 999   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
                                                ~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ b: number; }' does not satisfy the constraint '{ a: "Expected: never, Actual: number"; b: "Expected: number, Actual: never"; }'.
+  Property 'a' is missing in type '{ b: number; }' but required in type '{ a: "Expected: never, Actual: number"; b: "Expected: number, Actual: never"; }'.
+
+999   expectTypeOf<{a: number}>().toExtend<{b: number}>()
+                                           ~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: "Expected: number, Actual: never"; }'.
   Types of property 'b' are incompatible.
     Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
@@ -16,29 +21,40 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does
   Types of property 'b' are incompatible.
     Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
 
-999   expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
-                                         ~~~~~~~~~~~~~~~~~~~~~~
+999   expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
+                                    ~~~~~~~~~~~~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
   Types of property 'name' are incompatible.
     Type '"Apple"' is not assignable to type '"Expected: literal string: Apple, Actual: never"'.
 
-999   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
-                                          ~~~~~
+999   expectTypeOf<Fruit>().toExtend<Apple>()
+                                     ~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
+  Types of property 'edible' are incompatible.
+    Type 'boolean' is not assignable to type '"Expected: boolean, Actual: never"'.
+
+999   expectTypeOf<Apple>().toMatchObjectType<Fruit>()
+                                              ~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
   Property 'name' is missing in type 'Fruit' but required in type '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
 
 999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
                                           ~~~~~
-test/usage.test.ts:999:999 - error TS2554: Expected 0 arguments, but got 1.
+test/usage.test.ts:999:999 - error TS2344: Type '{ b: 1; }' does not satisfy the constraint '{ a: "Expected: never, Actual: number"; b: "Expected: literal number: 1, Actual: never"; }'.
+  Property 'a' is missing in type '{ b: 1; }' but required in type '{ a: "Expected: never, Actual: number"; b: "Expected: literal number: 1, Actual: never"; }'.
 
-999   expectTypeOf({a: 1}).toMatchTypeOf({b: 1})
-                                         ~~~~~~
+999   expectTypeOf({a: 1}).toExtend<{b: 1}>()
+                                    ~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ b: 1; }' does not satisfy the constraint '"Expected: ..., Actual: boolean"'.
+
+999   expectTypeOf({a: 1}).toMatchObjectType<{b: 1}>()
+                                             ~~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
   Types of property 'name' are incompatible.
     Type '"Apple"' is not assignable to type '"Expected: literal string: Apple, Actual: never"'.
 
-999   expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
-                                          ~~~~~
+999   expectTypeOf<Fruit>().toExtend<Apple>()
+                                     ~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
   Property 'name' is missing in type 'Fruit' but required in type '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
 
@@ -107,8 +123,8 @@ test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
                       ~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'number' does not satisfy the constraint '"Expected: number, Actual: string"'.
 
-999   expectTypeOf<string | number>().toMatchTypeOf<number>()
-                                                    ~~~~~~
+999   expectTypeOf<string | number>().toExtend<number>()
+                                               ~~~~~~
 test/usage.test.ts:999:999 - error TS2345: Argument of type '"xxl"' is not assignable to parameter of type '"xs" | "sm" | "md"'.
 
 999   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')
@@ -284,20 +300,5 @@ test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
   Argument of type '[this]' is not assignable to parameter of type 'MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<this, StrictEqualUsingTSInternalIdenticalToOperator<this, unknown> extends true ? unknown : MismatchInfo<this, unknown>>, true>'.
 
 999       expectTypeOf(this).toEqualTypeOf(this)
-                                           ~~~~
-
-test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
-  Overload 1 of 2, '(value: (Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue, ...MISMATCH: MismatchArgs<Extends<this, Extends<this, this> extends true ? unknown : MismatchInfo<...>>, true>): true', gave the following error.
-    Argument of type 'this' is not assignable to parameter of type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue'.
-      Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue'.
-        Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-          Type 'this' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-            Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-              Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
-                Type 'this' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
-                  Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
-  Argument of type '[this]' is not assignable to parameter of type 'MismatchArgs<Extends<this, Extends<this, unknown> extends true ? unknown : MismatchInfo<this, unknown>>, true>'.
-
-999       expectTypeOf(this).toMatchTypeOf(this)
                                            ~~~~"
 `;

@@ -24,7 +24,7 @@ import type {
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import type {AValue, Extends, MismatchArgs, StrictEqualUsingTSInternalIdenticalToOperator} from './utils'
+import type {AValue, Extends, IsUnion, MismatchArgs, Not, StrictEqualUsingTSInternalIdenticalToOperator} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
 export * from './messages' // backcompat, consider removing in next major version
@@ -36,6 +36,28 @@ export * from './utils' // backcompat, consider removing in next major version
  * {@linkcode expectTypeOf()} utility.
  */
 export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
+  toMatchObjectType: <
+    Expected extends IsUnion<Expected> extends true
+      ? 'toMatchObject does not support union types'
+      : Not<Extends<Expected, Record<string, unknown>>> extends true
+        ? 'toMatchObject only supports object types'
+        : StrictEqualUsingTSInternalIdenticalToOperator<
+              Pick<Actual, keyof Actual & keyof Expected>,
+              Expected
+            > extends true
+          ? unknown
+          : MismatchInfo<Pick<Actual, keyof Actual & keyof Expected>, Expected>,
+  >(
+    ...MISMATCH: MismatchArgs<
+      StrictEqualUsingTSInternalIdenticalToOperator<Pick<Actual, keyof Actual & keyof Expected>, Expected>,
+      true
+    >
+  ) => true
+
+  toExtend<Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+  ): true
+
   toEqualTypeOf: {
     /**
      * Uses TypeScript's internal technique to check for type "identicalness".
@@ -118,8 +140,20 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
   }
 
+  toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+  ) => true
+
+  /**
+   * @deprecated - use either `toMatchObject` or `toExtend` instead
+   * - use `toMatchObject` to performa a strict check on a subset of your type's keys
+   * - use `toExtend` to check if your type extends the expected type
+   */
   toMatchTypeOf: {
     /**
+     * @deprecated - use either `toMatchObject` or `toExtend` instead
+     * - use `toMatchObject` to performa a strict check on a subset of your type's keys
+     * - use `toExtend` to check if your type extends the expected type
      * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
@@ -147,6 +181,9 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
 
     /**
+     * @deprecated - use either `toMatchObject` or `toExtend` instead
+     * - use `toMatchObject` to performa a strict check on a subset of your type's keys
+     * - use `toExtend` to check if your type extends the expected type
      * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
@@ -265,6 +302,15 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
  * Represents the negative expectation type for the {@linkcode Actual} type.
  */
 export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: false}> {
+  toMatchObjectType: <Expected>(
+    ...MISMATCH: MismatchArgs<
+      StrictEqualUsingTSInternalIdenticalToOperator<Pick<Actual, keyof Actual & keyof Expected>, Expected>,
+      false
+    >
+  ) => true
+
+  toExtend<Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
+
   toEqualTypeOf: {
     /**
      * Uses TypeScript's internal technique to check for type "identicalness".
@@ -933,6 +979,8 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeConstructibleWith: fn,
+    toMatchObjectType: fn,
+    toExtend: fn,
     toBeCallableWith: expectTypeOf,
     extract: expectTypeOf,
     exclude: expectTypeOf,

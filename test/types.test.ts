@@ -847,3 +847,14 @@ test('Overload edge cases', () => {
   expectTypeOf<NoArgOverload>().parameters.toEqualTypeOf<[] | [1]>()
   expectTypeOf<NoArgOverload>().returns.toEqualTypeOf<1>()
 })
+
+test('toMatchObjectType', () => {
+  expectTypeOf<{a: number}>().toMatchObjectType<{a: number}>()
+  expectTypeOf<{a: number}>().not.toMatchObjectType<{a: string}>()
+  expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: number}>()
+
+  // @ts-expect-error
+  expectTypeOf<any>().toMatchObjectType<number>()
+  // @ts-expect-error
+  expectTypeOf<{a: number}>().toMatchObjectType<{a: string} | {a: number}>()
+})
