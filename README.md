@@ -166,6 +166,7 @@ expectTypeOf(true).toBeBoolean()
 expectTypeOf(() => {}).returns.toBeVoid()
 expectTypeOf(Promise.resolve(123)).resolves.toBeNumber()
 expectTypeOf(Symbol(1)).toBeSymbol()
+expectTypeOf(1n).toBeBigInt()
 ```
 
 `.toBe...` methods allow for types that extend the expected type:
@@ -182,6 +183,9 @@ expectTypeOf<'foo'>().toBeString()
 
 expectTypeOf<boolean>().toBeBoolean()
 expectTypeOf<true>().toBeBoolean()
+
+expectTypeOf<bigint>().toBeBigInt()
+expectTypeOf<0n>().toBeBigInt()
 ```
 
 `.toBe...` methods protect against `any`:
@@ -220,6 +224,7 @@ expectTypeOf(1).not.toBeNever()
 expectTypeOf(1).not.toBeNull()
 expectTypeOf(1).not.toBeUndefined()
 expectTypeOf(1).not.toBeNullable()
+expectTypeOf(1).not.toBeBigInt()
 ```
 
 Detect assignability of unioned types:
@@ -440,7 +445,12 @@ const assertNumber = (v: any): asserts v is number => {
 expectTypeOf(assertNumber).asserts.toBeNumber()
 
 const isString = (v: any): v is string => typeof v === 'string'
+
 expectTypeOf(isString).guards.toBeString()
+
+const isBigInt = (value: any): value is bigint => typeof value === 'bigint'
+
+expectTypeOf(isBigInt).guards.toBeBigInt()
 ```
 
 Assert on constructor parameters:

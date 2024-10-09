@@ -100,6 +100,11 @@ test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
 
 999   expectTypeOf(1).toBeNullable()
                       ~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
+  Type 'ExpectBigInt<number>' has no call signatures.
+
+999   expectTypeOf(1).toBeBigInt()
+                      ~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'number' does not satisfy the constraint '"Expected: number, Actual: string"'.
 
 999   expectTypeOf<string | number>().toMatchTypeOf<number>()
