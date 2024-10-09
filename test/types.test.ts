@@ -857,4 +857,36 @@ test('toMatchObjectType', () => {
   expectTypeOf<any>().toMatchObjectType<number>()
   // @ts-expect-error
   expectTypeOf<{a: number}>().toMatchObjectType<{a: string} | {a: number}>()
+
+  type MyType = {readonly a: string; b: number; c: {some: {very: {complex: 'type'}}}; d?: boolean}
+
+  // @ts-expect-error
+  expectTypeOf<MyType>().toMatchObjectType<{a: string; b: number}>() // fails - forgot readonly
+  // @ts-expect-error
+  expectTypeOf<MyType>().toMatchObjectType<{readonly a: string; b?: number}>() // fails - b shouldn't be optional
+  // @ts-expect-error
+  expectTypeOf<MyType>().toMatchObjectType<{readonly a: string; d: boolean}>() // fails - d should be optional
+
+  expectTypeOf<MyType>().toMatchObjectType<{readonly a: string; b: number}>() // passes
+  expectTypeOf<MyType>().toMatchObjectType<{readonly a: string; d?: boolean}>() // passes
+
+  type BinaryOp = {
+    (a: number, b: number): number
+    (a: bigint, b: bigint): bigint
+  }
+
+  type Calculator = {add: BinaryOp; subtract: BinaryOp}
+
+  expectTypeOf<Calculator>().toMatchObjectType<{add: BinaryOp}>()
+  expectTypeOf<Calculator>().toMatchObjectType<{subtract: BinaryOp}>()
+  expectTypeOf<Calculator>().toMatchObjectType<{add: BinaryOp; subtract: BinaryOp}>()
+
+  expectTypeOf<Calculator>().toMatchObjectType<{
+    add: {(a: number, b: number): number; (a: bigint, b: bigint): bigint}
+  }>()
+
+  // @ts-expect-error
+  expectTypeOf<Calculator>().toMatchObjectType<{add: (a: number, b: number) => number}>() // fails - only one overload
+  // @ts-expect-error
+  expectTypeOf<Calculator>().toMatchObjectType<{add: (a: bigint, b: bigint) => bigint}>() // fails - only one overload
 })
