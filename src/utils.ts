@@ -120,7 +120,7 @@ type ReadonlyEquivalent<X, Y> = Extends<
 /**
  * Checks if one type extends another. Note: this is not quite the same as `Left extends Right` because:
  * 1. If either type is `never`, the result is `true` iff the other type is also `never`.
- * 2. Types are wrapped in a 1-tuple so that union types are not distributed - instead we consider `string | number` to _not_ extend `number`. If we used `Left extends Right` directly you would get `Extends<string | number, number>` => `false | true` => `boolean`.
+ * 2. Types are wrapped in a 1-tuple so that union types are not distributed - instead we consider `string | number` to _not_ extend `number`. If we used `Left extends Right` directly you would get `Extends<string | number, number>` =\> `false | true` =\> `boolean`.
  */
 export type Extends<Left, Right> = IsNever<Left> extends true ? IsNever<Right> : [Left] extends [Right] ? true : false
 
@@ -227,3 +227,129 @@ export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
  * Convert a union like `1 | 2 | 3` to a tuple like `[1, 2, 3]`.
  */
 export type UnionToTuple<Union> = TuplifyUnion<Union>
+
+/**
+ * An alias for type `{}`. Represents any value that is
+ * not `null` or `undefined`. It is mostly used for semantic purposes
+ * to help distinguish between an empty object type and `{}` as
+ * they are not the same.
+ *
+ * @example
+ *
+ * ```ts
+ * import { expectTypeOf } from 'expect-type'
+ *
+ * expectTypeOf(42).toMatchTypeOf<AnyNonNullishValue>()
+ *
+ * expectTypeOf('Hello').toMatchTypeOf<AnyNonNullishValue>()
+ *
+ * // Results in [TS2322 Error]: Type 'null' is not assignable to type '{}'.
+ * expectTypeOf(null).not.toMatchTypeOf<AnyNonNullishValue>()
+ *
+ * // Results in [TS2322 Error]: Type 'undefined' is not assignable to type '{}'.
+ * expectTypeOf(undefined).not.toMatchTypeOf<AnyNonNullishValue>()
+ * ```
+ *
+ * @since 1.2.0
+ * @internal
+ */
+type AnyNonNullishValue = NonNullable<unknown>
+
+/**
+ * A utility type that represents any function with any number of arguments
+ * and any return type.
+ *
+ * @example
+ *
+ * ```ts
+ * const log: AnyFunction = (...args: any[]) => console.log(...args)
+ *
+ * const sum = ((a: number, b: number): number => a + b) satisfies AnyFunction
+ * ```
+ *
+ * @since 1.2.0
+ * @internal
+ */
+type AnyFunction = (...args: any[]) => any
+
+/**
+ * Useful to flatten the type output to improve type hints shown in editors.
+ * And also to transform an `interface` into a `type` alias to aide
+ * with assignability and portability.
+ *
+ * @example
+ * <caption>#### Flattening intersected types</caption>
+ *
+ * ```ts
+ * import { expectTypeOf } from 'expect-type'
+ *
+ * type PositionProps = {
+ *   top: number
+ *   left: number
+ * }
+ *
+ * type SizeProps = {
+ *   width: number
+ *   height: number
+ * }
+ *
+ * expectTypeOf<PositionProps & SizeProps>().not.toEqualTypeOf<{
+ *   top: number
+ *   left: number
+ *   width: number
+ *   height: number
+ * }>()
+ *
+ * expectTypeOf<Simplify<PositionProps & SizeProps>>().toEqualTypeOf<{
+ *   top: number
+ *   left: number
+ *   width: number
+ *   height: number
+ * }>()
+ * ```
+ *
+ * @since 1.2.0
+ * @internal
+ * @see {@link https://github.com/sindresorhus/type-fest/blob/main/source/simplify.d.ts | Source}
+ */
+type Simplify<TypeToFlatten> = TypeToFlatten extends AnyFunction
+  ? TypeToFlatten
+  : {
+      [KeyType in keyof TypeToFlatten]: TypeToFlatten[KeyType]
+    } & AnyNonNullishValue
+
+/**
+ * A utility type that makes specific properties of a given type `readonly`.
+ * It takes two type parameters: {@linkcode BaseType | the base type} and
+ * {@linkcode KeysToBecomeReadonly | the keys of the properties}
+ * that should be made `readonly`. The properties specified by the
+ * {@linkcode KeysToBecomeReadonly | keys} parameter will become
+ * `readonly`, while the rest of the type remains unchanged.
+ *
+ * @example
+ * <caption>#### Set specific properties to `readonly`</caption>
+ *
+ * ```ts
+ * import { expectTypeOf } from 'expect-type'
+ *
+ * type Post = {
+ *   author: string
+ *   content: string
+ *   title: string
+ * }
+ *
+ * expectTypeOf<SetReadonly<Post, 'title' | 'author'>>().toEqualTypeOf<{
+ *   readonly author: string
+ *   content: string
+ *   readonly title: string
+ * }>()
+ * ```
+ *
+ * @template BaseType - The base type whose properties will be transformed to `readonly`.
+ * @template KeysToBecomeReadonly - The keys of the __`BaseType`__ to be made `readonly`.
+ *
+ * @since 1.2.0
+ */
+export type SetReadonly<BaseType, KeysToBecomeReadonly extends keyof BaseType> = BaseType extends unknown
+  ? Simplify<Omit<BaseType, KeysToBecomeReadonly> & Readonly<Pick<BaseType, KeysToBecomeReadonly>>>
+  : never
