@@ -30,6 +30,7 @@ jobs:
       - run: pnpm install
       - run: pnpm install typescript@${{ matrix.ts }}
       - run: pnpm type-check
+      - run: echo 'typescript version ${{ matrix.ts }} passed' >> $GITHUB_STEP_SUMMARY
 
   are-the-types-wrong:
     runs-on: ubuntu-latest
