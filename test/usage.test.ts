@@ -21,20 +21,23 @@ test('`.toEqualTypeOf` fails on excess properties', () => {
   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('To allow for extra properties on an object type, use `.toMatchObjectType`. This is a strict check, but only on the subset of keys that are in both types.', () => {
+test('To allow for extra properties on an object type, use `.toMatchObjectType`. This is a strict check, but only on the subset of keys that are in the expected type.', () => {
   expectTypeOf({a: 1, b: 1}).toMatchObjectType<{a: number}>()
 })
 
 test('To check that a type extends another type, use `.toExtend`', () => {
   expectTypeOf<string>().toExtend<string | boolean>()
-  expectTypeOf<{a: number; b: number}>().toExtend<{a: number}>()
   // @ts-expect-error
   expectTypeOf<{a: number}>().toExtend<{b: number}>()
+
+  expectTypeOf<{a: number; b: number}>().toExtend<{a: number}>() // this works, but you would be better off using `.toMatchObjectType` here
 })
 
-test('`.toEqualTypeOf` and `.toExtend` both fail on missing properties', () => {
+test('`.toEqualTypeOf`, `.toMatchObjectType`, and `.toExtend` all fail on missing properties', () => {
   // @ts-expect-error
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
+  // @ts-expect-error
+  expectTypeOf({a: 1}).toMatchObjectType<{a: number; b: number}>()
   // @ts-expect-error
   expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
 })

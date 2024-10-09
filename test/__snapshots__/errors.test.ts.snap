@@ -21,6 +21,12 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does
   Types of property 'b' are incompatible.
     Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
 
+999   expectTypeOf({a: 1}).toMatchObjectType<{a: number; b: number}>()
+                                             ~~~~~~~~~~~~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: "Expected: number, Actual: never"; }'.
+  Types of property 'b' are incompatible.
+    Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
+
 999   expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
                                     ~~~~~~~~~~~~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
