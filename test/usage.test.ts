@@ -222,6 +222,7 @@ test('Up to ten overloads will produce union types for `.parameters` and `.retur
     (input: bigint): bigint[]
   }
 
+  expectTypeOf<Factorize>().parameters.not.toEqualTypeOf<[number]>()
   expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
   expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
 
