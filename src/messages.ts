@@ -23,13 +23,17 @@ export type PrintType<T> =
                   ? 'number'
                   : T extends number
                     ? `literal number: ${T}`
-                    : T extends null
-                      ? 'null'
-                      : T extends undefined
-                        ? 'undefined'
-                        : T extends (...args: any[]) => any
-                          ? 'function'
-                          : '...'
+                    : bigint extends T
+                      ? 'bigint'
+                      : T extends bigint
+                        ? `literal bigint: ${T}`
+                        : T extends null
+                          ? 'null'
+                          : T extends undefined
+                            ? 'undefined'
+                            : T extends (...args: any[]) => any
+                              ? 'function'
+                              : '...'
 
 /**
  * Helper for showing end-user a hint why their type assertion is failing.

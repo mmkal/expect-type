@@ -332,6 +332,7 @@ type Factorize = {
   (input: bigint): bigint[]
 }
 
+expectTypeOf<Factorize>().parameters.not.toEqualTypeOf<[number]>()
 expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
 expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
 
