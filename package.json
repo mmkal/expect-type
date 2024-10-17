@@ -40,7 +40,7 @@
     "@types/node": "^20.0.0",
     "@vitest/ui": "^2.0.5",
     "eslint": "^8.57.0",
-    "eslint-plugin-mmkal": "0.9.0",
+    "eslint-plugin-mmkal": "0.10.1",
     "np": "^10.0.0",
     "pkg-pr-new": "0.0.29",
     "strip-ansi": "7.1.0",
