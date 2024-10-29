@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.16.4",
-    "@types/node": "^20.0.0",
+    "@types/node": "^22.0.0",
     "@vitest/ui": "^2.0.5",
     "eslint": "^8.57.0",
     "eslint-plugin-mmkal": "0.9.0",
