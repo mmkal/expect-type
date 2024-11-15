@@ -44,6 +44,12 @@ export * from './utils' // backcompat, consider removing in next major version
  * {@linkcode expectTypeOf()} utility.
  */
 export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
+  /**
+   * Similar to jest's `expect(...).toMatchObject(...)` but for types.
+   * Deeply "picks" the properties of the actual type based on the expected type, then performs a strict check to make sure the types match `Expected`.
+   *
+   * Note: optional properties on the expected type are not allowed to be missing on the actual type.
+   */
   toMatchObjectType: <
     Expected extends IsUnion<Expected> extends true
       ? 'toMatchObject does not support union types'

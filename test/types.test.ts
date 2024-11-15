@@ -889,4 +889,13 @@ test('toMatchObjectType', () => {
   expectTypeOf<Calculator>().toMatchObjectType<{add: (a: number, b: number) => number}>() // fails - only one overload
   // @ts-expect-error
   expectTypeOf<Calculator>().toMatchObjectType<{add: (a: bigint, b: bigint) => bigint}>() // fails - only one overload
+
+  // @ts-expect-error - missing optional property not allowed
+  expectTypeOf<{a?: 1; b?: 2}>().toMatchObjectType<{a?: 1; b?: 2; c?: 3}>()
+
+  // @ts-expect-error - c should be optional, not | undefined
+  expectTypeOf<{a?: 1; b?: 2}>().toMatchObjectType<{a?: 1; b: 2 | undefined}>()
+
+  // @ts-expect-error - type must match exactly, a union that includes the actual type isn't good enough
+  expectTypeOf<{a: 1}>().toMatchObjectType<{a: 1 | undefined}>()
 })
