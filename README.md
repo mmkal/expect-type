@@ -95,6 +95,18 @@ To allow for extra properties on an object type, use `.toMatchObjectType`. This 
 expectTypeOf({a: 1, b: 1}).toMatchObjectType<{a: number}>()
 ```
 
+`.toMatchObjectType` can check partial matches on deeply nested objects:
+
+```typescript
+const user = {
+  email: 'a@b.com',
+  name: 'John Doe',
+  address: {street: '123 2nd St', city: 'New York', zip: '10001', state: 'NY', country: 'USA'},
+}
+
+expectTypeOf(user).toMatchObjectType<{name: string; address: {city: string}}>()
+```
+
 To check that a type extends another type, use `.toExtend`:
 
 ```typescript
@@ -132,11 +144,11 @@ expectTypeOf<Apple>().toExtend<Fruit>()
 // @ts-expect-error - the `editable` property isn't an exact match. In `Apple`, it's `true`, which extends `boolean`, but they're not identical.
 expectTypeOf<Apple>().toMatchObjectType<Fruit>()
 
-// @ts-expect-error
-expectTypeOf<Fruit>().toExtend<Apple>()
-
-// @ts-expect-error
+// @ts-expect-error - Apple is not an identical type to Fruit, it's a subtype
 expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+
+// @ts-expect-error - Apple is a Fruit, but not vice versa
+expectTypeOf<Fruit>().toExtend<Apple>()
 ```
 
 Assertions can be inverted with `.not`:

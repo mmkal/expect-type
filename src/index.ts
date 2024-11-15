@@ -24,7 +24,15 @@ import type {
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import type {AValue, Extends, IsUnion, MismatchArgs, Not, StrictEqualUsingTSInternalIdenticalToOperator} from './utils'
+import type {
+  AValue,
+  DeepPickMatchingProps,
+  Extends,
+  IsUnion,
+  MismatchArgs,
+  Not,
+  StrictEqualUsingTSInternalIdenticalToOperator,
+} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
 export * from './messages' // backcompat, consider removing in next major version
@@ -41,15 +49,12 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
       ? 'toMatchObject does not support union types'
       : Not<Extends<Expected, Record<string, unknown>>> extends true
         ? 'toMatchObject only supports object types'
-        : StrictEqualUsingTSInternalIdenticalToOperator<
-              Pick<Actual, keyof Actual & keyof Expected>,
-              Expected
-            > extends true
+        : StrictEqualUsingTSInternalIdenticalToOperator<DeepPickMatchingProps<Actual, Expected>, Expected> extends true
           ? unknown
-          : MismatchInfo<Pick<Actual, keyof Actual & keyof Expected>, Expected>,
+          : MismatchInfo<DeepPickMatchingProps<Actual, Expected>, Expected>,
   >(
     ...MISMATCH: MismatchArgs<
-      StrictEqualUsingTSInternalIdenticalToOperator<Pick<Actual, keyof Actual & keyof Expected>, Expected>,
+      StrictEqualUsingTSInternalIdenticalToOperator<DeepPickMatchingProps<Actual, Expected>, Expected>,
       true
     >
   ) => true
@@ -302,6 +307,16 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
  * Represents the negative expectation type for the {@linkcode Actual} type.
  */
 export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: false}> {
+  /**
+   * Similar to jest's `expect(...).toMatchObject(...)` but for types.
+   * Deeply "picks" the properties of the actual type based on the expected type, then performs a strict check to make sure the types match `Expected`.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: number}> // passes
+   * expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: string}> // fails
+   * ```
+   */
   toMatchObjectType: <Expected>(
     ...MISMATCH: MismatchArgs<
       StrictEqualUsingTSInternalIdenticalToOperator<Pick<Actual, keyof Actual & keyof Expected>, Expected>,

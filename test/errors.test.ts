@@ -200,6 +200,17 @@ test('toEqualTypeOf with tuples', () => {
   `)
 })
 
+test('toMatchObjectType', () => {
+  expect(tsErrors(`expectTypeOf({a: {b: 1}}).toMatchObjectType<{a: {b: string}}>()`)).toMatchInlineSnapshot(`
+    "test/test.ts:999:999 - error TS2344: Type '{ a: { b: string; }; }' does not satisfy the constraint '{ a: { b: "Expected: string, Actual: number"; }; }'.
+      The types of 'a.b' are incompatible between these types.
+        Type 'string' is not assignable to type '"Expected: string, Actual: number"'.
+
+    999 expectTypeOf({a: {b: 1}}).toMatchObjectType<{a: {b: string}}>()
+                                                    ~~~~~~~~~~~~~~~~"
+  `)
+})
+
 test('usage.test.ts', () => {
   // remove all `.not`s and `// @ts-expect-error`s from the main test file and snapshot the errors
   const usageTestFile = fs

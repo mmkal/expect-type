@@ -35,17 +35,17 @@ test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the con
 
 999   expectTypeOf<Apple>().toMatchObjectType<Fruit>()
                                               ~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
+  Property 'name' is missing in type 'Fruit' but required in type '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
+
+999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+                                          ~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
   Types of property 'name' are incompatible.
     Type '"Apple"' is not assignable to type '"Expected: literal string: Apple, Actual: never"'.
 
 999   expectTypeOf<Fruit>().toExtend<Apple>()
                                      ~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
-  Property 'name' is missing in type 'Fruit' but required in type '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
-
-999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
-                                          ~~~~~
 test/usage.test.ts:999:999 - error TS2344: Type '{ b: 1; }' does not satisfy the constraint '{ a: "Expected: never, Actual: number"; b: "Expected: literal number: 1, Actual: never"; }'.
   Property 'a' is missing in type '{ b: 1; }' but required in type '{ a: "Expected: never, Actual: number"; b: "Expected: literal number: 1, Actual: never"; }'.
 
