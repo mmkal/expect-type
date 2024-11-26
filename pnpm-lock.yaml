@@ -27,8 +27,8 @@ importers:
         specifier: ^10.0.0
         version: 10.1.0(typescript@5.7.2)
       pkg-pr-new:
-        specifier: 0.0.32
-        version: 0.0.32
+        specifier: 0.0.33
+        version: 0.0.33
       strip-ansi:
         specifier: 7.1.0
         version: 7.1.0
@@ -2741,8 +2741,8 @@ packages:
     resolution: {integrity: sha512-4peoBq4Wks0riS0z8741NVv+/8IiTvqnZAr8QGgtdifrtpdXbNw/FxRS1l6NFqm4EMzuS0EDqNNx4XGaz8cuyQ==}
     engines: {node: '>=18'}
 
-  pkg-pr-new@0.0.32:
-    resolution: {integrity: sha512-weyLBz/Qkc9ZJIE/pX5IGCyShdSq1SetOf7PSp9Vjv1RPPJySNP8NVW9w0SC3elVBCQlc6D76mJO/7PhVEJHag==}
+  pkg-pr-new@0.0.33:
+    resolution: {integrity: sha512-jdjMKKQNzhbBZATiZwK5YtA8aaWW6dX1AVhVxScqitSJPgHTr9Y5Izn2d7HQpe1iLek8OvEego39xbcE5FrWYg==}
     hasBin: true
 
   pkg-types@1.2.1:
@@ -6631,7 +6631,7 @@ snapshots:
     dependencies:
       find-up-simple: 1.0.0
 
-  pkg-pr-new@0.0.32:
+  pkg-pr-new@0.0.33:
     dependencies:
       '@jsdevtools/ez-spawn': 3.0.4
       '@octokit/action': 6.1.0
