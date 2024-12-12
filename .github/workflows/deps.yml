@@ -7,4 +7,4 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: mmkal/runovate@3c4727b5294b19087daea5cf06d09717213a948d
+      - uses: mmkal/runovate@d51d8c740d530dbae0f537a1138a15fbdb0255e3
