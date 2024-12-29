@@ -44,7 +44,7 @@
     "np": "^10.0.0",
     "pkg-pr-new": "0.0.39",
     "strip-ansi": "7.1.0",
-    "ts-morph": "23.0.0",
+    "ts-morph": "24.0.0",
     "typescript": "5.7.2",
     "vitest": "^2.1.2"
   }
