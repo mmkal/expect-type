@@ -36,7 +36,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "0.17.2",
+    "@arethetypeswrong/cli": "0.17.3",
     "@types/node": "^22.0.0",
     "@vitest/ui": "^2.0.5",
     "eslint": "^8.57.0",
