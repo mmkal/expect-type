@@ -6,10 +6,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: |
+          node -v
+          corepack -v
+      - run: npm install -g corepack@0.31.0 # todo: delete if https://github.com/nodejs/corepack/issues/612 is resolved
       - run: corepack enable
       - run: pnpm install
-      - run: pnpm run build
-      - run: pnpm run lint
+      - run: pnpm build
+      - run: pnpm lint
       - run: pnpm test -- --reporter html
       - name: upload artifact
         uses: actions/upload-artifact@v4
@@ -37,6 +41,7 @@ jobs:
           - "5.7"
     steps:
       - uses: actions/checkout@v4
+      - run: npm install -g corepack@0.31.0 # todo: delete if https://github.com/nodejs/corepack/issues/612 is resolved
       - run: corepack enable
       - run: pnpm install
       - run: pnpm install typescript@${{ matrix.ts }}
@@ -47,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: npm install -g corepack@0.31.0 # todo: delete if https://github.com/nodejs/corepack/issues/612 is resolved
       - run: corepack enable
       - run: pnpm install
       - run: pnpm arethetypeswrong
