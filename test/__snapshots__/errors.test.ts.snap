@@ -276,11 +276,12 @@ test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
     Argument of type 'this' is not assignable to parameter of type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & AValue'.
       Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & AValue'.
         Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-          Type 'this' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-            Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-              Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
-                Type 'this' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
-                  Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
+          Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
+            Type 'this' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+              Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+                Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
+                  Type 'this' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
+                    Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this>'.
   Argument of type '[this]' is not assignable to parameter of type 'MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<this, StrictEqualUsingTSInternalIdenticalToOperator<this, unknown> extends true ? unknown : MismatchInfo<this, unknown>>, true>'.
 
 999       expectTypeOf(this).toEqualTypeOf(this)
@@ -291,11 +292,12 @@ test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
     Argument of type 'this' is not assignable to parameter of type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue'.
       Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & AValue'.
         Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-          Type 'this' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-            Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
-              Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
-                Type 'this' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
-                  Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
+          Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
+            Type 'this' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+              Type 'B' is not assignable to type '(Extends<this, this> extends true ? unknown : MismatchInfo<this, this>) & { [avalue]?: undefined; }'.
+                Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
+                  Type 'this' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
+                    Type 'B' is not assignable to type 'Extends<this, this> extends true ? unknown : MismatchInfo<this, this>'.
   Argument of type '[this]' is not assignable to parameter of type 'MismatchArgs<Extends<this, Extends<this, unknown> extends true ? unknown : MismatchInfo<this, unknown>>, true>'.
 
 999       expectTypeOf(this).toMatchTypeOf(this)
