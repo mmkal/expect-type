@@ -8,8 +8,8 @@ jobs:
       - uses: actions/checkout@v4
       - run: corepack enable
       - run: pnpm install
-      - run: pnpm run build
-      - run: pnpm run lint
+      - run: pnpm build
+      - run: pnpm lint
       - run: pnpm test -- --reporter html
       - name: upload artifact
         uses: actions/upload-artifact@v4
