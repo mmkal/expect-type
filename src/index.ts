@@ -1,34 +1,35 @@
-import {StrictEqualUsingBranding} from './branding'
-import {
+import type {StrictEqualUsingBranding} from './branding'
+import type {
+  ExpectAny,
+  ExpectArray,
+  ExpectBigInt,
+  ExpectBoolean,
+  ExpectFunction,
+  ExpectNever,
+  ExpectNull,
+  ExpectNullable,
+  ExpectNumber,
+  ExpectObject,
+  ExpectString,
+  ExpectSymbol,
+  ExpectUndefined,
+  ExpectUnknown,
+  ExpectVoid,
   MismatchInfo,
   Scolder,
-  ExpectAny,
-  ExpectUnknown,
-  ExpectNever,
-  ExpectFunction,
-  ExpectObject,
-  ExpectArray,
-  ExpectNumber,
-  ExpectString,
-  ExpectBoolean,
-  ExpectVoid,
-  ExpectSymbol,
-  ExpectNull,
-  ExpectUndefined,
-  ExpectNullable,
 } from './messages'
-import {
+import type {
   ConstructorOverloadParameters,
   OverloadParameters,
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends} from './utils'
+import type {AValue, Extends, MismatchArgs, StrictEqualUsingTSInternalIdenticalToOperator} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
-export * from './utils' // backcompat, consider removing in next major version
 export * from './messages' // backcompat, consider removing in next major version
 export * from './overloads'
+export * from './utils' // backcompat, consider removing in next major version
 
 /**
  * Represents the positive assertion methods available for type checking in the
@@ -507,6 +508,26 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   map: <T>(fn: (value: Actual) => T) => ExpectTypeOf<T, Options>
 
   /**
+   * Checks whether the type of the value is **`bigint`**.
+   *
+   * @example
+   * <caption>#### Distinguish between **`number`** and **`bigint`**</caption>
+   *
+   * ```ts
+   * import { expectTypeOf } from 'expect-type'
+   *
+   * const aVeryBigInteger = 10n ** 100n
+   *
+   * expectTypeOf(aVeryBigInteger).not.toBeNumber()
+   *
+   * expectTypeOf(aVeryBigInteger).toBeBigInt()
+   * ```
+   *
+   * @since 1.1.0
+   */
+  toBeBigInt: Scolder<ExpectBigInt<Actual>, Options>
+
+  /**
    * Checks whether a function is callable with the given parameters.
    *
    * __Note__: You cannot negate this assertion with
@@ -916,6 +937,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toBeNull: fn,
     toBeUndefined: fn,
     toBeNullable: fn,
+    toBeBigInt: fn,
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeConstructibleWith: fn,

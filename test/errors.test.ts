@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import * as fs from 'node:fs'
 import {test, expect} from 'vitest'
 import {tsErrors, tsFileErrors} from './ts-output'
 
@@ -15,11 +15,10 @@ test('toEqualTypeOf<...>() error message', async () => {
 
 test('toEqualTypeOf(...) error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})`)).toMatchInlineSnapshot(`
-    "test/test.ts:999:999 - error TS2345: Argument of type '{ a: string; }' is not assignable to parameter of type 'Mismatch'.
-      Object literal may only specify known properties, and 'a' does not exist in type 'Mismatch'.
+    "test/test.ts:999:999 - error TS2353: Object literal may only specify known properties, and 'a' does not exist in type 'Mismatch'.
 
     999 expectTypeOf({a: 1}).toEqualTypeOf({a: 'one'})
-                                            ~~~~~~~~"
+                                            ~"
   `)
 })
 
@@ -61,7 +60,7 @@ test('toEqualTypeOf special types', async () => {
     test/test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
 
     999 expectTypeOf<{a: 1}>().toEqualTypeOf<{a: never}>()
-                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                               ~~~~~~~~~~~~~
 
       src/index.ts:999:999
         999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>

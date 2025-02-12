@@ -2,7 +2,7 @@
 /* eslint prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
 
 import {test} from 'vitest'
-import {expectTypeOf} from '../src'
+import {expectTypeOf} from '../src/index'
 
 test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
@@ -82,6 +82,7 @@ test('You can test for basic JavaScript types', () => {
   expectTypeOf(() => {}).returns.toBeVoid()
   expectTypeOf(Promise.resolve(123)).resolves.toBeNumber()
   expectTypeOf(Symbol(1)).toBeSymbol()
+  expectTypeOf(1n).toBeBigInt()
 })
 
 test('`.toBe...` methods allow for types that extend the expected type', () => {
@@ -96,6 +97,9 @@ test('`.toBe...` methods allow for types that extend the expected type', () => {
 
   expectTypeOf<boolean>().toBeBoolean()
   expectTypeOf<true>().toBeBoolean()
+
+  expectTypeOf<bigint>().toBeBigInt()
+  expectTypeOf<0n>().toBeBigInt()
 })
 
 test('`.toBe...` methods protect against `any`', () => {
@@ -128,6 +132,7 @@ test('More `.not` examples', () => {
   expectTypeOf(1).not.toBeNull()
   expectTypeOf(1).not.toBeUndefined()
   expectTypeOf(1).not.toBeNullable()
+  expectTypeOf(1).not.toBeBigInt()
 })
 
 test('Detect assignability of unioned types', () => {
@@ -217,6 +222,7 @@ test('Up to ten overloads will produce union types for `.parameters` and `.retur
     (input: bigint): bigint[]
   }
 
+  expectTypeOf<Factorize>().parameters.not.toEqualTypeOf<[number]>()
   expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
   expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
 
@@ -328,7 +334,12 @@ test('You can also check type guards & type assertions', () => {
   expectTypeOf(assertNumber).asserts.toBeNumber()
 
   const isString = (v: any): v is string => typeof v === 'string'
+
   expectTypeOf(isString).guards.toBeString()
+
+  const isBigInt = (value: any): value is bigint => typeof value === 'bigint'
+
+  expectTypeOf(isBigInt).guards.toBeBigInt()
 })
 
 test('Assert on constructor parameters', () => {

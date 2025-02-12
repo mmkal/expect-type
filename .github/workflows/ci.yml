@@ -6,21 +6,53 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: |
+          node -v
+          corepack -v
+      - run: npm install -g corepack@0.31.0 # todo: delete if https://github.com/nodejs/corepack/issues/612 is resolved
       - run: corepack enable
       - run: pnpm install
-      - run: pnpm run build
-      - run: pnpm run lint
-      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm lint
+      - run: pnpm test -- --reporter html
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          path: html
+          name: test-report
 
   test-types:
     runs-on: ubuntu-latest
     name: Test Types with TypeScript ${{ matrix.ts }}
     strategy:
       matrix:
-        ts: [4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5]
+        ts:
+          - "4.7"
+          - "4.8"
+          - "4.9"
+          - "5.0"
+          - "5.1"
+          - "5.2"
+          - "5.3"
+          - "5.4"
+          - "5.5"
+          - "5.6"
+          - "5.7"
     steps:
       - uses: actions/checkout@v4
+      - run: npm install -g corepack@0.31.0 # todo: delete if https://github.com/nodejs/corepack/issues/612 is resolved
       - run: corepack enable
       - run: pnpm install
       - run: pnpm install typescript@${{ matrix.ts }}
+      - run: pnpm list typescript
       - run: pnpm type-check
+
+  are-the-types-wrong:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g corepack@0.31.0 # todo: delete if https://github.com/nodejs/corepack/issues/612 is resolved
+      - run: corepack enable
+      - run: pnpm install
+      - run: pnpm arethetypeswrong
