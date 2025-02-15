@@ -502,7 +502,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   /**
    * Transform that type of the value via a callback.
    *
-   * @param fn A callback that transforms the input value. Note that this function is not actually called - it's only used for type inference.
+   * @param fn - A callback that transforms the input value. Note that this function is not actually called - it's only used for type inference.
    * @returns A new type which can be used for further assertions.
    */
   map: <T>(fn: (value: Actual) => T) => ExpectTypeOf<T, Options>
