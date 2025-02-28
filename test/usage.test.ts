@@ -338,6 +338,19 @@ test("You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-
   expectTypeOf(f).toBeCallableWith('foo')
 })
 
+/**
+ * This can be useful for generic functions or complex types which you can't access via `.toBeCallableWith`, `.toHaveProperty` etc.
+ * The callback function isn't called at runtime, which can make this a useful way to get complex inferred types without worrying about running code.
+ */
+test('Use `.map` to transform types', () => {
+  const capitalize = <S extends string>(input: S) =>
+    (input.slice(0, 1).toUpperCase() + input.slice(1)) as Capitalize<S>
+
+  expectTypeOf(capitalize)
+    .map(fn => fn('hello world'))
+    .toEqualTypeOf<'Hello world'>()
+})
+
 test('You can also check type guards & type assertions', () => {
   const assertNumber = (v: any): asserts v is number => {
     if (typeof v !== 'number') {
