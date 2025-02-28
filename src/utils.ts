@@ -227,3 +227,26 @@ export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
  * Convert a union like `1 | 2 | 3` to a tuple like `[1, 2, 3]`.
  */
 export type UnionToTuple<Union> = TuplifyUnion<Union>
+
+export type IsTuple<T> = Or<[Extends<T, []>, Extends<T, [any, ...any[]]>]>
+
+export type IsUnion<T> = Not<Extends<UnionToTuple<T>['length'], 1>>
+
+/**
+ * A recursive version of `Pick` that selects properties from the left type that are present in the right type.
+ * The "leaf" types from `Left` are used - only the keys of `Right` are considered.
+ *
+ * @example
+ * ```ts
+ * const user = {email: 'a@b.com', name: 'John Doe', address: {street: '123 2nd St', city: 'New York', zip: '10001', state: 'NY', country: 'USA'}}
+ *
+ * type Result = DeepPickMatchingProps<typeof user, {name: unknown; address: {city: unknown}}> // {name: string, address: {city: string}}
+ * ```
+ */
+export type DeepPickMatchingProps<Left, Right> =
+  Left extends Record<string, unknown>
+    ? Pick<
+        {[K in keyof Left]: K extends keyof Right ? DeepPickMatchingProps<Left[K], Right[K]> : never},
+        Extract<keyof Left, keyof Right>
+      >
+    : Left
