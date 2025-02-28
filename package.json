@@ -41,7 +41,7 @@
     "@vitest/ui": "^3.0.0",
     "eslint": "^8.57.0",
     "eslint-plugin-mmkal": "0.9.0",
-    "np": "^10.0.0",
+    "np": "^10.2.0",
     "pkg-pr-new": "0.0.39",
     "strip-ansi": "7.1.0",
     "ts-morph": "23.0.0",
