@@ -13,4 +13,4 @@ jobs:
       - run: corepack enable
       - run: pnpm install
       - run: pnpm build
-      - run: pnpm pkg-pr-new publish
+      - uses: mmkal/pkg.pr.new/publish@d7b1998e71c8304d556bbc8b2298956376445c3a
