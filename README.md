@@ -13,7 +13,7 @@ import {expectTypeOf} from 'expect-type'
 import {foo, bar} from '../foo'
 
 // make sure `foo` has type {a: number}
-expectTypeOf(foo).toMatchTypeOf<{a: number}>()
+expectTypeOf(foo).toEqualTypeOf<{a: number}>()
 
 // make sure `bar` is a function taking a string:
 expectTypeOf(bar).parameter(0).toBeString()
@@ -31,7 +31,7 @@ See below for lots more examples.
 - [Documentation](#documentation)
    - [Features](#features)
    - [Why is my assertion failing?](#why-is-my-assertion-failing)
-   - [Where is `.toMatchTypeOf`?](#where-is-tomatchtypeof)
+   - [Why is `.toMatchTypeOf` deprecated?](#why-is-tomatchtypeof-deprecated)
    - [Internal type helpers](#internal-type-helpers)
    - [Error messages](#error-messages)
       - [Concrete "expected" objects vs type arguments](#concrete-expected-objects-vs-type-arguments)
@@ -754,9 +754,9 @@ expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
 expectTypeOf<{a: {b: 1} & {c: 1}}>().branded.toEqualTypeOf<{a: {b: 1; c: 1}}>()
 ```
 
-### Where is `.toMatchTypeOf`?
+### Why is `.toMatchTypeOf` deprecated?
 
-The `.toMatchTypeOf` method is deprecated, in favour of `.toMatchObjectType` (when strictly checking against an object type with a subset of keys), or `.toExtend` (when checking for "is-a" relationships). There are no foreseeable plans to remove `.toMatchTypeOf`, but there's no reason to continue using it - `.toMatchObjectType` is stricter, and `.toExtend` is identical.
+The `.toMatchTypeOf` method is deprecated in favour of `.toMatchObjectType` (when strictly checking against an object type with a subset of keys), or `.toExtend` (when checking for "is-a" relationships). There are no foreseeable plans to remove `.toMatchTypeOf`, but there's no reason to continue using it - `.toMatchObjectType` is stricter, and `.toExtend` is identical.
 
 ### Internal type helpers
 
@@ -839,7 +839,7 @@ import {mount} from './mount.js'
 
 test('my types work properly', () => {
   expectTypeOf(mount).toBeFunction()
-  expectTypeOf(mount).parameter(0).toMatchTypeOf<{name: string}>()
+  expectTypeOf(mount).parameter(0).toEqualTypeOf<{name: string}>()
 
   expectTypeOf(mount({name: 42})).toBeString()
 })
@@ -902,7 +902,7 @@ The key differences in this project are:
   - class instances
   - array item values
   - nullable types
-- assertions on types "matching" rather than exact type equality, for "is-a" relationships e.g. `expectTypeOf(square).toMatchTypeOf<Shape>()`
+- assertions on types "matching" rather than exact type equality, for "is-a" relationships e.g. `expectTypeOf(square).toExtend<Shape>()`
 - built into existing tooling. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
 - small implementation with no dependencies. [Take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of TypeScript).
 
