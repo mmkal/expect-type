@@ -13,7 +13,7 @@ import {expectTypeOf} from 'expect-type'
 import {foo, bar} from '../foo'
 
 // make sure `foo` has type {a: number}
-expectTypeOf(foo).toMatchTypeOf<{a: number}>()
+expectTypeOf(foo).toEqualTypeOf<{a: number}>()
 
 // make sure `bar` is a function taking a string:
 expectTypeOf(bar).parameter(0).toBeString()
@@ -839,7 +839,7 @@ import {mount} from './mount.js'
 
 test('my types work properly', () => {
   expectTypeOf(mount).toBeFunction()
-  expectTypeOf(mount).parameter(0).toMatchTypeOf<{name: string}>()
+  expectTypeOf(mount).parameter(0).toEqualTypeOf<{name: string}>()
 
   expectTypeOf(mount({name: 42})).toBeString()
 })
@@ -902,7 +902,7 @@ The key differences in this project are:
   - class instances
   - array item values
   - nullable types
-- assertions on types "matching" rather than exact type equality, for "is-a" relationships e.g. `expectTypeOf(square).toMatchTypeOf<Shape>()`
+- assertions on types "matching" rather than exact type equality, for "is-a" relationships e.g. `expectTypeOf(square).toExtend<Shape>()`
 - built into existing tooling. No extra build step, cli tool, IDE extension, or lint plugin is needed. Just import the function and start writing tests. Failures will be at compile time - they'll appear in your IDE and when you run `tsc`.
 - small implementation with no dependencies. [Take a look!](./src/index.ts) (tsd, for comparison, is [2.6MB](https://bundlephobia.com/result?p=tsd@0.13.1) because it ships a patched version of TypeScript).
 
