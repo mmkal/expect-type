@@ -851,7 +851,9 @@ test('Overload edge cases', () => {
 test('toMatchObjectType', () => {
   expectTypeOf<{a: number}>().toMatchObjectType<{a: number}>()
   expectTypeOf<{a: number}>().not.toMatchObjectType<{a: string}>()
+  expectTypeOf<{a: number}>().not.toMatchObjectType({a: 'string'})
   expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: number}>()
+  expectTypeOf({a: 1, b: 2}).toMatchObjectType({a: 2})
 
   // @ts-expect-error
   expectTypeOf<any>().toMatchObjectType<number>()
@@ -898,4 +900,50 @@ test('toMatchObjectType', () => {
 
   // @ts-expect-error - type must match exactly, a union that includes the actual type isn't good enough
   expectTypeOf<{a: 1}>().toMatchObjectType<{a: 1 | undefined}>()
+})
+
+test('toExtend', () => {
+  expectTypeOf<{a: number}>().toExtend<{a: number}>()
+  expectTypeOf<{a: number}>().not.toExtend<{a: string}>()
+  expectTypeOf<{a: number}>().not.toExtend({a: 'string'})
+  expectTypeOf({a: 1, b: 2}).toExtend<{a: number}>()
+  expectTypeOf({a: 1, b: 2}).toExtend({a: 2})
+
+  expectTypeOf<any>().toExtend<number>()
+  expectTypeOf<{a: number}>().toExtend<{a: string} | {a: number}>()
+
+  type MyType = {readonly a: string; b: number; c: {some: {very: {complex: 'type'}}}; d?: boolean}
+
+  expectTypeOf<MyType>().toExtend<{a: string; b: number}>() // fails - forgot readonly
+  expectTypeOf<MyType>().toExtend<{readonly a: string; b?: number}>() // fails - b shouldn't be optional
+  // @ts-expect-error
+  expectTypeOf<MyType>().toExtend<{readonly a: string; d: boolean}>() // fails - d should be optional
+
+  expectTypeOf<MyType>().toExtend<{readonly a: string; b: number}>() // passes
+  expectTypeOf<MyType>().toExtend<{readonly a: string; d?: boolean}>() // passes
+
+  type BinaryOp = {
+    (a: number, b: number): number
+    (a: bigint, b: bigint): bigint
+  }
+
+  type Calculator = {add: BinaryOp; subtract: BinaryOp}
+
+  expectTypeOf<Calculator>().toExtend<{add: BinaryOp}>()
+  expectTypeOf<Calculator>().toExtend<{subtract: BinaryOp}>()
+  expectTypeOf<Calculator>().toExtend<{add: BinaryOp; subtract: BinaryOp}>()
+
+  expectTypeOf<Calculator>().toExtend<{
+    add: {(a: number, b: number): number; (a: bigint, b: bigint): bigint}
+  }>()
+
+  expectTypeOf<Calculator>().toExtend<{add: (a: number, b: number) => number}>() // fails - only one overload
+  expectTypeOf<Calculator>().toExtend<{add: (a: bigint, b: bigint) => bigint}>() // fails - only one overload
+
+  expectTypeOf<{a?: 1; b?: 2}>().toExtend<{a?: 1; b?: 2; c?: 3}>()
+
+  // @ts-expect-error - c should be optional, not | undefined
+  expectTypeOf<{a?: 1; b?: 2}>().toExtend<{a?: 1; b: 2 | undefined}>()
+
+  expectTypeOf<{a: 1}>().toExtend<{a: 1 | undefined}>()
 })
