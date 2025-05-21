@@ -404,8 +404,16 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     <Expected>(...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>): true
   }
 
+  /**
+   * @deprecated - use either `toMatchObjectType` or `toExtend` instead
+   * - use `toMatchObjectType` to perform a strict check on a subset of your type's keys
+   * - use `toExtend` to check if your type extends the expected type
+   */
   toMatchTypeOf: {
     /**
+     * @deprecated - use either `toMatchObjectType` or `toExtend` instead
+     * - use `toMatchObjectType` to perform a strict check on a subset of your type's keys
+     * - use `toExtend` to check if your type extends the expected type
      * A less strict version of
      * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
@@ -434,6 +442,9 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
 
     /**
+     * @deprecated - use either `toMatchObjectType` or `toExtend` instead
+     * - use `toMatchObjectType` to perform a strict check on a subset of your type's keys
+     * - use `toExtend` to check if your type extends the expected type
      * A less strict version of
      * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
