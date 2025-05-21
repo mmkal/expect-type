@@ -48,7 +48,17 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * Similar to jest's `expect(...).toMatchObject(...)` but for types.
    * Deeply "picks" the properties of the actual type based on the expected type, then performs a strict check to make sure the types match `Expected`.
    *
-   * Note: optional properties on the expected type are not allowed to be missing on the actual type.
+   * **Note**: optional properties on the {@linkcode Expected | expected type} are not allowed to be missing on the {@linkcode Actual | actual type}.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1, b: 1 }).toMatchObjectType<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1, b: 1 }).not.toMatchObjectType<{ a: number; c?: number }>()
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
    */
   toMatchObjectType: <
     Expected extends IsUnion<Expected> extends true
@@ -65,9 +75,45 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     >
   ) => true
 
+  /**
+   * Check if your type extends the expected type
+   *
+   * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()} that allows for extra properties.
+   * This is roughly equivalent to an `extends` constraint in a function type argument.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1, b: 1 }).toExtend<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1 }).not.toExtend<{ b: number }>()
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
   toExtend<Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
     ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
   ): true
+
+  /**
+   * Check if your type extends the expected type
+   *
+   * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()} that allows for extra properties.
+   * This is roughly equivalent to an `extends` constraint in a function type argument.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1, b: 1 }).toExtend<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1 }).not.toExtend<{ b: number }>()
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
+  toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+  ) => true
 
   toEqualTypeOf: {
     /**
@@ -151,20 +197,19 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
   }
 
-  toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
-    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
-  ) => true
-
   /**
-   * @deprecated - use either `toMatchObjectType` or `toExtend` instead
-   * - use `toMatchObjectType` to perform a strict check on a subset of your type's keys
-   * - use `toExtend` to check if your type extends the expected type
+   * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+   *
+   * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+   * - Use {@linkcode toExtend} to check if your type extends the expected type
    */
   toMatchTypeOf: {
     /**
-     * @deprecated - use either `toMatchObjectType` or `toExtend` instead
-     * - use `toMatchObjectType` to perform a strict check on a subset of your type's keys
-     * - use `toExtend` to check if your type extends the expected type
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
@@ -192,9 +237,11 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
 
     /**
-     * @deprecated - use either `toMatchObjectType` or `toExtend` instead
-     * - use `toMatchObjectType` to perform a strict check on a subset of your type's keys
-     * - use `toExtend` to check if your type extends the expected type
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
@@ -317,11 +364,17 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * Similar to jest's `expect(...).toMatchObject(...)` but for types.
    * Deeply "picks" the properties of the actual type based on the expected type, then performs a strict check to make sure the types match `Expected`.
    *
+   * **Note**: optional properties on the {@linkcode Expected | expected type} are not allowed to be missing on the {@linkcode Actual | actual type}.
+   *
    * @example
    * ```ts
-   * expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: number}> // passes
-   * expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: string}> // fails
+   * expectTypeOf({ a: 1, b: 1 }).toMatchObjectType<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1, b: 1 }).not.toMatchObjectType<{ a: number; c?: number }>()
    * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
    */
   toMatchObjectType: <Expected>(
     ...MISMATCH: MismatchArgs<
@@ -330,6 +383,22 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     >
   ) => true
 
+  /**
+   * Check if your type extends the expected type
+   *
+   * A less strict version of {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()} that allows for extra properties.
+   * This is roughly equivalent to an `extends` constraint in a function type argument.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1, b: 1 }).toExtend<{ a: number }>()]
+   *
+   * expectTypeOf({ a: 1 }).not.toExtend<{ b: number }>()
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
   toExtend<Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
 
   toEqualTypeOf: {
@@ -404,8 +473,19 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     <Expected>(...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>): true
   }
 
+  /**
+   * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+   *
+   * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+   * - Use {@linkcode toExtend} to check if your type extends the expected type
+   */
   toMatchTypeOf: {
     /**
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of
      * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
@@ -434,6 +514,11 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
 
     /**
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of
      * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
