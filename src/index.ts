@@ -50,24 +50,55 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    *
    * Note: optional properties on the expected type are not allowed to be missing on the actual type.
    */
-  toMatchObjectType: <
-    Expected extends IsUnion<Expected> extends true
-      ? 'toMatchObject does not support union types'
-      : Not<Extends<Expected, Record<string, unknown>>> extends true
-        ? 'toMatchObject only supports object types'
-        : StrictEqualUsingTSInternalIdenticalToOperator<DeepPickMatchingProps<Actual, Expected>, Expected> extends true
-          ? unknown
-          : MismatchInfo<DeepPickMatchingProps<Actual, Expected>, Expected>,
-  >(
-    ...MISMATCH: MismatchArgs<
-      StrictEqualUsingTSInternalIdenticalToOperator<DeepPickMatchingProps<Actual, Expected>, Expected>,
-      true
-    >
-  ) => true
+  toMatchObjectType: {
+    <
+      Expected extends IsUnion<Expected> extends true
+        ? 'toMatchObject does not support union types'
+        : Not<Extends<Expected, Record<string, unknown>>> extends true
+          ? 'toMatchObject only supports object types'
+          : StrictEqualUsingTSInternalIdenticalToOperator<
+                DeepPickMatchingProps<Actual, Expected>,
+                Expected
+              > extends true
+            ? unknown
+            : MismatchInfo<DeepPickMatchingProps<Actual, Expected>, Expected>,
+    >(
+      ...MISMATCH: MismatchArgs<
+        StrictEqualUsingTSInternalIdenticalToOperator<DeepPickMatchingProps<Actual, Expected>, Expected>,
+        true
+      >
+    ): true
 
-  toExtend<Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
-    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
-  ): true
+    <
+      Expected extends IsUnion<Expected> extends true
+        ? 'toMatchObject does not support union types'
+        : Not<Extends<Expected, Record<string, unknown>>> extends true
+          ? 'toMatchObject only supports object types'
+          : StrictEqualUsingTSInternalIdenticalToOperator<
+                DeepPickMatchingProps<Actual, Expected>,
+                Expected
+              > extends true
+            ? unknown
+            : MismatchInfo<DeepPickMatchingProps<Actual, Expected>, Expected>,
+    >(
+      value: Expected & AValue,
+      ...MISMATCH: MismatchArgs<
+        StrictEqualUsingTSInternalIdenticalToOperator<DeepPickMatchingProps<Actual, Expected>, Expected>,
+        true
+      >
+    ): true
+  }
+
+  toExtend: {
+    <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+    ): true
+
+    <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+      value: Expected & AValue,
+      ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+    ): true
+  }
 
   toEqualTypeOf: {
     /**
@@ -150,10 +181,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
     ): true
   }
-
-  toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
-    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
-  ) => true
 
   /**
    * @deprecated - use either `toMatchObjectType` or `toExtend` instead
@@ -323,14 +350,28 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: string}> // fails
    * ```
    */
-  toMatchObjectType: <Expected>(
-    ...MISMATCH: MismatchArgs<
-      StrictEqualUsingTSInternalIdenticalToOperator<Pick<Actual, keyof Actual & keyof Expected>, Expected>,
-      false
-    >
-  ) => true
+  toMatchObjectType: {
+    <Expected>(
+      ...MISMATCH: MismatchArgs<
+        StrictEqualUsingTSInternalIdenticalToOperator<Pick<Actual, keyof Actual & keyof Expected>, Expected>,
+        false
+      >
+    ): true
 
-  toExtend<Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
+    <Expected>(
+      value: Expected & AValue,
+      ...MISMATCH: MismatchArgs<
+        StrictEqualUsingTSInternalIdenticalToOperator<Pick<Actual, keyof Actual & keyof Expected>, Expected>,
+        false
+      >
+    ): true
+  }
+
+  toExtend: {
+    <Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
+
+    <Expected>(value: Expected & AValue, ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
+  }
 
   toEqualTypeOf: {
     /**
