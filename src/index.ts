@@ -75,7 +75,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     >
   ) => true
 
-
   /**
    * Check if your type extends the expected type
    *
