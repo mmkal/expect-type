@@ -360,7 +360,7 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * Similar to jest's `expect(...).toMatchObject(...)` but for types.
    * Deeply "picks" the properties of the actual type based on the expected type, then performs a strict check to make sure the types match `Expected`.
    *
-   * Note: optional properties on the expected type are not allowed to be missing on the actual type.
+   * **Note**: optional properties on the {@linkcode Expected | expected type} are not allowed to be missing on the {@linkcode Actual | actual type}.
    *
    * @example
    * ```ts
@@ -470,15 +470,18 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
   }
 
   /**
-   * @deprecated - use either `toMatchObjectType` or `toExtend` instead
-   * - use `toMatchObjectType` to perform a strict check on a subset of your type's keys
-   * - use `toExtend` to check if your type extends the expected type
+   * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+   *
+   * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+   * - Use {@linkcode toExtend} to check if your type extends the expected type
    */
   toMatchTypeOf: {
     /**
-     * @deprecated - use either `toMatchObjectType` or `toExtend` instead
-     * - use `toMatchObjectType` to perform a strict check on a subset of your type's keys
-     * - use `toExtend` to check if your type extends the expected type
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of
      * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
@@ -507,9 +510,11 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
 
     /**
-     * @deprecated - use either `toMatchObjectType` or `toExtend` instead
-     * - use `toMatchObjectType` to perform a strict check on a subset of your type's keys
-     * - use `toExtend` to check if your type extends the expected type
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of
      * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
