@@ -49,6 +49,16 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * Deeply "picks" the properties of the actual type based on the expected type, then performs a strict check to make sure the types match `Expected`.
    *
    * Note: optional properties on the expected type are not allowed to be missing on the actual type.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1, b: 1 }).toMatchObjectType<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1, b: 1 }).not.toMatchObjectType<{ a: number; c?: number }>()
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
    */
   toMatchObjectType: <
     Expected extends IsUnion<Expected> extends true
@@ -317,11 +327,17 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * Similar to jest's `expect(...).toMatchObject(...)` but for types.
    * Deeply "picks" the properties of the actual type based on the expected type, then performs a strict check to make sure the types match `Expected`.
    *
+   * Note: optional properties on the expected type are not allowed to be missing on the actual type.
+   *
    * @example
    * ```ts
-   * expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: number}> // passes
-   * expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: string}> // fails
+   * expectTypeOf({ a: 1, b: 1 }).toMatchObjectType<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1, b: 1 }).not.toMatchObjectType<{ a: number; c?: number }>()
    * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
    */
   toMatchObjectType: <Expected>(
     ...MISMATCH: MismatchArgs<
