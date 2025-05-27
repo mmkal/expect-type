@@ -146,7 +146,17 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
     ): true
   }
-
+  /**
+   * Checks that the actual type extends the expected type.
+   *
+   * @example
+   * ```ts
+   * const myValue = {a: 1, b: 2}
+   * expectTypeOf(myValue).toExtend<{ a: number }>()
+   * expectTypeOf(myValue).toExtend<Record<string, number>>()
+   * expectTypeOf(myValue).toExtend<Record<string, boolean>>() // fails
+   * ```
+   */
   toExtend<Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
     ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
   ): true
