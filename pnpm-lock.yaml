@@ -14,6 +14,9 @@ importers:
       '@types/node':
         specifier: ^22.0.0
         version: 22.10.10
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20250527.1
+        version: 7.0.0-dev.20250527.1
       '@vitest/ui':
         specifier: ^3.0.0
         version: 3.0.4(vitest@3.0.4)
@@ -952,6 +955,53 @@ packages:
   '@typescript-eslint/visitor-keys@7.18.0':
     resolution: {integrity: sha512-cDF0/Gf81QpY3xYyJKDV14Zwdmid5+uuENhjH2EqFaF0ni+yAyq/LzMaIJdhNJXZI7uLzwIlA+V7oWoyn6Curg==}
     engines: {node: ^18.18.0 || >=20.0.0}
+
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20250527.1':
+    resolution: {integrity: sha512-LnWBwSceMPemM/KnCbDybPsHLficDO8aOvw4RedHd7Xz+1ZDOo/fRJWg5jFhSYLdgx2Nzp9Ljwf9u1Nc2iEYRA==}
+    engines: {node: '>=20.6.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20250527.1':
+    resolution: {integrity: sha512-vF77D6aBJiQCAQ5zaPoai5GDyNms1N02ZB6T2c8DnUOzgWelDgMoA6oL5t6LeTdvwx3oI0Ey0ekVz3NnJpPbwA==}
+    engines: {node: '>=20.6.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20250527.1':
+    resolution: {integrity: sha512-6orHoa5+tfY18niW06UerdZODbDd1QTyQJ3uMyO01y5WGM6PYIhuvshKEoYDa1O9NbUsYPhPbfcRmgncqi3/Sw==}
+    engines: {node: '>=20.6.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20250527.1':
+    resolution: {integrity: sha512-KBkWzCrtX+0oO4hsgEV0uKYt9unDkyP5PY6NZmK9lf72F8ZZ79HfQxu990YR85J6Co8XEXy0gDxSU6tmOTKC9g==}
+    engines: {node: '>=20.6.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20250527.1':
+    resolution: {integrity: sha512-wbYrUQsSK6HbxUmhYG9/pwZ8M/fJxQFRDsqu84h/dcXBZ2YGYDnZ6fD+7lDj4RNCrWUFY+EqrUyB5rkMsTgZdw==}
+    engines: {node: '>=20.6.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20250527.1':
+    resolution: {integrity: sha512-SytZ+nrNfeE3HdsCSQ1E6ewflc5r6tp4A9SjihUxxmRmvHQzoL3GIn0gVlz+nO6h3zAWoJsRbuR8AcX+Kgn/vQ==}
+    engines: {node: '>=20.6.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20250527.1':
+    resolution: {integrity: sha512-jHX0l1st0Dtl/XUjNo0XlQpJwuvnQmq+LCsB0qoAfojT/EIAiKq20gU5GR1GJAjN+KP5vw07BjoIm4vr7+1pBg==}
+    engines: {node: '>=20.6.0'}
+    cpu: [x64]
+    os: [win32]
+
+  '@typescript/native-preview@7.0.0-dev.20250527.1':
+    resolution: {integrity: sha512-sRoq2q17GlLKH6eoTxtFfnEgf77Zvec3a4jTtnO23NDA1UKzkOnUA5fnR5+Na44fOa5muHSyOj/NoH8lc36tBw==}
+    engines: {node: '>=20.6.0'}
+    hasBin: true
 
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
@@ -4649,6 +4699,37 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.18.0
       eslint-visitor-keys: 3.4.3
+
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20250527.1':
+    optional: true
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20250527.1':
+    optional: true
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20250527.1':
+    optional: true
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20250527.1':
+    optional: true
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20250527.1':
+    optional: true
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20250527.1':
+    optional: true
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20250527.1':
+    optional: true
+
+  '@typescript/native-preview@7.0.0-dev.20250527.1':
+    optionalDependencies:
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20250527.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20250527.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20250527.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20250527.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20250527.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20250527.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20250527.1
 
   '@ungap/structured-clone@1.2.0': {}
 

@@ -65,10 +65,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     >
   ) => true
 
-  toExtend<Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
-    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
-  ): true
-
   toEqualTypeOf: {
     /**
      * Uses TypeScript's internal technique to check for type "identicalness".
@@ -151,9 +147,9 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
   }
 
-  toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+  toExtend<Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
     ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
-  ) => true
+  ): true
 
   /**
    * @deprecated - use either `toMatchObjectType` or `toExtend` instead
