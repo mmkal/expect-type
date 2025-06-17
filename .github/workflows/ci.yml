@@ -48,6 +48,7 @@ jobs:
       - run: pnpm install typescript@${{ matrix.ts }}
       - run: pnpm list typescript
       - run: pnpm type-check
+      - run: pnpm tsgo
 
   are-the-types-wrong:
     runs-on: ubuntu-latest

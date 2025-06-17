@@ -91,26 +91,6 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    * @param MISMATCH - The mismatch arguments.
    * @returns `true`.
    */
-  toExtend<Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
-    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
-  ): true
-
-  /**
-   * Check if your type extends the expected type
-   *
-   * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()} that allows for extra properties.
-   * This is roughly equivalent to an `extends` constraint in a function type argument.
-   *
-   * @example
-   * ```ts
-   * expectTypeOf({ a: 1, b: 1 }).toExtend<{ a: number }>()
-   *
-   * expectTypeOf({ a: 1 }).not.toExtend<{ b: number }>()
-   * ```
-   *
-   * @param MISMATCH - The mismatch arguments.
-   * @returns `true`.
-   */
   toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
     ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
   ) => true
