@@ -22,6 +22,17 @@ test('toEqualTypeOf(...) error message', async () => {
   `)
 })
 
+test('toEqualTypeOf with optional properties', async () => {
+  expect(tsErrors(`expectTypeOf<{x?: 1; y: 1}>().toEqualTypeOf<{x?: 1; y: 2}>()`)).toMatchInlineSnapshot(`
+    "test/test.ts:999:999 - error TS2344: Type '{ x?: 1 | undefined; y: 2; }' does not satisfy the constraint '{ y: "Expected: literal number: 2, Actual: literal number: 1"; x?: 1 | undefined; }'.
+      Types of property 'y' are incompatible.
+        Type '2' is not assignable to type '"Expected: literal number: 2, Actual: literal number: 1"'.
+
+    999 expectTypeOf<{x?: 1; y: 1}>().toEqualTypeOf<{x?: 1; y: 2}>()
+                                                    ~~~~~~~~~~~~~"
+  `)
+})
+
 test('toEqualTypeOf special types', async () => {
   expect(
     tsErrors(
