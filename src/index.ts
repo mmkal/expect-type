@@ -816,6 +816,30 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   ) => ExpectTypeOf<Omit<Actual, KeyToOmit>, Options>
 
   /**
+   * Converts all properties of a type to **`readonly`**,
+   * behaving exactly like the TypeScript {@linkcode Readonly} utility type.
+   *
+   * @example
+   * <caption>#### Create a **`readonly`** version of a type</caption>
+   *
+   * ```ts
+   * import { expectTypeOf } from 'expect-type'
+   *
+   * type Post = {
+   *   title: string
+   *   content: string
+   * }
+   *
+   * expectTypeOf<Post>().readonly().toEqualTypeOf<Readonly<Post>>()
+   * ```
+   *
+   * @returns The type with all properties made **`readonly`**, mirroring the behavior of TypeScript's {@linkcode Readonly} utility.
+   *
+   * @since 1.2.0
+   */
+  readonly(): ExpectTypeOf<Readonly<Actual>, Options>
+
+  /**
    * Extracts a certain function argument with `.parameter(number)` call to
    * perform other assertions on it.
    *
@@ -1081,6 +1105,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     exclude: expectTypeOf,
     pick: expectTypeOf,
     omit: expectTypeOf,
+    readonly: expectTypeOf,
     toHaveProperty: expectTypeOf,
     parameter: expectTypeOf,
   }
