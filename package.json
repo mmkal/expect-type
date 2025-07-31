@@ -46,7 +46,7 @@
     "pkg-pr-new": "0.0.54",
     "strip-ansi": "7.1.0",
     "ts-morph": "26.0.0",
-    "typescript": "5.8.3",
+    "typescript": "5.9.2",
     "vitest": "^3.0.0"
   }
 }
