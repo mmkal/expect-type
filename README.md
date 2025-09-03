@@ -874,7 +874,7 @@ A summary of some of the limitations of this library. Some of these are document
 1. `toBeCallableWith` will likely fail if you try to use it with a generic function or an overload. See [this issue](https://github.com/mmkal/expect-type/issues/50) for an example and how to work around it.
 1. (For now) overloaded functions might trip up the `.parameter` and `.parameters` helpers. This matches how the built-in TypeScript helper `Parameters<...>` works. This may be improved in the future though ([see related issue](https://github.com/mmkal/expect-type/issues/30)).
 1. `expectTypeOf(this).toEqualTypeOf(this)` inside class methods does not work.
-1. The [`exactOptionalPropertyTypes`](https://www.typescriptlang.org/tsconfig/#exactOptionalPropertyTypes) compiler option can't be tested since it only affects values/assignments, not types. See [this issue](https://github.com/mmkal/expect-type/issues/128).
+1. The [`exactOptionalPropertyTypes`](https://www.typescriptlang.org/tsconfig/#exactOptionalPropertyTypes) compiler option can't be tested since it only affects value assignments. See [this issue](https://github.com/mmkal/expect-type/issues/128).
 
 ## Similar projects
 
