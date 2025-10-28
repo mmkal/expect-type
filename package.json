@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.2",
-    "@types/node": "^22.0.0",
+    "@types/node": "^24.0.0",
     "@typescript/native-preview": "7.0.0-dev.20251027.1",
     "@vitest/ui": "^4.0.0",
     "eslint": "^8.57.0",
