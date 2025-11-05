@@ -228,9 +228,6 @@ export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
  */
 export type UnionToTuple<Union> = TuplifyUnion<Union>
 
-/** `true` iff `T` is a tuple, as opposed to an indeterminate-length array */
-export type IsTuple<T extends readonly any[]> = number extends T['length'] ? false : true
-
 /** The numbers between 0 and 9 that you learned in school */
 export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
@@ -243,5 +240,29 @@ export type TupleToRecord<T extends any[]> = {
   [K in keyof T as `${Extract<K, `${Digit}${string}`>}`]: T[K]
 }
 
+/** `true` iff `T` is a tuple, as opposed to an indeterminate-length array */
+export type IsTuple<T extends readonly any[]> = number extends T['length'] ? false : true
+
 /** `true` iff `T` is a record accepting any string keys, or accepting any number keys */
 export type IsRecord<T> = Or<[Extends<string, keyof T>, Extends<number, keyof T>]>
+
+export type IsUnion<T> = Not<Extends<UnionToTuple<T>['length'], 1>>
+
+/**
+ * A recursive version of `Pick` that selects properties from the left type that are present in the right type.
+ * The "leaf" types from `Left` are used - only the keys of `Right` are considered.
+ *
+ * @example
+ * ```ts
+ * const user = {email: 'a@b.com', name: 'John Doe', address: {street: '123 2nd St', city: 'New York', zip: '10001', state: 'NY', country: 'USA'}}
+ *
+ * type Result = DeepPickMatchingProps<typeof user, {name: unknown; address: {city: unknown}}> // {name: string, address: {city: string}}
+ * ```
+ */
+export type DeepPickMatchingProps<Left, Right> =
+  Left extends Record<string, unknown>
+    ? Pick<
+        {[K in keyof Left]: K extends keyof Right ? DeepPickMatchingProps<Left[K], Right[K]> : never},
+        Extract<keyof Left, keyof Right>
+      >
+    : Left

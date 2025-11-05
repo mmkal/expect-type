@@ -3,7 +3,7 @@
 /* eslint prettier/prettier: ["warn", { "singleQuote": true, "semi": false, "arrowParens": "avoid", "trailingComma": "es5", "bracketSpacing": false, "endOfLine": "auto", "printWidth": 100 }] */
 
 import {test} from 'vitest'
-import {expectTypeOf} from '../src'
+import {expectTypeOf} from '../src/index'
 
 test("Check an object's type with `.toEqualTypeOf`", () => {
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number}>()
@@ -22,41 +22,68 @@ test('`.toEqualTypeOf` fails on excess properties', () => {
   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
 })
 
-test('To allow for extra properties, use `.toMatchTypeOf`. This is roughly equivalent to an `extends` constraint in a function type argument.', () => {
-  expectTypeOf({a: 1, b: 1}).toMatchTypeOf<{a: number}>()
+test('To allow for extra properties on an object type, use `.toMatchObjectType`. This is a strict check, but only on the subset of keys that are in the expected type', () => {
+  expectTypeOf({a: 1, b: 1}).toMatchObjectType<{a: number}>()
 })
 
-test('`.toEqualTypeOf` and `.toMatchTypeOf` both fail on missing properties', () => {
+test('`.toMatchObjectType` can check partial matches on deeply nested objects', () => {
+  const user = {
+    email: 'a@b.com',
+    name: 'John Doe',
+    address: {street: '123 2nd St', city: 'New York', zip: '10001', state: 'NY', country: 'USA'},
+  }
+
+  expectTypeOf(user).toMatchObjectType<{name: string; address: {city: string}}>()
+})
+
+test('To check that a type extends another type, use `.toExtend`', () => {
+  expectTypeOf('some string').toExtend<string | boolean>()
+  // @ts-expect-error
+  expectTypeOf({a: 1}).toExtend<{b: number}>()
+})
+
+test("`.toExtend` can be used with object types, but `.toMatchObjectType` is usually a better choice when dealing with objects, since it's stricter", () => {
+  expectTypeOf({a: 1, b: 2}).toExtend<{a: number}>() // avoid this
+  expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: number}>() // prefer this
+})
+
+test('`.toEqualTypeOf`, `.toMatchObjectType`, and `.toExtend` all fail on missing properties', () => {
   // @ts-expect-error
   expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
   // @ts-expect-error
-  expectTypeOf({a: 1}).toMatchTypeOf<{a: number; b: number}>()
+  expectTypeOf({a: 1}).toMatchObjectType<{a: number; b: number}>()
+  // @ts-expect-error
+  expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
 })
 
-test('Another example of the difference between `.toMatchTypeOf` and `.toEqualTypeOf`, using generics. `.toMatchTypeOf` can be used for "is-a" relationships', () => {
+test('Another example of the difference between `.toExtend`, `.toMatchObjectType`, and `.toEqualTypeOf`. `.toExtend` can be used for "is-a" relationships', () => {
   type Fruit = {type: 'Fruit'; edible: boolean}
   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
 
-  expectTypeOf<Apple>().toMatchTypeOf<Fruit>()
+  expectTypeOf<Apple>().toExtend<Fruit>()
 
-  // @ts-expect-error
-  expectTypeOf<Fruit>().toMatchTypeOf<Apple>()
+  // @ts-expect-error - the `editable` property isn't an exact match. In `Apple`, it's `true`, which extends `boolean`, but they're not identical.
+  expectTypeOf<Apple>().toMatchObjectType<Fruit>()
 
-  // @ts-expect-error
+  // @ts-expect-error - Apple is not an identical type to Fruit, it's a subtype
   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+
+  // @ts-expect-error - Apple is a Fruit, but not vice versa
+  expectTypeOf<Fruit>().toExtend<Apple>()
 })
 
 test('Assertions can be inverted with `.not`', () => {
-  expectTypeOf({a: 1}).not.toMatchTypeOf({b: 1})
+  expectTypeOf({a: 1}).not.toExtend<{b: 1}>()
+  expectTypeOf({a: 1}).not.toMatchObjectType<{b: 1}>()
 })
 
 test('`.not` can be easier than relying on `// @ts-expect-error`', () => {
   type Fruit = {type: 'Fruit'; edible: boolean}
   type Apple = {type: 'Fruit'; name: 'Apple'; edible: true}
 
-  expectTypeOf<Apple>().toMatchTypeOf<Fruit>()
+  expectTypeOf<Apple>().toExtend<Fruit>()
 
-  expectTypeOf<Fruit>().not.toMatchTypeOf<Apple>()
+  expectTypeOf<Fruit>().not.toExtend<Apple>()
   expectTypeOf<Apple>().not.toEqualTypeOf<Fruit>()
 })
 
@@ -83,6 +110,7 @@ test('You can test for basic JavaScript types', () => {
   expectTypeOf(() => {}).returns.toBeVoid()
   expectTypeOf(Promise.resolve(123)).resolves.toBeNumber()
   expectTypeOf(Symbol(1)).toBeSymbol()
+  expectTypeOf(1n).toBeBigInt()
 })
 
 test('`.toBe...` methods allow for types that extend the expected type', () => {
@@ -97,6 +125,9 @@ test('`.toBe...` methods allow for types that extend the expected type', () => {
 
   expectTypeOf<boolean>().toBeBoolean()
   expectTypeOf<true>().toBeBoolean()
+
+  expectTypeOf<bigint>().toBeBigInt()
+  expectTypeOf<0n>().toBeBigInt()
 })
 
 test('`.toBe...` methods protect against `any`', () => {
@@ -179,11 +210,12 @@ test('More `.not` examples', () => {
   expectTypeOf(1).not.toBeNull()
   expectTypeOf(1).not.toBeUndefined()
   expectTypeOf(1).not.toBeNullable()
+  expectTypeOf(1).not.toBeBigInt()
 })
 
 test('Detect assignability of unioned types', () => {
-  expectTypeOf<number>().toMatchTypeOf<string | number>()
-  expectTypeOf<string | number>().not.toMatchTypeOf<number>()
+  expectTypeOf<number>().toExtend<string | number>()
+  expectTypeOf<string | number>().not.toExtend<number>()
 })
 
 test('Use `.extract` and `.exclude` to narrow down complex union types', () => {
@@ -268,6 +300,7 @@ test('Up to ten overloads will produce union types for `.parameters` and `.retur
     (input: bigint): bigint[]
   }
 
+  expectTypeOf<Factorize>().parameters.not.toEqualTypeOf<[number]>()
   expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number] | [bigint]>()
   expectTypeOf<Factorize>().returns.toEqualTypeOf<number[] | bigint[]>()
 
@@ -356,6 +389,19 @@ test("You can't use `.toBeCallableWith` with `.not` - you need to use ts-expect-
   expectTypeOf(f).toBeCallableWith('foo')
 })
 
+/**
+ * This can be useful for generic functions or complex types which you can't access via `.toBeCallableWith`, `.toHaveProperty` etc.
+ * The callback function isn't called at runtime, which can make this a useful way to get complex inferred types without worrying about running code.
+ */
+test('Use `.map` to transform types', () => {
+  const capitalize = <S extends string>(input: S) =>
+    (input.slice(0, 1).toUpperCase() + input.slice(1)) as Capitalize<S>
+
+  expectTypeOf(capitalize)
+    .map(fn => fn('hello world'))
+    .toEqualTypeOf<'Hello world'>()
+})
+
 test('You can also check type guards & type assertions', () => {
   const assertNumber = (v: any): asserts v is number => {
     if (typeof v !== 'number') {
@@ -366,7 +412,12 @@ test('You can also check type guards & type assertions', () => {
   expectTypeOf(assertNumber).asserts.toBeNumber()
 
   const isString = (v: any): v is string => typeof v === 'string'
+
   expectTypeOf(isString).guards.toBeString()
+
+  const isBigInt = (value: any): value is bigint => typeof value === 'bigint'
+
+  expectTypeOf(isBigInt).guards.toBeBigInt()
 })
 
 test('Assert on constructor parameters', () => {
@@ -469,13 +520,13 @@ test('Detect the difference between regular and `readonly` properties', () => {
   type A1 = {readonly a: string; b: string}
   type E1 = {a: string; b: string}
 
-  expectTypeOf<A1>().toMatchTypeOf<E1>()
+  expectTypeOf<A1>().toExtend<E1>()
   expectTypeOf<A1>().not.toEqualTypeOf<E1>()
 
   type A2 = {a: string; b: {readonly c: string}}
   type E2 = {a: string; b: {c: string}}
 
-  expectTypeOf<A2>().toMatchTypeOf<E2>()
+  expectTypeOf<A2>().toExtend<E2>()
   expectTypeOf<A2>().not.toEqualTypeOf<E2>()
 })
 
@@ -551,8 +602,6 @@ test('Another limitation: passing `this` references to `expectTypeOf` results in
     foo() {
       // @ts-expect-error
       expectTypeOf(this).toEqualTypeOf(this)
-      // @ts-expect-error
-      expectTypeOf(this).toMatchTypeOf(this)
     }
   }
 

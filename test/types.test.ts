@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {expect, test} from 'vitest'
-import * as a from '../src'
-import {UnionToIntersection} from '../src'
-import {
+import * as a from '../src/index'
+import type {UnionToIntersection} from '../src/index'
+import type {
   ConstructorOverloadParameters,
   OverloadParameters,
   OverloadReturnTypes,
@@ -920,4 +920,56 @@ test('inspect', () => {
   expectTypeOf<{a: Record<string, unknown>}>().branded.toEqualTypeOf<{
     a: {[K in string]: unknown}
   }>()
+})
+
+test('toMatchObjectType', () => {
+  expectTypeOf<{a: number}>().toMatchObjectType<{a: number}>()
+  expectTypeOf<{a: number}>().not.toMatchObjectType<{a: string}>()
+  expectTypeOf({a: 1, b: 2}).toMatchObjectType<{a: number}>()
+
+  // @ts-expect-error
+  expectTypeOf<any>().toMatchObjectType<number>()
+  // @ts-expect-error
+  expectTypeOf<{a: number}>().toMatchObjectType<{a: string} | {a: number}>()
+
+  type MyType = {readonly a: string; b: number; c: {some: {very: {complex: 'type'}}}; d?: boolean}
+
+  // @ts-expect-error
+  expectTypeOf<MyType>().toMatchObjectType<{a: string; b: number}>() // fails - forgot readonly
+  // @ts-expect-error
+  expectTypeOf<MyType>().toMatchObjectType<{readonly a: string; b?: number}>() // fails - b shouldn't be optional
+  // @ts-expect-error
+  expectTypeOf<MyType>().toMatchObjectType<{readonly a: string; d: boolean}>() // fails - d should be optional
+
+  expectTypeOf<MyType>().toMatchObjectType<{readonly a: string; b: number}>() // passes
+  expectTypeOf<MyType>().toMatchObjectType<{readonly a: string; d?: boolean}>() // passes
+
+  type BinaryOp = {
+    (a: number, b: number): number
+    (a: bigint, b: bigint): bigint
+  }
+
+  type Calculator = {add: BinaryOp; subtract: BinaryOp}
+
+  expectTypeOf<Calculator>().toMatchObjectType<{add: BinaryOp}>()
+  expectTypeOf<Calculator>().toMatchObjectType<{subtract: BinaryOp}>()
+  expectTypeOf<Calculator>().toMatchObjectType<{add: BinaryOp; subtract: BinaryOp}>()
+
+  expectTypeOf<Calculator>().toMatchObjectType<{
+    add: {(a: number, b: number): number; (a: bigint, b: bigint): bigint}
+  }>()
+
+  // @ts-expect-error
+  expectTypeOf<Calculator>().toMatchObjectType<{add: (a: number, b: number) => number}>() // fails - only one overload
+  // @ts-expect-error
+  expectTypeOf<Calculator>().toMatchObjectType<{add: (a: bigint, b: bigint) => bigint}>() // fails - only one overload
+
+  // @ts-expect-error - missing optional property not allowed
+  expectTypeOf<{a?: 1; b?: 2}>().toMatchObjectType<{a?: 1; b?: 2; c?: 3}>()
+
+  // @ts-expect-error - c should be optional, not | undefined
+  expectTypeOf<{a?: 1; b?: 2}>().toMatchObjectType<{a?: 1; b: 2 | undefined}>()
+
+  // @ts-expect-error - type must match exactly, a union that includes the actual type isn't good enough
+  expectTypeOf<{a: 1}>().toMatchObjectType<{a: 1 | undefined}>()
 })

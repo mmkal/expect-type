@@ -6,42 +6,102 @@ import {
   DeepBrandPropNotesOptions,
   DeepBrandPropNotesOptionsDefaults,
 } from './branding'
-import {
+import type {
+  ExpectAny,
+  ExpectArray,
+  ExpectBigInt,
+  ExpectBoolean,
+  ExpectFunction,
+  ExpectNever,
+  ExpectNull,
+  ExpectNullable,
+  ExpectNumber,
+  ExpectObject,
+  ExpectString,
+  ExpectSymbol,
+  ExpectUndefined,
+  ExpectUnknown,
+  ExpectVoid,
   MismatchInfo,
   Scolder,
-  ExpectAny,
-  ExpectUnknown,
-  ExpectNever,
-  ExpectFunction,
-  ExpectObject,
-  ExpectArray,
-  ExpectNumber,
-  ExpectString,
-  ExpectBoolean,
-  ExpectVoid,
-  ExpectSymbol,
-  ExpectNull,
-  ExpectUndefined,
-  ExpectNullable,
 } from './messages'
-import {
+import type {
   ConstructorOverloadParameters,
   OverloadParameters,
   OverloadReturnTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
-import {StrictEqualUsingTSInternalIdenticalToOperator, AValue, MismatchArgs, Extends} from './utils'
+import type {
+  AValue,
+  DeepPickMatchingProps,
+  Extends,
+  IsUnion,
+  MismatchArgs,
+  Not,
+  StrictEqualUsingTSInternalIdenticalToOperator,
+} from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
-export * from './utils' // backcompat, consider removing in next major version
 export * from './messages' // backcompat, consider removing in next major version
 export * from './overloads'
+export * from './utils' // backcompat, consider removing in next major version
 
 /**
  * Represents the positive assertion methods available for type checking in the
  * {@linkcode expectTypeOf()} utility.
  */
 export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: true; branded: false}> {
+  /**
+   * Similar to jest's `expect(...).toMatchObject(...)` but for types.
+   * Deeply "picks" the properties of the actual type based on the expected type, then performs a strict check to make sure the types match `Expected`.
+   *
+   * **Note**: optional properties on the {@linkcode Expected | expected type} are not allowed to be missing on the {@linkcode Actual | actual type}.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1, b: 1 }).toMatchObjectType<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1, b: 1 }).not.toMatchObjectType<{ a: number; c?: number }>()
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
+  toMatchObjectType: <
+    Expected extends IsUnion<Expected> extends true
+      ? 'toMatchObject does not support union types'
+      : Not<Extends<Expected, Record<string, unknown>>> extends true
+        ? 'toMatchObject only supports object types'
+        : StrictEqualUsingTSInternalIdenticalToOperator<DeepPickMatchingProps<Actual, Expected>, Expected> extends true
+          ? unknown
+          : MismatchInfo<DeepPickMatchingProps<Actual, Expected>, Expected>,
+  >(
+    ...MISMATCH: MismatchArgs<
+      StrictEqualUsingTSInternalIdenticalToOperator<DeepPickMatchingProps<Actual, Expected>, Expected>,
+      true
+    >
+  ) => true
+
+  /**
+   * Check if your type extends the expected type
+   *
+   * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()} that allows for extra properties.
+   * This is roughly equivalent to an `extends` constraint in a function type argument.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1, b: 1 }).toExtend<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1 }).not.toExtend<{ b: number }>()
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
+  toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
+    ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+  ) => true
+
   toEqualTypeOf: {
     /**
      * Uses TypeScript's internal technique to check for type "identicalness".
@@ -124,8 +184,19 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
   }
 
+  /**
+   * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+   *
+   * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+   * - Use {@linkcode toExtend} to check if your type extends the expected type
+   */
   toMatchTypeOf: {
     /**
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
@@ -153,6 +224,11 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
 
     /**
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of {@linkcode toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
      * This is roughly equivalent to an `extends` constraint
@@ -307,6 +383,47 @@ export interface Branded<Actual, Options extends DeepBrandOptions> {
  * Represents the negative expectation type for the {@linkcode Actual} type.
  */
 export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {positive: false}> {
+  /**
+   * Similar to jest's `expect(...).toMatchObject(...)` but for types.
+   * Deeply "picks" the properties of the actual type based on the expected type, then performs a strict check to make sure the types match `Expected`.
+   *
+   * **Note**: optional properties on the {@linkcode Expected | expected type} are not allowed to be missing on the {@linkcode Actual | actual type}.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1, b: 1 }).toMatchObjectType<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1, b: 1 }).not.toMatchObjectType<{ a: number; c?: number }>()
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
+  toMatchObjectType: <Expected>(
+    ...MISMATCH: MismatchArgs<
+      StrictEqualUsingTSInternalIdenticalToOperator<Pick<Actual, keyof Actual & keyof Expected>, Expected>,
+      false
+    >
+  ) => true
+
+  /**
+   * Check if your type extends the expected type
+   *
+   * A less strict version of {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()} that allows for extra properties.
+   * This is roughly equivalent to an `extends` constraint in a function type argument.
+   *
+   * @example
+   * ```ts
+   * expectTypeOf({ a: 1, b: 1 }).toExtend<{ a: number }>()]
+   *
+   * expectTypeOf({ a: 1 }).not.toExtend<{ b: number }>()
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
+  toExtend<Expected>(...MISMATCH: MismatchArgs<Extends<Actual, Expected>, false>): true
+
   toEqualTypeOf: {
     /**
      * Uses TypeScript's internal technique to check for type "identicalness".
@@ -379,8 +496,19 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     <Expected>(...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, false>): true
   }
 
+  /**
+   * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+   *
+   * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+   * - Use {@linkcode toExtend} to check if your type extends the expected type
+   */
   toMatchTypeOf: {
     /**
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of
      * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
@@ -409,6 +537,11 @@ export interface NegativeExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
     ): true
 
     /**
+     * @deprecated Since v1.2.0 - Use either {@linkcode toMatchObjectType} or {@linkcode toExtend} instead
+     *
+     * - Use {@linkcode toMatchObjectType} to perform a strict check on a subset of your type's keys
+     * - Use {@linkcode toExtend} to check if your type extends the expected type
+     *
      * A less strict version of
      * {@linkcode PositiveExpectTypeOf.toEqualTypeOf | .toEqualTypeOf()}
      * that allows for extra properties.
@@ -540,6 +673,34 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * Checks whether the type of the value is `null` or `undefined`.
    */
   toBeNullable: Scolder<ExpectNullable<Actual>, Options>
+
+  /**
+   * Transform that type of the value via a callback.
+   *
+   * @param fn - A callback that transforms the input value. Note that this function is not actually called - it's only used for type inference.
+   * @returns A new type which can be used for further assertions.
+   */
+  map: <T>(fn: (value: Actual) => T) => ExpectTypeOf<T, Options>
+
+  /**
+   * Checks whether the type of the value is **`bigint`**.
+   *
+   * @example
+   * <caption>#### Distinguish between **`number`** and **`bigint`**</caption>
+   *
+   * ```ts
+   * import { expectTypeOf } from 'expect-type'
+   *
+   * const aVeryBigInteger = 10n ** 100n
+   *
+   * expectTypeOf(aVeryBigInteger).not.toBeNumber()
+   *
+   * expectTypeOf(aVeryBigInteger).toBeBigInt()
+   * ```
+   *
+   * @since 1.1.0
+   */
+  toBeBigInt: Scolder<ExpectBigInt<Actual>, Options>
 
   /**
    * Checks whether a function is callable with the given parameters.
@@ -958,9 +1119,13 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toBeNull: fn,
     toBeUndefined: fn,
     toBeNullable: fn,
+    toBeBigInt: fn,
     toMatchTypeOf: fn,
     toEqualTypeOf: fn,
     toBeConstructibleWith: fn,
+    toMatchObjectType: fn,
+    toExtend: fn,
+    map: expectTypeOf,
     toBeCallableWith: expectTypeOf,
     extract: expectTypeOf,
     exclude: expectTypeOf,

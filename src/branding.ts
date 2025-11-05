@@ -1,5 +1,5 @@
-import {ConstructorOverloadParameters, NumOverloads, OverloadsInfoUnion} from './overloads'
-import {
+import type {ConstructorOverloadParameters, NumOverloads, OverloadsInfoUnion} from './overloads'
+import type {
   IsNever,
   IsAny,
   IsUnknown,

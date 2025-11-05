@@ -1,11 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "baseBranches": ["deps"],
-  "automerge": true,
-  "automergeType": "branch",
   "extends": [
     "config:recommended"
   ],
-  "fetchChangeLogs": "branch",
-  "commitBody": "{{#if logJSON.hasReleaseNotes}}{{#each logJSON.versions as |release|}}{{# if release.releaseNotes}}##### [v{{{release.version}}}]({{{release.releaseNotes.url}}})\n\n{{{release.releaseNotes.body}}}{{/if}}{{/each}}{{/if}}"
+  "baseBranches": [
+    "deps"
+  ],
+  "automerge": true,
+  "automergeType": "branch",
+  "fetchChangeLogs": "branch"
 }
