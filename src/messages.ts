@@ -1,5 +1,15 @@
 import type {StrictEqualUsingBranding} from './branding'
-import type {And, Extends, ExtendsExcludingAnyOrNever, IsAny, IsNever, IsUnknown, Not, UsefulKeys} from './utils'
+import type {
+  And,
+  Extends,
+  ExtendsExcludingAnyOrNever,
+  IsAny,
+  IsNever,
+  IsUnknown,
+  Not,
+  OptionalKeys,
+  UsefulKeys,
+} from './utils'
 
 /**
  * Determines the printable type representation for a given type.
@@ -45,15 +55,32 @@ export type MismatchInfo<Actual, Expected> =
   And<[Extends<PrintType<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
     ? And<[Extends<any[], Actual>, Extends<any[], Expected>]> extends true
       ? Array<MismatchInfo<Extract<Actual, any[]>[number], Extract<Expected, any[]>[number]>>
-      : {
-          [K in UsefulKeys<Actual> | UsefulKeys<Expected>]: MismatchInfo<
-            K extends keyof Actual ? Actual[K] : never,
-            K extends keyof Expected ? Expected[K] : never
-          >
-        }
+      : Optionalify<
+          {
+            [K in UsefulKeys<Actual> | UsefulKeys<Expected>]: MismatchInfo<
+              K extends keyof Actual ? Actual[K] : never,
+              K extends keyof Expected ? Expected[K] : never
+            >
+          },
+          OptionalKeys<Expected>
+        >
     : StrictEqualUsingBranding<Actual, Expected> extends true
       ? Actual
       : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
+
+/**
+ * Helper for making some keys of a type optional. Only useful so far for `MismatchInfo` - it makes sure we
+ * don't get bogus errors about optional properties mismatching, when actually it's something else that's wrong.
+ *
+ * - Note: this helper is a no-op if there are no optional keys in the type.
+ */
+// prettier-ignore
+export type Optionalify<T, TOptionalKeys> = [TOptionalKeys] extends [never]
+  ? T // no optional keys, just use the original type
+  : (
+      {[K in Exclude<keyof T, TOptionalKeys>]: T[K]} &
+      {[K in Extract<keyof T, TOptionalKeys>]?: T[K]}
+    ) extends infer X ? {[K in keyof X]: X[K]} : never // this `extends infer X` trick makes the types more readable - it flattens the props from the intersection into a single type.
 
 /**
  * @internal
