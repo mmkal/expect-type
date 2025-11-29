@@ -43,7 +43,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-mmkal": "0.9.0",
     "np": "^10.2.0",
-    "pkg-pr-new": "0.0.60",
+    "pkg-pr-new": "0.0.61",
     "strip-ansi": "7.1.2",
     "ts-morph": "27.0.2",
     "typescript": "5.9.3",
