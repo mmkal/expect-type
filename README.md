@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/mmkal/expect-type/actions/workflows/ci.yml/badge.svg)](https://github.com/mmkal/expect-type/actions/workflows/ci.yml)
 ![npm](https://img.shields.io/npm/dt/expect-type)
-[![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/mmkal)](https://x.com/mmkalmmkal)
+[![X Follow](https://img.shields.io/twitter/follow/mmkal)](https://x.com/mmkalmmkal)
 
 Compile-time tests for types. Useful to make sure types don't regress into being overly permissive as changes go in over time.
 
