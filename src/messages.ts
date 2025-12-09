@@ -85,16 +85,6 @@ export type Optionalify<T, TOptionalKeys> = [TOptionalKeys] extends [never]
 /**
  * @internal
  */
-const inverted = Symbol('inverted')
-
-/**
- * @internal
- */
-type Inverted<T> = {[inverted]: T}
-
-/**
- * @internal
- */
 const expectNull = Symbol('expectNull')
 export type ExpectNull<T> = {
   [expectNull]: T
@@ -219,14 +209,73 @@ export type ExpectBigInt<T> = {
 }
 
 /**
+ * Like PrintType but returns 'any' as a string for any types (instead of never).
+ * This is used for error messages where we need to display the actual type.
+ *
+ * @internal
+ */
+type PrintTypeForError<T> =
+  IsAny<T> extends true
+    ? 'any'
+    : IsUnknown<T> extends true
+      ? 'unknown'
+      : IsNever<T> extends true
+        ? 'never'
+        : boolean extends T
+          ? 'boolean'
+          : T extends boolean
+            ? `literal boolean: ${T}`
+            : string extends T
+              ? 'string'
+              : T extends string
+                ? `literal string: ${T}`
+                : number extends T
+                  ? 'number'
+                  : T extends number
+                    ? `literal number: ${T}`
+                    : bigint extends T
+                      ? 'bigint'
+                      : T extends bigint
+                        ? `literal bigint: ${T}`
+                        : T extends null
+                          ? 'null'
+                          : T extends undefined
+                            ? 'undefined'
+                            : T extends (...args: any[]) => any
+                              ? 'function'
+                              : '...'
+
+/**
+ * Generates an error message for a failed positive assertion.
+ */
+export type PositiveAssertionError<
+  Actual,
+  ExpectedTypeName extends string,
+> = `Expected: ${ExpectedTypeName}, Actual: ${PrintTypeForError<Actual>}`
+
+/**
+ * Generates an error message for a failed negative assertion.
+ */
+export type NegativeAssertionError<
+  Actual,
+  ExpectedTypeName extends string,
+> = `\`.not.${ExpectedTypeName extends 'nullable' ? 'toBeNullable' : `toBe${Capitalize<ExpectedTypeName>}`}()\` failed; Actual: ${PrintTypeForError<Actual>}`
+
+/**
  * Checks if the result of an expecter matches the specified options, and
  * resolves to a fairly readable error message if not.
+ *
+ * When the assertion passes, this resolves to `() => true` (a callable function).
+ * When the assertion fails, this resolves to an object with a descriptive key
+ * that makes the error message clear.
  */
 export type Scolder<
   Expecter extends {result: boolean},
   Options extends {positive: boolean},
+  ExpectedTypeName extends string,
+  Actual,
 > = Expecter['result'] extends Options['positive']
   ? () => true
   : Options['positive'] extends true
-    ? Expecter
-    : Inverted<Expecter>
+    ? {[K in PositiveAssertionError<Actual, ExpectedTypeName>]: never}
+    : {[K in NegativeAssertionError<Actual, ExpectedTypeName>]: never}

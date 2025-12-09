@@ -194,7 +194,7 @@ test('toBeString', async () => {
   const badString = `expectTypeOf(1).toBeString()`
   expect(tsErrors(badString)).toMatchInlineSnapshot(`
     "test/test.ts:999:999 - error TS2349: This expression is not callable.
-      Type 'ExpectString<number>' has no call signatures.
+      Type '{ "Expected: string, Actual: number": never; }' has no call signatures.
 
     999 expectTypeOf(1).toBeString()
                         ~~~~~~~~~~"
@@ -205,7 +205,7 @@ test('toBeNullable', async () => {
   const okAssertion = `expectTypeOf<1 | undefined>().toBeNullable()`
   expect(tsErrors(okAssertion + '\n' + okAssertion.replace('.toBe', '.not.toBe'))).toMatchInlineSnapshot(`
     "test/test.ts:999:999 - error TS2349: This expression is not callable.
-      Type 'Inverted<ExpectNullable<1 | undefined>>' has no call signatures.
+      Type '{ "\`.not.toBeNullable()\` failed; Actual: undefined": never; "\`.not.toBeNullable()\` failed; Actual: literal number: 1": never; }' has no call signatures.
 
     999 expectTypeOf<1 | undefined>().not.toBeNullable()
                                           ~~~~~~~~~~~~"
