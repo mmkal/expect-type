@@ -36,8 +36,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0
       ts-morph:
-        specifier: 23.0.0
-        version: 23.0.0
+        specifier: 27.0.2
+        version: 27.0.2
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -761,8 +761,8 @@ packages:
     resolution: {integrity: sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==}
     engines: {node: '>=18'}
 
-  '@ts-morph/common@0.24.0':
-    resolution: {integrity: sha512-c1xMmNHWpNselmpIqursHeOHHBTIsJLbB+NuovbTTRCNiTLEr/U9dbJ8qy0jd/O2x5pc3seWuOUN5R2IoOTp8A==}
+  '@ts-morph/common@0.28.1':
+    resolution: {integrity: sha512-W74iWf7ILp1ZKNYXY5qbddNaml7e9Sedv5lvU1V8lftlitkc9Pq1A+jlH23ltDgWYeZFFEqGCD1Ies9hqu3O+g==}
 
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
@@ -2664,11 +2664,6 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mkdirp@3.0.1:
-    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   mlly@1.7.4:
     resolution: {integrity: sha512-qmdSIPC4bDJXgZTCR7XosJiNKySV7O215tsPtDN9iEO/7q/76b/ijtgRu/+epFXSJhijtTCCGp3DWS549P3xKw==}
 
@@ -3453,8 +3448,8 @@ packages:
     peerDependencies:
       typescript: '>=4.0.0'
 
-  ts-morph@23.0.0:
-    resolution: {integrity: sha512-FcvFx7a9E8TUe6T3ShihXJLiJOiqyafzFKUO4aqIHDUCIvADdGNShcbc2W5PMr3LerXRv7mafvFZ9lRENxJmug==}
+  ts-morph@27.0.2:
+    resolution: {integrity: sha512-fhUhgeljcrdZ+9DZND1De1029PrE+cMkIP7ooqkLRTrRLTqcki2AstsyJm0vRNbTbVCNJ0idGlbBrfqc7/nA8w==}
 
   tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
@@ -4462,12 +4457,11 @@ snapshots:
 
   '@sindresorhus/merge-streams@2.3.0': {}
 
-  '@ts-morph/common@0.24.0':
+  '@ts-morph/common@0.28.1':
     dependencies:
-      fast-glob: 3.3.3
-      minimatch: 9.0.5
-      mkdirp: 3.0.1
+      minimatch: 10.0.1
       path-browserify: 1.0.1
+      tinyglobby: 0.2.15
 
   '@types/chai@5.2.3':
     dependencies:
@@ -6669,8 +6663,6 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  mkdirp@3.0.1: {}
-
   mlly@1.7.4:
     dependencies:
       acorn: 8.14.0
@@ -7557,9 +7549,9 @@ snapshots:
       minimatch: 10.0.1
       typescript: 5.9.2
 
-  ts-morph@23.0.0:
+  ts-morph@27.0.2:
     dependencies:
-      '@ts-morph/common': 0.24.0
+      '@ts-morph/common': 0.28.1
       code-block-writer: 13.0.3
 
   tslib@1.14.1: {}
