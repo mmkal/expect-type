@@ -67,7 +67,7 @@ test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the con
 999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
                                           ~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNumber<never>' has no call signatures.
+  Type '{ "Expected: number, Actual: never": never; }' has no call signatures.
 
 999   expectTypeOf<never>().toBeNumber()
                             ~~~~~~~~~~
@@ -78,52 +78,52 @@ test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; };
 999   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNumber<any>' has no call signatures.
+  Type '{ "Expected: number, Actual: any": never; }' has no call signatures.
 
 999   expectTypeOf(badIntParser).returns.toBeNumber()
                                          ~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNull<undefined>' has no call signatures.
+  Type '{ "Expected: null, Actual: undefined": never; }' has no call signatures.
 
 999   expectTypeOf(undefined).toBeNull()
                               ~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectUndefined<null>' has no call signatures.
+  Type '{ "Expected: undefined, Actual: null": never; }' has no call signatures.
 
 999   expectTypeOf(null).toBeUndefined()
                          ~~~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectUnknown<number>' has no call signatures.
+  Type '{ "Expected: unknown, Actual: number": never; }' has no call signatures.
 
 999   expectTypeOf(1).toBeUnknown()
                       ~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectAny<number>' has no call signatures.
+  Type '{ "Expected: any, Actual: number": never; }' has no call signatures.
 
 999   expectTypeOf(1).toBeAny()
                       ~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNever<number>' has no call signatures.
+  Type '{ "Expected: never, Actual: number": never; }' has no call signatures.
 
 999   expectTypeOf(1).toBeNever()
                       ~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNull<number>' has no call signatures.
+  Type '{ "Expected: null, Actual: number": never; }' has no call signatures.
 
 999   expectTypeOf(1).toBeNull()
                       ~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectUndefined<number>' has no call signatures.
+  Type '{ "Expected: undefined, Actual: number": never; }' has no call signatures.
 
 999   expectTypeOf(1).toBeUndefined()
                       ~~~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNullable<number>' has no call signatures.
+  Type '{ "Expected: nullable, Actual: number": never; }' has no call signatures.
 
 999   expectTypeOf(1).toBeNullable()
                       ~~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectBigInt<number>' has no call signatures.
+  Type '{ "Expected: bigint, Actual: number": never; }' has no call signatures.
 
 999   expectTypeOf(1).toBeBigInt()
                       ~~~~~~~~~~
@@ -140,7 +140,7 @@ test/usage.test.ts:999:999 - error TS2345: Argument of type '"c"' is not assigna
 999   expectTypeOf(obj).toHaveProperty('c')
                                        ~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectString<number>' has no call signatures.
+  Type '{ "Expected: string, Actual: number": never; }' has no call signatures.
 
 999   expectTypeOf(obj).toHaveProperty('a').toBeString()
                                             ~~~~~~~~~~
@@ -155,12 +155,12 @@ test/usage.test.ts:999:999 - error TS2344: Type '[number]' does not satisfy the 
 999   expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number]>()
                                                          ~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectAny<(a: number) => number[]>' has no call signatures.
+  Type '{ "Expected: any, Actual: function": never; }' has no call signatures.
 
 999   expectTypeOf(f).toBeAny()
                       ~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectAny<number[]>' has no call signatures.
+  Type '{ "Expected: any, Actual: ...": never; }' has no call signatures.
 
 999   expectTypeOf(f).returns.toBeAny()
                               ~~~~~~~
@@ -183,7 +183,7 @@ test/usage.test.ts:999:999 - error TS2345: Argument of type '(this: { name: stri
 999   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
                                               ~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectString<number>' has no call signatures.
+  Type '{ "Expected: string, Actual: number": never; }' has no call signatures.
 
 999   expectTypeOf([1, 2, 3]).items.toBeString()
                                     ~~~~~~~~~~
@@ -218,10 +218,10 @@ test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
     999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: number | null; }' does not satisfy the constraint '{ a: "Expected: number, Actual: undefined" | "Expected: null, Actual: undefined"; }'.
+test/usage.test.ts:999:999 - error TS2344: Type '{ a: number | null; }' does not satisfy the constraint '{ a: "Expected: null, Actual: undefined" | "Expected: number, Actual: undefined"; }'.
   Types of property 'a' are incompatible.
-    Type 'number | null' is not assignable to type '"Expected: number, Actual: undefined" | "Expected: null, Actual: undefined"'.
-      Type 'null' is not assignable to type '"Expected: number, Actual: undefined" | "Expected: null, Actual: undefined"'.
+    Type 'number | null' is not assignable to type '"Expected: null, Actual: undefined" | "Expected: number, Actual: undefined"'.
+      Type 'null' is not assignable to type '"Expected: null, Actual: undefined" | "Expected: number, Actual: undefined"'.
 
 999   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
                                                         ~~~~~~~~~~~~~~~~~~

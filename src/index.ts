@@ -564,72 +564,72 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
   /**
    * Checks whether the type of the value is `any`.
    */
-  toBeAny: Scolder<ExpectAny<Actual>, Options>
+  toBeAny: Scolder<ExpectAny<Actual>, Options, 'any', Actual>
 
   /**
    * Checks whether the type of the value is `unknown`.
    */
-  toBeUnknown: Scolder<ExpectUnknown<Actual>, Options>
+  toBeUnknown: Scolder<ExpectUnknown<Actual>, Options, 'unknown', Actual>
 
   /**
    * Checks whether the type of the value is `never`.
    */
-  toBeNever: Scolder<ExpectNever<Actual>, Options>
+  toBeNever: Scolder<ExpectNever<Actual>, Options, 'never', Actual>
 
   /**
    * Checks whether the type of the value is `function`.
    */
-  toBeFunction: Scolder<ExpectFunction<Actual>, Options>
+  toBeFunction: Scolder<ExpectFunction<Actual>, Options, 'function', Actual>
 
   /**
    * Checks whether the type of the value is `object`.
    */
-  toBeObject: Scolder<ExpectObject<Actual>, Options>
+  toBeObject: Scolder<ExpectObject<Actual>, Options, 'object', Actual>
 
   /**
    * Checks whether the type of the value is an {@linkcode Array}.
    */
-  toBeArray: Scolder<ExpectArray<Actual>, Options>
+  toBeArray: Scolder<ExpectArray<Actual>, Options, 'array', Actual>
 
   /**
    * Checks whether the type of the value is `number`.
    */
-  toBeNumber: Scolder<ExpectNumber<Actual>, Options>
+  toBeNumber: Scolder<ExpectNumber<Actual>, Options, 'number', Actual>
 
   /**
    * Checks whether the type of the value is `string`.
    */
-  toBeString: Scolder<ExpectString<Actual>, Options>
+  toBeString: Scolder<ExpectString<Actual>, Options, 'string', Actual>
 
   /**
    * Checks whether the type of the value is `boolean`.
    */
-  toBeBoolean: Scolder<ExpectBoolean<Actual>, Options>
+  toBeBoolean: Scolder<ExpectBoolean<Actual>, Options, 'boolean', Actual>
 
   /**
    * Checks whether the type of the value is `void`.
    */
-  toBeVoid: Scolder<ExpectVoid<Actual>, Options>
+  toBeVoid: Scolder<ExpectVoid<Actual>, Options, 'void', Actual>
 
   /**
    * Checks whether the type of the value is `symbol`.
    */
-  toBeSymbol: Scolder<ExpectSymbol<Actual>, Options>
+  toBeSymbol: Scolder<ExpectSymbol<Actual>, Options, 'symbol', Actual>
 
   /**
    * Checks whether the type of the value is `null`.
    */
-  toBeNull: Scolder<ExpectNull<Actual>, Options>
+  toBeNull: Scolder<ExpectNull<Actual>, Options, 'null', Actual>
 
   /**
    * Checks whether the type of the value is `undefined`.
    */
-  toBeUndefined: Scolder<ExpectUndefined<Actual>, Options>
+  toBeUndefined: Scolder<ExpectUndefined<Actual>, Options, 'undefined', Actual>
 
   /**
    * Checks whether the type of the value is `null` or `undefined`.
    */
-  toBeNullable: Scolder<ExpectNullable<Actual>, Options>
+  toBeNullable: Scolder<ExpectNullable<Actual>, Options, 'nullable', Actual>
 
   /**
    * Transform that type of the value via a callback.
@@ -657,7 +657,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    *
    * @since 1.1.0
    */
-  toBeBigInt: Scolder<ExpectBigInt<Actual>, Options>
+  toBeBigInt: Scolder<ExpectBigInt<Actual>, Options, 'bigint', Actual>
 
   /**
    * Checks whether a function is callable with the given parameters.
