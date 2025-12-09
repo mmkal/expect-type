@@ -36,10 +36,10 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "0.18.2",
-    "@types/node": "^24.0.0",
+    "@arethetypeswrong/cli": "0.17.3",
+    "@types/node": "^22.0.0",
     "@typescript/native-preview": "7.0.0-dev.20251208.1",
-    "@vitest/ui": "^4.0.0",
+    "@vitest/ui": "^3.0.0",
     "eslint": "^8.57.0",
     "eslint-plugin-mmkal": "0.9.0",
     "np": "^10.2.0",
