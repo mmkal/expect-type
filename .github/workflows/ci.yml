@@ -16,7 +16,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm test --reporter=html
       - name: upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           path: html
