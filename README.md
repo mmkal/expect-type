@@ -248,6 +248,57 @@ expectTypeOf<1 | null>().toBeNullable()
 expectTypeOf<1 | undefined | null>().toBeNullable()
 ```
 
+Use `.branded.inspect` to find badly-defined paths:
+
+This finds `any` and `never` types deep within objects. This can be useful for debugging, or for validating large or complex types. If there are `any` or `never` types lurking deep within the type, your IDE will highlight the bad paths.
+
+Note: this is a fairly heavy operation, so you might not want to actually commit the assertions to source control.
+
+```typescript
+const bad = (metadata: string) => ({
+  name: 'Bob',
+  dob: new Date('1970-01-01'),
+  meta: {
+    raw: metadata,
+    parsed: JSON.parse(metadata), // whoops, any!
+  },
+  exitCode: process.exit(), // whoops, never!
+})
+
+expectTypeOf(bad).returns.branded.inspect({
+  foundProps: {
+    '.meta.parsed': 'any',
+    '.exitCode': 'never',
+  },
+})
+```
+
+You can use `.branded.inspect` to confirm there are no unexpected types:
+
+```typescript
+const good = (metadata: string) => ({
+  name: 'Bob',
+  dob: new Date('1970-01-01'),
+  meta: {
+    raw: metadata,
+    parsed: JSON.parse(metadata) as unknown, // here we just cast, but you should use zod/similar validation libraries
+  },
+  exitCode: 0,
+})
+
+expectTypeOf(good).returns.branded.inspect({
+  foundProps: {},
+})
+
+// You can also use it to search for other types. Valid options for `findType` are currently only `'never' | 'any' | 'unknown'`.
+
+expectTypeOf(good).returns.branded.inspect<{findType: 'unknown'}>({
+  foundProps: {
+    '.meta.parsed': 'unknown',
+  },
+})
+```
+
 More `.not` examples:
 
 ```typescript

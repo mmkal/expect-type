@@ -236,13 +236,15 @@ test('toMatchObjectType', () => {
 })
 
 test('usage.test.ts', () => {
+  const originalUsageTestFile = fs.readFileSync(__dirname + '/usage.test.ts', 'utf8')
+  // first make sure there are no bugs, to avoid creating noisy snapshot diffs when I blindly run `pnpm test -- -u`
+  expect(tsFileErrors({filepath: 'test/usage.test.ts', content: originalUsageTestFile})).toEqual('')
+
   // remove all `.not`s and `// @ts-expect-error`s from the main test file and snapshot the errors
-  const usageTestFile = fs
-    .readFileSync(__dirname + '/usage.test.ts')
-    .toString()
+  const sabotagedUsageTestFile = originalUsageTestFile
     .split('\n')
     .map(line => line.replace('// @ts-expect-error', '// error expected on next line:'))
     .map(line => line.replace('.not.', '.'))
     .join('\n')
-  expect(tsFileErrors({filepath: 'test/usage.test.ts', content: usageTestFile})).toMatchSnapshot()
+  expect(tsFileErrors({filepath: 'test/usage.test.ts', content: sabotagedUsageTestFile})).toMatchSnapshot()
 })

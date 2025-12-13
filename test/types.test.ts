@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import {test} from 'vitest'
+import {expect, test} from 'vitest'
 import * as a from '../src/index'
 import type {UnionToIntersection} from '../src/index'
 import type {
@@ -48,16 +48,16 @@ test('boolean type logic', () => {
   expectTypeOf<a.Extends<1, number>>().toEqualTypeOf<true>()
   expectTypeOf<a.Extends<number, 1>>().toEqualTypeOf<false>()
 
-  expectTypeOf<a.StrictEqualUsingBranding<1, 1>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<1, number>>().toEqualTypeOf<false>()
-  expectTypeOf<a.StrictEqualUsingBranding<{a: 1}, {a: 1}>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<[{a: 1}], [{a: 1}]>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<never, never>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<any, any>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<unknown, unknown>>().toEqualTypeOf<true>()
-  expectTypeOf<a.StrictEqualUsingBranding<any, never>>().toEqualTypeOf<false>()
-  expectTypeOf<a.StrictEqualUsingBranding<any, unknown>>().toEqualTypeOf<false>()
-  expectTypeOf<a.StrictEqualUsingBranding<never, unknown>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<1, 1, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<1, number, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<{a: 1}, {a: 1}, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<[{a: 1}], [{a: 1}], a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<never, never, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<any, any, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<unknown, unknown, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<true>()
+  expectTypeOf<a.StrictEqualUsingBranding<any, never, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<any, unknown, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<false>()
+  expectTypeOf<a.StrictEqualUsingBranding<never, unknown, a.DeepBrandOptionsDefaults>>().toEqualTypeOf<false>()
 })
 
 test(`never types don't sneak by`, () => {
@@ -166,7 +166,7 @@ test('parity with IsExact from conditional-type-checks', () => {
   /** shim conditional-type-check's `assert` */
   const assert = <T extends boolean>(_result: T) => true
   /** shim conditional-type-check's `IsExact` using `Equal` */
-  type IsExact<T, U> = a.StrictEqualUsingBranding<T, U>
+  type IsExact<T, U> = a.StrictEqualUsingBranding<T, U, a.DeepBrandOptionsDefaults>
 
   // basic test for `assert` shim:
   expectTypeOf(assert).toBeCallableWith(true)
@@ -236,10 +236,14 @@ test('parity with IsExact from conditional-type-checks', () => {
 })
 
 test('Equal works with functions', () => {
-  expectTypeOf<a.StrictEqualUsingBranding<() => void, () => string>>().toEqualTypeOf<false>()
-  expectTypeOf<a.StrictEqualUsingBranding<() => void, (s: string) => void>>().toEqualTypeOf<false>()
   expectTypeOf<
-    a.StrictEqualUsingBranding<() => () => () => void, () => (s: string) => () => void>
+    a.StrictEqualUsingBranding<() => void, () => string, a.DeepBrandOptionsDefaults>
+  >().toEqualTypeOf<false>()
+  expectTypeOf<
+    a.StrictEqualUsingBranding<() => void, (s: string) => void, a.DeepBrandOptionsDefaults>
+  >().toEqualTypeOf<false>()
+  expectTypeOf<
+    a.StrictEqualUsingBranding<() => () => () => void, () => (s: string) => () => void, a.DeepBrandOptionsDefaults>
   >().toEqualTypeOf<false>()
 })
 
@@ -686,10 +690,16 @@ test('Works arounds tsc bug not handling intersected types for this form of equi
   // The workaround is the new optional .branded modifier.
   expectTypeOf<{foo: number} & {bar: string}>().branded.toEqualTypeOf<{foo: number; bar: string}>()
   expectTypeOf(one).branded.toEqualTypeOf<typeof two>()
-  // @ts-expect-error
-  expectTypeOf<{foo: number} & {bar: string}>().branded.not.toEqualTypeOf<{foo: number; bar: string}>()
-  // @ts-expect-error
-  expectTypeOf(one).branded.not.toEqualTypeOf(two)
+  const tryUseBrandedDotNot = () =>
+    // @ts-expect-error
+    expectTypeOf<{foo: number} & {bar: string}>().branded.not.toEqualTypeOf<{foo: number; bar: string}>()
+
+  expect(tryUseBrandedDotNot).toThrow()
+  const tryUseBrandedDotNot2 = () =>
+    // @ts-expect-error
+    expectTypeOf(one).branded.not.toEqualTypeOf(two)
+
+  expect(tryUseBrandedDotNot2).toThrow()
 })
 
 test(".branded doesn't get tripped up by overloaded functions", () => {
@@ -760,6 +770,14 @@ test('Distinguish between identical types that are AND`d together', () => {
   expectTypeOf<{foo: number} & {foo: number}>().toEqualTypeOf<{foo: number} & {foo: number}>()
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
   expectTypeOf<(() => 1) & {x: 1}>().not.toEqualTypeOf<() => 1>()
+})
+
+test('.branded with tuples', () => {
+  type A = {tuple: [1, unknown]}
+  type B = {tuple: [1, any]}
+
+  // @ts-expect-error any vs unknown inside tuple
+  expectTypeOf<A>().branded.toEqualTypeOf<B>()
 })
 
 test('limitations', () => {
@@ -846,6 +864,62 @@ test('Overload edge cases', () => {
 
   expectTypeOf<NoArgOverload>().parameters.toEqualTypeOf<[] | [1]>()
   expectTypeOf<NoArgOverload>().returns.toEqualTypeOf<1>()
+})
+
+test('prop notes', () => {
+  type X = {
+    aa: any
+    bb: boolean
+    aa1: number[]
+    obj: {
+      oa: any
+      ob: boolean
+    }
+    aa2: Array<{x: number; y: any; z: never}>
+    nn: never
+    tt: [0, any, 2, never, 3]
+    oo: {
+      (a: any, b: any): any[]
+      (b: unknown[]): never
+    }
+    ff: (this: any, x: 1) => 2
+  }
+
+  const notes: a.DeepBrandPropNotes<X, a.DeepBrandOptionsDefaults & {findType: 'any' | 'never'}> = {
+    '.aa': 'any',
+    '.obj.oa': 'any',
+    '.aa2[number].y': 'any',
+    '.aa2[number].z': 'never',
+    '.nn': 'never',
+    '.tt[number].1': 'any',
+    '.tt[number].3': 'never',
+    '.oo(overloads).0(params)[number].0': 'any',
+    '.oo(overloads).0(params)[number].1': 'any',
+    '.oo(overloads).0(return)[number]': 'any',
+    '.oo(overloads).1(return)': 'never',
+    '.ff(this)': 'any',
+  }
+
+  expectTypeOf(notes).toHaveProperty('.aa')
+})
+
+test('inspect', () => {
+  expectTypeOf<{u: unknown}>().branded.inspect({foundProps: {}})
+  // make sure if you do accidentally supply some, you're only allowed to supply an obvious error message
+  expectTypeOf<{u: unknown}>().branded.inspect({foundProps: {'.u': 'No flagged props found!'}})
+
+  expectTypeOf<{
+    r: Record<string, any>
+  }>().branded.inspect({
+    // @ts-expect-error we should be forced to say that a record has any in its RHS
+    foundProps: {
+      // '.r(values)': 'any', // uncommenting this would remove the error
+    },
+  })
+
+  expectTypeOf<{a: Record<string, unknown>}>().branded.toEqualTypeOf<{
+    a: {[K in string]: unknown}
+  }>()
 })
 
 test('toMatchObjectType', () => {

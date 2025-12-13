@@ -1,4 +1,11 @@
-import type {StrictEqualUsingBranding} from './branding'
+import {
+  DeepBrandOptions,
+  DeepBrandOptionsDefaults,
+  StrictEqualUsingBranding,
+  DeepBrandPropNotes,
+  DeepBrandPropNotesOptions,
+  DeepBrandPropNotesOptionsDefaults,
+} from './branding'
 import type {
   ExpectAny,
   ExpectArray,
@@ -294,46 +301,82 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    *
    * @see {@link https://github.com/mmkal/expect-type/pull/21 | Reference}
    */
-  branded: {
-    /**
-     * Uses TypeScript's internal technique to check for type "identicalness".
-     *
-     * It will check if the types are fully equal to each other.
-     * It will not fail if two objects have different values, but the same type.
-     * It will fail however if an object is missing a property.
-     *
-     * **_Unexpected failure_**? For a more permissive but less performant
-     * check that accommodates for equivalent intersection types,
-     * use {@linkcode PositiveExpectTypeOf.branded | .branded.toEqualTypeOf()}.
-     * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing | The documentation for details}.
-     *
-     * @example
-     * <caption>Using generic type argument syntax</caption>
-     * ```ts
-     * expectTypeOf({ a: 1 }).toEqualTypeOf<{ a: number }>()
-     *
-     * expectTypeOf({ a: 1, b: 1 }).not.toEqualTypeOf<{ a: number }>()
-     * ```
-     *
-     * @example
-     * <caption>Using inferred type syntax by passing a value</caption>
-     * ```ts
-     * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 1 })
-     *
-     * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 2 })
-     * ```
-     *
-     * @param MISMATCH - The mismatch arguments.
-     * @returns `true`.
-     */
-    toEqualTypeOf: <
-      Expected extends StrictEqualUsingBranding<Actual, Expected> extends true
-        ? unknown
-        : MismatchInfo<Actual, Expected>,
-    >(
-      ...MISMATCH: MismatchArgs<StrictEqualUsingBranding<Actual, Expected>, true>
-    ) => true
-  }
+  branded: Branded<Actual, DeepBrandOptionsDefaults>
+}
+
+export interface Branded<Actual, Options extends DeepBrandOptions> {
+  /**
+   * Uses TypeScript's internal technique to check for type "identicalness".
+   *
+   * It will check if the types are fully equal to each other.
+   * It will not fail if two objects have different values, but the same type.
+   * It will fail however if an object is missing a property.
+   *
+   * **_Unexpected failure_**? For a more permissive but less performant
+   * check that accommodates for equivalent intersection types,
+   * use {@linkcode PositiveExpectTypeOf.branded | .branded.toEqualTypeOf()}.
+   * @see {@link https://github.com/mmkal/expect-type#why-is-my-assertion-failing | The documentation for details}.
+   *
+   * @example
+   * <caption>Using generic type argument syntax</caption>
+   * ```ts
+   * expectTypeOf({ a: 1 }).toEqualTypeOf<{ a: number }>()
+   *
+   * expectTypeOf({ a: 1, b: 1 }).not.toEqualTypeOf<{ a: number }>()
+   * ```
+   *
+   * @example
+   * <caption>Using inferred type syntax by passing a value</caption>
+   * ```ts
+   * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 1 })
+   *
+   * expectTypeOf({ a: 1 }).toEqualTypeOf({ a: 2 })
+   * ```
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
+  toEqualTypeOf: <
+    Expected extends StrictEqualUsingBranding<Actual, Expected, Options> extends true
+      ? unknown
+      : MismatchInfo<Actual, Expected>,
+  >(
+    ...MISMATCH: MismatchArgs<StrictEqualUsingBranding<Actual, Expected, Options>, true>
+  ) => true
+
+  /**
+   * Walk an object to find all paths that are badly-defined - meaning, have `any` or `never` types.
+   *
+   * In most cases, this should be passed `{badlyDefinedPaths: []}`, and a type error will appear if there are any badly-deifned paths.
+   *
+   * @param params Explicitly supplied "badly-defined" paths. For a well-defined type with no issues, pass an empty list. The compiler will tell you if you're wrong!
+   * @returns true
+   *
+   * @example
+   * ```ts
+   * type BadType = {a: any; b: boolean; c: never; d: [0, any]; e: Array<{f: any; g: number}>}
+   *
+   * // \@ts-expect-error lots of `any`/`never` in this type, so you're not allowed to claim there are no badly-defined paths.
+   * expectTypeOf<BadType>().inspect({badlyDefinedPaths: []})
+   * expectTypeOf<BadType>().inspect({
+   *   badlyDefinePaths: ['.a: any', '.c: never', '.d[1]: any', 'e[number].f: any'],
+   * })
+   * ```
+   *
+   * @example
+   * ```ts
+   * type GoodType = {b: boolean: c: string}
+   *
+   * expectTypeOf<GoodType>().inspect({badlyDefinedPaths: []})
+   * ```
+   */
+  inspect: <
+    PropNoteOptions extends Exclude<DeepBrandPropNotesOptions, DeepBrandOptions> = DeepBrandPropNotesOptionsDefaults,
+  >(params: {
+    foundProps: DeepBrandPropNotes<Actual, Options & PropNoteOptions>
+  }) => true
+
+  configure<O extends DeepBrandOptions>(): Branded<Actual, O>
 }
 
 /**
@@ -1048,13 +1091,20 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     'instance',
     'guards',
     'asserts',
-    'branded',
   ] as const
   type Keys = keyof PositiveExpectTypeOf<any> | keyof NegativeExpectTypeOf<any>
 
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+  function createBranded(): Branded<{}, any> {
+    return {
+      inspect: () => true,
+      configure: () => createBranded(),
+      toEqualTypeOf: fn,
+    }
+  }
+
   type FunctionsDict = Record<Exclude<Keys, (typeof nonFunctionProperties)[number]>, any>
   const obj: FunctionsDict = {
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     toBeAny: fn,
     toBeUnknown: fn,
     toBeNever: fn,
@@ -1083,7 +1133,11 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     omit: expectTypeOf,
     toHaveProperty: expectTypeOf,
     parameter: expectTypeOf,
+    get branded() {
+      return createBranded()
+    },
   }
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
   const getterProperties: readonly Keys[] = nonFunctionProperties
   getterProperties.forEach((prop: Keys) => Object.defineProperty(obj, prop, {get: () => expectTypeOf({})}))
