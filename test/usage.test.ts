@@ -179,7 +179,7 @@ test('Use `.branded.inspect` to find badly-defined paths', () => {
   })
 })
 
-test('You can use `.branded.inspect` to confirm there are no never/any types', () => {
+test('You can use `.branded.inspect` to confirm there are no unexpected types', () => {
   const good = (metadata: string) => ({
     name: 'Bob',
     dob: new Date('1970-01-01'),
@@ -194,7 +194,7 @@ test('You can use `.branded.inspect` to confirm there are no never/any types', (
     foundProps: {},
   })
 
-  // You can also use it to search for other types. Valid options for `findType` are currently onlly `'never' | 'any' | 'unknown'`.
+  // You can also use it to search for other types. Valid options for `findType` are currently only `'never' | 'any' | 'unknown'`.
 
   expectTypeOf(good).returns.branded.inspect<{findType: 'unknown'}>({
     foundProps: {
