@@ -273,7 +273,7 @@ expectTypeOf(bad).returns.branded.inspect({
 })
 ```
 
-You can use `.branded.inspect` to confirm there are no never/any types:
+You can use `.branded.inspect` to confirm there are no unexpected types:
 
 ```typescript
 const good = (metadata: string) => ({
@@ -290,7 +290,7 @@ expectTypeOf(good).returns.branded.inspect({
   foundProps: {},
 })
 
-// You can also use it to search for other types. Valid options for `findType` are currently onlly `'never' | 'any' | 'unknown'`.
+// You can also use it to search for other types. Valid options for `findType` are currently only `'never' | 'any' | 'unknown'`.
 
 expectTypeOf(good).returns.branded.inspect<{findType: 'unknown'}>({
   foundProps: {
