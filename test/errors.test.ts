@@ -59,7 +59,7 @@ test('toEqualTypeOf special types', async () => {
   ).toMatchInlineSnapshot(`
     "test/test.ts:999:999 - error TS2344: Type '{ a: 1; }' does not satisfy the constraint '{ a: never; }'.
       Types of property 'a' are incompatible.
-        Type 'number' is not assignable to type 'never'.
+        Type '1' is not assignable to type 'never'.
 
     999 expectTypeOf<{a: any}>().toEqualTypeOf<{a: 1}>()
                                                ~~~~~~
