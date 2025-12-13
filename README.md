@@ -273,7 +273,7 @@ expectTypeOf(bad).returns.branded.inspect({
 })
 ```
 
-You can use `.branded.inspect` to confirm there are no unexpected types:
+You can use `.branded.inspect` to confirm there are no never/any types:
 
 ```typescript
 const good = (metadata: string) => ({
