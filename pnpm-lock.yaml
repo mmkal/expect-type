@@ -28,7 +28,7 @@ importers:
         version: 0.9.0(eslint@8.57.1)(typescript@5.9.3)(vitest@4.0.18)
       np:
         specifier: ^11.0.0
-        version: 11.0.1(@types/node@24.10.9)(typescript@5.9.3)
+        version: 11.0.2(@types/node@24.10.9)(typescript@5.9.3)
       pkg-pr-new:
         specifier: 0.0.62
         version: 0.0.62
@@ -1446,8 +1446,8 @@ packages:
     resolution: {integrity: sha512-ouuZd4/dm2Sw5Gmqy6bGyNNNe1qt9RpmxveLSO7KcgsTnU7RXfsw+/bukWGo1abgBiMAic068rclZsO4IWmmxQ==}
     engines: {node: '>= 12'}
 
-  clipboardy@5.0.2:
-    resolution: {integrity: sha512-3IG8i8Yfb410yqDlCx9Ve3lYLFN3bD1IkrWcowT1kyTo6y4bwYf2guK9Q8a6zck5vWm7afm6Y61i7BG/Ir3FMA==}
+  clipboardy@5.1.0:
+    resolution: {integrity: sha512-w8Faf7egtk+6eZ+QJSYhCc8W5GKKd36Et6Qtl+c/dOFtPSjgCkJn9+QHr7D3EbdAO6rJb8I76sizRQAJpwOoLg==}
     engines: {node: '>=20'}
 
   cliui@7.0.4:
@@ -2250,8 +2250,8 @@ packages:
   inquirer-autosubmit-prompt@0.2.0:
     resolution: {integrity: sha512-mzNrusCk5L6kSzlN0Ioddn8yzrhYNLli+Sn2ZxMuLechMYAzakiFCIULxsxlQb5YKzthLGfrFACcWoAvM7p04Q==}
 
-  inquirer@13.2.1:
-    resolution: {integrity: sha512-kjIN+joqgbSncQJ6GfN7gV9AbDQlMA+hJ96xcwkQUwP9KN/ZIusoJ2mAfdt0LPrZJQsEyk5i/YrgJQTxSgzlPw==}
+  inquirer@13.2.2:
+    resolution: {integrity: sha512-+hlN8I88JE9T3zjWHGnMhryniRDbSgFNJHJTyD2iKO5YNpMRyfghQ6wVoe+gV4ygMM4r4GzlsBxNa1g/UUZixA==}
     engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
     peerDependencies:
       '@types/node': '>=18'
@@ -2602,8 +2602,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  ky@1.14.2:
-    resolution: {integrity: sha512-q3RBbsO5A5zrPhB6CaCS8ZUv+NWCXv6JJT4Em0i264G9W0fdPB8YRfnnEi7Dm7X7omAkBIPojzYJ2D1oHTHqug==}
+  ky@1.14.3:
+    resolution: {integrity: sha512-9zy9lkjac+TR1c2tG+mkNSVlyOpInnWdSMiue4F+kq8TwJSgv6o8jhLRg8Ho6SnZ9wOYUq/yozts9qQCfk7bIw==}
     engines: {node: '>=18'}
 
   language-subtag-registry@0.3.23:
@@ -2687,6 +2687,10 @@ packages:
 
   lru-cache@11.2.4:
     resolution: {integrity: sha512-B5Y16Jr9LB9dHVkh6ZevG+vAbOsNOYCX+sXvFWFu7B3Iz5mijW3zdbMyhsh8ANd2mSWBYdJgnqi+mL7/LrOPYg==}
+    engines: {node: 20 || >=22}
+
+  lru-cache@11.2.5:
+    resolution: {integrity: sha512-vFrFJkWtJvJnD5hg+hJvVE8Lh/TcMzKnTgCWmtBipwI5yLX/iX+5UB2tfuyODF5E7k9xEzMdYgGqaSb1c0c5Yw==}
     engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
@@ -2822,8 +2826,8 @@ packages:
     resolution: {integrity: sha512-RWk+PI433eESQ7ounYxIp67CYuVsS1uYSonX3kA6ps/3LWfjVQa/ptEg6Y3T6uAMq1mWpX9PQ+qx+QaHpsc7gQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  np@11.0.1:
-    resolution: {integrity: sha512-1akYJndLbTNwGQTKSiadsA1xRneVo0DigPLhzlpa1VamPreZJH6UtzjahjiDuadypefA+NA+/codG2wK8+Lp0A==}
+  np@11.0.2:
+    resolution: {integrity: sha512-3dmJJUmJ81DijpXCow9+RmGM/Eb/I9pggql9O2vuATI3Y2xRhVkOBkxLfTHikoyIGqsQ4FiK00IBhnlh7cJdhg==}
     engines: {bun: '>=1', git: '>=2.11.0', node: '>=20', npm: '>=9', pnpm: '>=8', yarn: '>=1.7.0'}
     hasBin: true
 
@@ -3057,6 +3061,10 @@ packages:
 
   powershell-utils@0.1.0:
     resolution: {integrity: sha512-dM0jVuXJPsDN6DvRpea484tCUaMiXWjuCn++HGTqUWzGDjv5tZkEZldAJ/UMlqRYGFrD/etByo4/xOuC/snX2A==}
+    engines: {node: '>=20'}
+
+  powershell-utils@0.2.0:
+    resolution: {integrity: sha512-ZlsFlG7MtSFCoc5xreOvBAozCJ6Pf06opgJjh9ONEv418xpZSAzNjstD36C6+JwOnfSqOW/9uDkqKjezTdxZhw==}
     engines: {node: '>=20'}
 
   prelude-ls@1.2.1:
@@ -3625,8 +3633,8 @@ packages:
     resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
     engines: {node: '>=16'}
 
-  type-fest@5.4.1:
-    resolution: {integrity: sha512-xygQcmneDyzsEuKZrFbRMne5HDqMs++aFzefrJTgEIKjQ3rekM+RPfFCVq2Gp1VIDqddoYeppCj4Pcb+RZW0GQ==}
+  type-fest@5.4.2:
+    resolution: {integrity: sha512-FLEenlVYf7Zcd34ISMLo3ZzRE1gRjY1nMDTp+bQRBiPsaKyIW8K3Zr99ioHDUgA9OGuGGJPyYpNcffGmBhJfGg==}
     engines: {node: '>=20'}
 
   typed-array-buffer@1.0.3:
@@ -5307,12 +5315,13 @@ snapshots:
 
   cli-width@4.1.0: {}
 
-  clipboardy@5.0.2:
+  clipboardy@5.1.0:
     dependencies:
       execa: 9.6.1
       is-wayland: 0.1.0
       is-wsl: 3.1.0
       is64bit: 2.0.0
+      powershell-utils: 0.2.0
 
   cliui@7.0.4:
     dependencies:
@@ -6260,7 +6269,7 @@ snapshots:
 
   hosted-git-info@9.0.2:
     dependencies:
-      lru-cache: 11.2.4
+      lru-cache: 11.2.5
 
   human-signals@8.0.1: {}
 
@@ -6315,7 +6324,7 @@ snapshots:
       inquirer: 6.5.2
       rxjs: 6.6.7
 
-  inquirer@13.2.1(@types/node@24.10.9):
+  inquirer@13.2.2(@types/node@24.10.9):
     dependencies:
       '@inquirer/ansi': 2.0.3
       '@inquirer/core': 11.1.1(@types/node@24.10.9)
@@ -6681,7 +6690,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  ky@1.14.2: {}
+  ky@1.14.3: {}
 
   language-subtag-registry@0.3.23: {}
 
@@ -6781,6 +6790,8 @@ snapshots:
   lru-cache@10.4.3: {}
 
   lru-cache@11.2.4: {}
+
+  lru-cache@11.2.5: {}
 
   lru-cache@5.1.1:
     dependencies:
@@ -6918,11 +6929,11 @@ snapshots:
       semver: 7.7.3
       validate-npm-package-license: 3.0.4
 
-  np@11.0.1(@types/node@24.10.9)(typescript@5.9.3):
+  np@11.0.2(@types/node@24.10.9)(typescript@5.9.3):
     dependencies:
       chalk: 5.6.2
       chalk-template: 1.1.2
-      clipboardy: 5.0.2
+      clipboardy: 5.1.0
       cosmiconfig: 9.0.0(typescript@5.9.3)
       del: 8.0.1
       escape-goat: 4.0.0
@@ -6933,7 +6944,7 @@ snapshots:
       hosted-git-info: 9.0.2
       ignore-walk: 8.0.0
       import-local: 3.2.0
-      inquirer: 13.2.1(@types/node@24.10.9)
+      inquirer: 13.2.2(@types/node@24.10.9)
       is-installed-globally: 1.0.0
       is-interactive: 2.0.0
       is-scoped: 3.0.0
@@ -6966,7 +6977,7 @@ snapshots:
     dependencies:
       is-scoped: 3.0.0
       is-url-superb: 6.1.0
-      ky: 1.14.2
+      ky: 1.14.3
       lodash.zip: 4.2.0
       org-regex: 1.0.0
       p-map: 7.0.4
@@ -7103,7 +7114,7 @@ snapshots:
 
   package-json@10.0.1:
     dependencies:
-      ky: 1.14.2
+      ky: 1.14.3
       registry-auth-token: 5.1.1
       registry-url: 6.0.1
       semver: 7.7.3
@@ -7208,6 +7219,8 @@ snapshots:
 
   powershell-utils@0.1.0: {}
 
+  powershell-utils@0.2.0: {}
+
   prelude-ls@1.2.1: {}
 
   presentable-error@0.0.1: {}
@@ -7276,7 +7289,7 @@ snapshots:
     dependencies:
       find-up-simple: 1.0.1
       read-pkg: 10.0.0
-      type-fest: 5.4.1
+      type-fest: 5.4.2
 
   read-pkg-up@7.0.1:
     dependencies:
@@ -7289,7 +7302,7 @@ snapshots:
       '@types/normalize-package-data': 2.4.4
       normalize-package-data: 8.0.0
       parse-json: 8.3.0
-      type-fest: 5.4.1
+      type-fest: 5.4.2
       unicorn-magic: 0.3.0
 
   read-pkg@5.2.0:
@@ -7800,7 +7813,7 @@ snapshots:
 
   type-fest@4.41.0: {}
 
-  type-fest@5.4.1:
+  type-fest@5.4.2:
     dependencies:
       tagged-tag: 1.0.0
 
