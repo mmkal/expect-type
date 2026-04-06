@@ -562,6 +562,19 @@ type GreetOverloaded = {
 expectTypeOf<GreetOverloaded>().thisParameter.toEqualTypeOf<{name: string} | {id: number}>()
 ```
 
+`thisParameter` supports overloads where some overloads lack `this`:
+
+```typescript
+type GreetOverloaded = {
+  (this: {name: string}, message: string): string
+  (message: string): string
+}
+
+// When an overload lacks an explicit `this`, TypeScript infers `unknown` for it,
+// so the union `{name: string} | unknown` collapses to `unknown`.
+expectTypeOf<GreetOverloaded>().thisParameter.toBeUnknown()
+```
+
 Distinguish between functions with different `this` parameters:
 
 ```typescript
