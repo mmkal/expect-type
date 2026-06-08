@@ -7,6 +7,7 @@
         "strict": true,
         "noEmit": true,
         "noErrorTruncation": true,
+        "types": ["node"],
         "esModuleInterop": true
     },
     "include": ["src", "test", "*.js", ".*.*js", "*.md"]
