@@ -313,10 +313,11 @@ export type TSPre53OverloadThisParameterTypes<FunctionType> =
  *
  * @template FunctionType - the function type to extract `this` parameter types from.
  */
-export type OverloadThisParameterTypes<FunctionType> =
-  IsNever<TSPost53OverloadsInfoUnion<(a: 1) => 2>> extends true
+export type OverloadThisParameterTypes<FunctionType> = FunctionType extends (...args: any[]) => any
+  ? IsNever<TSPost53OverloadsInfoUnion<(a: 1) => 2>> extends true
     ? TSPre53OverloadThisParameterTypes<FunctionType>
     : TSPost53OverloadThisParameterTypes<FunctionType>
+  : ThisParameterType<FunctionType>
 
 /**
  * Takes an overload variants {@linkcode Union},
