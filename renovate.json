@@ -8,5 +8,7 @@
   ],
   "automerge": true,
   "automergeType": "branch",
+  "prCreation": "approval",
+  "dependencyDashboard": true,
   "fetchChangeLogs": "branch"
 }
