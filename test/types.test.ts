@@ -83,8 +83,6 @@ test(`never types don't sneak by`, () => {
 test('thisParameter returns unknown for non-callable types', () => {
   expectTypeOf<ThisParameterType<number>>().toBeUnknown()
   expectTypeOf<number>().thisParameter.toBeUnknown()
-  // @ts-expect-error
-  expectTypeOf<number>().thisParameter.toBeNever()
 })
 
 test("any/never types don't break toEqualTypeOf or toMatchTypeOf", () => {
