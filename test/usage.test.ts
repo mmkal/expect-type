@@ -414,6 +414,26 @@ test('Check function `this` parameters', () => {
   expectTypeOf(greet).thisParameter.toEqualTypeOf<{name: string}>()
 })
 
+test('`thisParameter` supports overloads', () => {
+  type GreetOverloaded = {
+    (this: {name: string}, message: string): string
+    (this: {id: number}, message: string): string
+  }
+
+  expectTypeOf<GreetOverloaded>().thisParameter.toEqualTypeOf<{name: string} | {id: number}>()
+})
+
+test('`thisParameter` supports overloads where some overloads lack `this`', () => {
+  type GreetOverloaded = {
+    (this: {name: string}, message: string): string
+    (message: string): string
+  }
+
+  // When an overload lacks an explicit `this`, TypeScript infers `unknown` for it,
+  // so the union `{name: string} | unknown` collapses to `unknown`.
+  expectTypeOf<GreetOverloaded>().thisParameter.toBeUnknown()
+})
+
 test('Distinguish between functions with different `this` parameters', () => {
   function greetFormal(this: {title: string; name: string}, message: string) {
     return `Dear ${this.title} ${this.name}, here's your message: ${message}`

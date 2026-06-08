@@ -22,6 +22,7 @@ import type {
   ConstructorOverloadParameters,
   OverloadParameters,
   OverloadReturnTypes,
+  OverloadThisParameterTypes,
   OverloadsNarrowedByParameters,
 } from './overloads'
 import type {
@@ -883,7 +884,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * expectTypeOf(greet).thisParameter.toEqualTypeOf<{ name: string }>()
    * ```
    */
-  thisParameter: ExpectTypeOf<ThisParameterType<Actual>, Options>
+  thisParameter: ExpectTypeOf<OverloadThisParameterTypes<Actual>, Options>
 
   /**
    * Equivalent to the {@linkcode InstanceType} utility type.
