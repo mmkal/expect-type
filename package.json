@@ -36,7 +36,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "0.18.3",
+    "@arethetypeswrong/cli": "0.18.4",
     "@types/node": "^24.0.0",
     "@typescript/native-preview": "7.0.0-dev.20260622.1",
     "@vitest/ui": "^4.0.0",
