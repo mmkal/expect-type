@@ -126,6 +126,200 @@ export type OverloadReturnTypes<FunctionType> =
   OverloadsInfoUnion<FunctionType> extends InferFunctionType<infer Fn> ? ReturnType<Fn> : never
 
 /**
+ * Like {@linkcode TSPost53OverloadsInfoUnion} but extracts only the
+ * `this` parameter types, using `(this: infer T, ...)` to preserve `this`
+ * before it gets stripped.
+ *
+ * @template FunctionType - the function type to extract `this` parameter types from.
+ */
+export type TSPost53OverloadThisParameterTypes<FunctionType> = FunctionType extends {
+  (this: infer T1, ...args: any[]): any
+  (this: infer T2, ...args: any[]): any
+  (this: infer T3, ...args: any[]): any
+  (this: infer T4, ...args: any[]): any
+  (this: infer T5, ...args: any[]): any
+  (this: infer T6, ...args: any[]): any
+  (this: infer T7, ...args: any[]): any
+  (this: infer T8, ...args: any[]): any
+  (this: infer T9, ...args: any[]): any
+  (this: infer T10, ...args: any[]): any
+}
+  ? T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10
+  : never
+
+/**
+ * Like {@linkcode DecreasingOverloadsInfoUnion} but preserves the
+ * `this` parameter in each extracted function variant so that it can be
+ * used for filtering and `this` type extraction.
+ *
+ * @template FunctionType - the function type to extract overload info from.
+ */
+export type DecreasingOverloadsInfoUnionWithThis<FunctionType> = FunctionType extends {
+  (this: infer T1, ...args: infer A1): infer R1
+  (this: infer T2, ...args: infer A2): infer R2
+  (this: infer T3, ...args: infer A3): infer R3
+  (this: infer T4, ...args: infer A4): infer R4
+  (this: infer T5, ...args: infer A5): infer R5
+  (this: infer T6, ...args: infer A6): infer R6
+  (this: infer T7, ...args: infer A7): infer R7
+  (this: infer T8, ...args: infer A8): infer R8
+  (this: infer T9, ...args: infer A9): infer R9
+  (this: infer T10, ...args: infer A10): infer R10
+}
+  ?
+      | ((this: T1, ...args: A1) => R1)
+      | ((this: T2, ...args: A2) => R2)
+      | ((this: T3, ...args: A3) => R3)
+      | ((this: T4, ...args: A4) => R4)
+      | ((this: T5, ...args: A5) => R5)
+      | ((this: T6, ...args: A6) => R6)
+      | ((this: T7, ...args: A7) => R7)
+      | ((this: T8, ...args: A8) => R8)
+      | ((this: T9, ...args: A9) => R9)
+      | ((this: T10, ...args: A10) => R10)
+  : FunctionType extends {
+        (this: infer T1, ...args: infer A1): infer R1
+        (this: infer T2, ...args: infer A2): infer R2
+        (this: infer T3, ...args: infer A3): infer R3
+        (this: infer T4, ...args: infer A4): infer R4
+        (this: infer T5, ...args: infer A5): infer R5
+        (this: infer T6, ...args: infer A6): infer R6
+        (this: infer T7, ...args: infer A7): infer R7
+        (this: infer T8, ...args: infer A8): infer R8
+        (this: infer T9, ...args: infer A9): infer R9
+      }
+    ?
+        | ((this: T1, ...args: A1) => R1)
+        | ((this: T2, ...args: A2) => R2)
+        | ((this: T3, ...args: A3) => R3)
+        | ((this: T4, ...args: A4) => R4)
+        | ((this: T5, ...args: A5) => R5)
+        | ((this: T6, ...args: A6) => R6)
+        | ((this: T7, ...args: A7) => R7)
+        | ((this: T8, ...args: A8) => R8)
+        | ((this: T9, ...args: A9) => R9)
+    : FunctionType extends {
+          (this: infer T1, ...args: infer A1): infer R1
+          (this: infer T2, ...args: infer A2): infer R2
+          (this: infer T3, ...args: infer A3): infer R3
+          (this: infer T4, ...args: infer A4): infer R4
+          (this: infer T5, ...args: infer A5): infer R5
+          (this: infer T6, ...args: infer A6): infer R6
+          (this: infer T7, ...args: infer A7): infer R7
+          (this: infer T8, ...args: infer A8): infer R8
+        }
+      ?
+          | ((this: T1, ...args: A1) => R1)
+          | ((this: T2, ...args: A2) => R2)
+          | ((this: T3, ...args: A3) => R3)
+          | ((this: T4, ...args: A4) => R4)
+          | ((this: T5, ...args: A5) => R5)
+          | ((this: T6, ...args: A6) => R6)
+          | ((this: T7, ...args: A7) => R7)
+          | ((this: T8, ...args: A8) => R8)
+      : FunctionType extends {
+            (this: infer T1, ...args: infer A1): infer R1
+            (this: infer T2, ...args: infer A2): infer R2
+            (this: infer T3, ...args: infer A3): infer R3
+            (this: infer T4, ...args: infer A4): infer R4
+            (this: infer T5, ...args: infer A5): infer R5
+            (this: infer T6, ...args: infer A6): infer R6
+            (this: infer T7, ...args: infer A7): infer R7
+          }
+        ?
+            | ((this: T1, ...args: A1) => R1)
+            | ((this: T2, ...args: A2) => R2)
+            | ((this: T3, ...args: A3) => R3)
+            | ((this: T4, ...args: A4) => R4)
+            | ((this: T5, ...args: A5) => R5)
+            | ((this: T6, ...args: A6) => R6)
+            | ((this: T7, ...args: A7) => R7)
+        : FunctionType extends {
+              (this: infer T1, ...args: infer A1): infer R1
+              (this: infer T2, ...args: infer A2): infer R2
+              (this: infer T3, ...args: infer A3): infer R3
+              (this: infer T4, ...args: infer A4): infer R4
+              (this: infer T5, ...args: infer A5): infer R5
+              (this: infer T6, ...args: infer A6): infer R6
+            }
+          ?
+              | ((this: T1, ...args: A1) => R1)
+              | ((this: T2, ...args: A2) => R2)
+              | ((this: T3, ...args: A3) => R3)
+              | ((this: T4, ...args: A4) => R4)
+              | ((this: T5, ...args: A5) => R5)
+              | ((this: T6, ...args: A6) => R6)
+          : FunctionType extends {
+                (this: infer T1, ...args: infer A1): infer R1
+                (this: infer T2, ...args: infer A2): infer R2
+                (this: infer T3, ...args: infer A3): infer R3
+                (this: infer T4, ...args: infer A4): infer R4
+                (this: infer T5, ...args: infer A5): infer R5
+              }
+            ?
+                | ((this: T1, ...args: A1) => R1)
+                | ((this: T2, ...args: A2) => R2)
+                | ((this: T3, ...args: A3) => R3)
+                | ((this: T4, ...args: A4) => R4)
+                | ((this: T5, ...args: A5) => R5)
+            : FunctionType extends {
+                  (this: infer T1, ...args: infer A1): infer R1
+                  (this: infer T2, ...args: infer A2): infer R2
+                  (this: infer T3, ...args: infer A3): infer R3
+                  (this: infer T4, ...args: infer A4): infer R4
+                }
+              ?
+                  | ((this: T1, ...args: A1) => R1)
+                  | ((this: T2, ...args: A2) => R2)
+                  | ((this: T3, ...args: A3) => R3)
+                  | ((this: T4, ...args: A4) => R4)
+              : FunctionType extends {
+                    (this: infer T1, ...args: infer A1): infer R1
+                    (this: infer T2, ...args: infer A2): infer R2
+                    (this: infer T3, ...args: infer A3): infer R3
+                  }
+                ? ((this: T1, ...args: A1) => R1) | ((this: T2, ...args: A2) => R2) | ((this: T3, ...args: A3) => R3)
+                : FunctionType extends {
+                      (this: infer T1, ...args: infer A1): infer R1
+                      (this: infer T2, ...args: infer A2): infer R2
+                    }
+                  ? ((this: T1, ...args: A1) => R1) | ((this: T2, ...args: A2) => R2)
+                  : FunctionType extends (this: infer T1, ...args: infer A1) => infer R1
+                    ? (this: T1, ...args: A1) => R1
+                    : never
+
+/**
+ * Like {@linkcode TSPre53OverloadsInfoUnion} but extracts the
+ * `this` parameter types, using
+ * {@linkcode DecreasingOverloadsInfoUnionWithThis} to preserve `this`
+ * through the filtering step.
+ *
+ * @template FunctionType - the function type to extract `this` parameter types from.
+ */
+export type TSPre53OverloadThisParameterTypes<FunctionType> =
+  Tuplify<DecreasingOverloadsInfoUnionWithThis<FunctionType>> extends infer TupleType
+    ? TupleType extends [infer OverloadedFunctionType]
+      ? IsUselessOverloadInfo<OverloadedFunctionType> extends true
+        ? never
+        : OverloadedFunctionType extends (this: infer InferredThisType, ...args: any[]) => any
+          ? InferredThisType
+          : never
+      : never
+    : never
+
+/**
+ * A union type of the `this` parameter types for any overload of
+ * function {@linkcode FunctionType}.
+ *
+ * @template FunctionType - the function type to extract `this` parameter types from.
+ */
+export type OverloadThisParameterTypes<FunctionType> = FunctionType extends (...args: any[]) => any
+  ? IsNever<TSPost53OverloadsInfoUnion<(a: 1) => 2>> extends true
+    ? TSPre53OverloadThisParameterTypes<FunctionType>
+    : TSPost53OverloadThisParameterTypes<FunctionType>
+  : ThisParameterType<FunctionType>
+
+/**
  * Takes an overload variants {@linkcode Union},
  * produced from {@linkcode OverloadsInfoUnion} and rejects
  * the ones incompatible with parameters {@linkcode Args}.

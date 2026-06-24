@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/mmkal/expect-type/actions/workflows/ci.yml/badge.svg)](https://github.com/mmkal/expect-type/actions/workflows/ci.yml)
 ![npm](https://img.shields.io/npm/dt/expect-type)
-[![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/mmkal)](https://x.com/mmkalmmkal)
+[![X Follow](https://img.shields.io/twitter/follow/mmkal)](https://x.com/mmkalmmkal)
 
 Compile-time tests for types. Useful to make sure types don't regress into being overly permissive as changes go in over time.
 
@@ -600,6 +600,30 @@ function greet(this: {name: string}, message: string) {
 }
 
 expectTypeOf(greet).thisParameter.toEqualTypeOf<{name: string}>()
+```
+
+`thisParameter` supports overloads:
+
+```typescript
+type GreetOverloaded = {
+  (this: {name: string}, message: string): string
+  (this: {id: number}, message: string): string
+}
+
+expectTypeOf<GreetOverloaded>().thisParameter.toEqualTypeOf<{name: string} | {id: number}>()
+```
+
+`thisParameter` supports overloads where some overloads lack `this`:
+
+```typescript
+type GreetOverloaded = {
+  (this: {name: string}, message: string): string
+  (message: string): string
+}
+
+// When an overload lacks an explicit `this`, TypeScript infers `unknown` for it,
+// so the union `{name: string} | unknown` collapses to `unknown`.
+expectTypeOf<GreetOverloaded>().thisParameter.toBeUnknown()
 ```
 
 Distinguish between functions with different `this` parameters:
