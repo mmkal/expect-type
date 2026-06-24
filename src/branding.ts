@@ -9,7 +9,6 @@ import type {
   MutuallyExtends,
   UnionToTuple,
   IsTuple,
-  Not,
   UnionToIntersection,
   TupleToRecord,
   IsRecord,
@@ -54,68 +53,70 @@ export type DeepBrand<T, Options extends DeepBrandOptions> =
       ? {type: 'any'}
       : IsUnknown<T> extends true
         ? {type: 'unknown'}
-        : Not<IsNever<NominalType<T, Options>>> extends true
-          ? {type: NominalType<T, Options>}
-          : T extends string | number | boolean | symbol | bigint | null | undefined | void
-            ? {
-                type: 'primitive'
-                value: T
-              }
-            : T extends new (...args: any[]) => any
+        : NominalType<T, Options> extends infer Nominal
+          ? IsNever<Nominal> extends true
+            ? T extends string | number | boolean | symbol | bigint | null | undefined | void
               ? {
-                  type: 'constructor'
-                  params: ConstructorOverloadParameters<T>
-                  instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>, Options>
+                  type: 'primitive'
+                  value: T
                 }
-              : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
-                ? NumOverloads<T> extends 1
-                  ? {
-                      type: 'function'
-                      params: DeepBrand<P, Options>
-                      return: DeepBrand<R, Options>
-                      this: DeepBrand<ThisParameterType<T>, Options>
-                      props: DeepBrand<Omit<T, keyof Function>, Options>
-                    }
-                  : UnionToTuple<OverloadsInfoUnion<T>> extends infer OverloadsTuple
+              : T extends new (...args: any[]) => any
+                ? {
+                    type: 'constructor'
+                    params: ConstructorOverloadParameters<T>
+                    instance: DeepBrand<InstanceType<Extract<T, new (...args: any) => any>>, Options>
+                  }
+                : T extends (...args: infer P) => infer R // avoid functions with different params/return values matching
+                  ? NumOverloads<T> extends 1
                     ? {
-                        type: 'overloads'
-                        overloads: {
-                          [K in keyof OverloadsTuple]: DeepBrand<OverloadsTuple[K], Options>
+                        type: 'function'
+                        params: DeepBrand<P, Options>
+                        return: DeepBrand<R, Options>
+                        this: DeepBrand<ThisParameterType<T>, Options>
+                        props: DeepBrand<Omit<T, keyof Function>, Options>
+                      }
+                    : UnionToTuple<OverloadsInfoUnion<T>> extends infer OverloadsTuple
+                      ? {
+                          type: 'overloads'
+                          overloads: {
+                            [K in keyof OverloadsTuple]: DeepBrand<OverloadsTuple[K], Options>
+                          }
                         }
-                      }
-                    : never
-                : T extends any[]
-                  ? IsTuple<T> extends true
-                    ? {
-                        type: 'tuple'
-                        items: {
-                          [K in keyof T]: DeepBrand<T[K], Options>
+                      : never
+                  : T extends any[]
+                    ? IsTuple<T> extends true
+                      ? {
+                          type: 'tuple'
+                          items: {
+                            [K in keyof T]: DeepBrand<T[K], Options>
+                          }
                         }
-                      }
-                    : {
-                        type: 'array'
-                        items: DeepBrand<T[number], Options>
-                      }
-                  : IsRecord<T> extends true
-                    ? {
-                        type: 'record'
-                        keys: keyof T
-                        values: DeepBrand<T[keyof T], Options>
-                      }
-                    : {
-                        type: 'object'
-                        properties: {
-                          [K in keyof T]: DeepBrand<T[K], Options>
+                      : {
+                          type: 'array'
+                          items: DeepBrand<T[number], Options>
                         }
-                        readonly: ReadonlyKeys<T>
-                        required: RequiredKeys<T>
-                        optional: OptionalKeys<T>
-                        constructorParams: ConstructorOverloadParameters<T> extends infer P
-                          ? IsNever<P> extends true
-                            ? never
-                            : DeepBrand<P, Options>
-                          : never
-                      }
+                    : IsRecord<T> extends true
+                      ? {
+                          type: 'record'
+                          keys: keyof T
+                          values: DeepBrand<T[keyof T], Options>
+                        }
+                      : {
+                          type: 'object'
+                          properties: {
+                            [K in keyof T]: DeepBrand<T[K], Options>
+                          }
+                          readonly: ReadonlyKeys<T>
+                          required: RequiredKeys<T>
+                          optional: OptionalKeys<T>
+                          constructorParams: ConstructorOverloadParameters<T> extends infer P
+                            ? IsNever<P> extends true
+                              ? never
+                              : DeepBrand<P, Options>
+                            : never
+                        }
+            : {type: Nominal}
+          : never
 
 /**
  * Checks if two types are strictly equal using branding.

@@ -340,7 +340,7 @@ export interface Branded<Actual, Options extends DeepBrandOptions> {
   toEqualTypeOf: <
     Expected extends StrictEqualUsingBranding<Actual, Expected, Options> extends true
       ? unknown
-      : MismatchInfo<Actual, Expected>,
+      : MismatchInfo<Actual, Expected, Options>,
   >(
     ...MISMATCH: MismatchArgs<StrictEqualUsingBranding<Actual, Expected, Options>, true>
   ) => true
