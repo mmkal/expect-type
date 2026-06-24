@@ -299,6 +299,33 @@ expectTypeOf(good).returns.branded.inspect<{findType: 'unknown'}>({
 })
 ```
 
+`.toBeAny()` vs `.branded.inspect()`:
+
+`.toBeAny()` and `.branded.inspect(...)` answer different questions, so reach for them in different situations.
+
+Use `.toBeAny()` (usually via `.toHaveProperty(...)`) when you already know _which_ property should — or shouldn't — be `any`, and want to pin that exact spot. This is the right tool when a property is deliberately `any` and you want a regression test guarding it, or when you want to assert a specific property is _not_ `any` after giving it a real type.
+
+Reach for `.branded.inspect(...)` when you _don't_ know where a bad type might be hiding. It walks the whole type and reports every `any`/`never` path it finds, so it's the tool for catching anys lurking deep inside a large or complex object — `.foo.bar.baz` could be `any` and you'd never think to check it by hand.
+
+```typescript
+const bad = (metadata: string) => ({
+  name: 'Bob',
+  meta: {
+    parsed: JSON.parse(metadata), // whoops, any!
+  },
+})
+
+// `.toBeAny()`: you already know which property to check.
+expectTypeOf(bad).returns.toHaveProperty('meta').toHaveProperty('parsed').toBeAny()
+
+// `.branded.inspect()`: surface _any_ `any` hiding anywhere in the (possibly huge) type, without knowing where to look.
+expectTypeOf(bad).returns.branded.inspect({
+  foundProps: {
+    '.meta.parsed': 'any',
+  },
+})
+```
+
 More `.not` examples:
 
 ```typescript
