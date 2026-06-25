@@ -346,29 +346,47 @@ export interface Branded<Actual, Options extends DeepBrandOptions> {
   ) => true
 
   /**
-   * Walk an object to find all paths that are badly-defined - meaning, have `any` or `never` types.
+   * Walk a type to find every deeply-nested path that resolves to `any` or `never`, useful for catching
+   * badly-defined types hiding inside large or complex objects.
    *
-   * In most cases, this should be passed `{badlyDefinedPaths: []}`, and a type error will appear if there are any badly-deifned paths.
+   * Pass `{foundProps: {}}` to assert there are none - a type error will list the offending paths if there are.
+   * Otherwise pass `foundProps` as a record of `path -> flagged type` to acknowledge the ones you expect.
+   * The compiler tells you the exact paths (and what they resolve to) if you get it wrong.
    *
-   * @param params Explicitly supplied "badly-defined" paths. For a well-defined type with no issues, pass an empty list. The compiler will tell you if you're wrong!
+   * Use the `findType` type argument to search for `'any'`, `'never'`, or `'unknown'` instead of the default (`'any' | 'never'`).
+   *
+   * @param params An object with a `foundProps` record mapping each flagged path to its resolved type. For a
+   * well-defined type with no issues, pass `{foundProps: {}}`.
    * @returns true
    *
    * @example
    * ```ts
-   * type BadType = {a: any; b: boolean; c: never; d: [0, any]; e: Array<{f: any; g: number}>}
+   * type BadType = {a: any; nested: {b: never}; list: Array<{c: any}>}
    *
-   * // \@ts-expect-error lots of `any`/`never` in this type, so you're not allowed to claim there are no badly-defined paths.
-   * expectTypeOf<BadType>().inspect({badlyDefinedPaths: []})
-   * expectTypeOf<BadType>().inspect({
-   *   badlyDefinePaths: ['.a: any', '.c: never', '.d[1]: any', 'e[number].f: any'],
+   * // \@ts-expect-error there are `any`/`never` paths, so you can't claim there are none.
+   * expectTypeOf<BadType>().branded.inspect({foundProps: {}})
+   *
+   * // ...instead, enumerate them (the compiler reports the exact paths if this is wrong):
+   * expectTypeOf<BadType>().branded.inspect({
+   *   foundProps: {
+   *     '.a': 'any',
+   *     '.nested.b': 'never',
+   *     '.list[number].c': 'any',
+   *   },
    * })
    * ```
    *
    * @example
    * ```ts
-   * type GoodType = {b: boolean: c: string}
+   * type GoodType = {b: boolean; c: string}
    *
-   * expectTypeOf<GoodType>().inspect({badlyDefinedPaths: []})
+   * expectTypeOf<GoodType>().branded.inspect({foundProps: {}})
+   * ```
+   *
+   * @example
+   * ```ts
+   * // search for `unknown` instead of `any`/`never`:
+   * expectTypeOf<{u: unknown}>().branded.inspect<{findType: 'unknown'}>({foundProps: {'.u': 'unknown'}})
    * ```
    */
   inspect: <
