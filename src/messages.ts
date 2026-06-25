@@ -1,4 +1,4 @@
-import type {StrictEqualUsingBranding} from './branding'
+import {DeepBrandOptions, DeepBrandOptionsDefaults, StrictEqualUsingBranding} from './branding'
 import type {
   And,
   Extends,
@@ -8,6 +8,7 @@ import type {
   IsUnknown,
   Not,
   OptionalKeys,
+  StrictEqualUsingTSInternalIdenticalToOperator,
   UsefulKeys,
 } from './utils'
 
@@ -51,20 +52,21 @@ export type PrintType<T> =
  * expected types are. Needs to check for `Not<IsAny<Actual>>` because
  * otherwise `LeafTypeOf<Actual>` returns `never`, which extends everything 🤔
  */
-export type MismatchInfo<Actual, Expected> =
+export type MismatchInfo<Actual, Expected, Options extends DeepBrandOptions = DeepBrandOptionsDefaults> =
   And<[Extends<PrintType<Actual>, '...'>, Not<IsAny<Actual>>]> extends true
     ? And<[Extends<any[], Actual>, Extends<any[], Expected>]> extends true
-      ? Array<MismatchInfo<Extract<Actual, any[]>[number], Extract<Expected, any[]>[number]>>
+      ? Array<MismatchInfo<Extract<Actual, any[]>[number], Extract<Expected, any[]>[number], Options>>
       : Optionalify<
           {
             [K in UsefulKeys<Actual> | UsefulKeys<Expected>]: MismatchInfo<
               K extends keyof Actual ? Actual[K] : never,
-              K extends keyof Expected ? Expected[K] : never
+              K extends keyof Expected ? Expected[K] : never,
+              Options
             >
           },
           OptionalKeys<Expected>
         >
-    : StrictEqualUsingBranding<Actual, Expected> extends true
+    : StrictEqualUsingBranding<Actual, Expected, Options> extends true
       ? Actual
       : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
 
@@ -206,7 +208,7 @@ export type ExpectNever<T> = {[expectNever]: T; result: IsNever<T>}
 const expectNullable = Symbol('expectNullable')
 export type ExpectNullable<T> = {
   [expectNullable]: T
-  result: Not<StrictEqualUsingBranding<T, NonNullable<T>>>
+  result: Not<StrictEqualUsingTSInternalIdenticalToOperator<T, NonNullable<T>>>
 }
 
 /**

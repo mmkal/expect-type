@@ -228,7 +228,23 @@ export type TuplifyUnion<Union, LastElement = LastOf<Union>> =
  */
 export type UnionToTuple<Union> = TuplifyUnion<Union>
 
-export type IsTuple<T> = Or<[Extends<T, []>, Extends<T, [any, ...any[]]>]>
+/** The numbers between 0 and 9 that you learned in school */
+export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+
+/**
+ * e.g. `['a', 'b']` -> `{ 0: 'a', 1: 'b' }`
+ * Looks at the keys to see which look digit-like, so could do the wrong thing for types like
+ * `['a', 'b'] & {'1foo': string}`
+ */
+export type TupleToRecord<T extends any[]> = {
+  [K in keyof T as `${Extract<K, `${Digit}${string}`>}`]: T[K]
+}
+
+/** `true` iff `T` is a tuple, as opposed to an indeterminate-length array */
+export type IsTuple<T extends readonly any[]> = number extends T['length'] ? false : true
+
+/** `true` iff `T` is a record accepting any string keys, or accepting any number keys */
+export type IsRecord<T> = Or<[Extends<string, keyof T>, Extends<number, keyof T>]>
 
 export type IsUnion<T> = Not<Extends<UnionToTuple<T>['length'], 1>>
 
