@@ -1,6 +1,8 @@
+import {createHash} from 'node:crypto'
 import * as fs from 'node:fs'
+import * as tsmorph from 'ts-morph'
 import {test, expect} from 'vitest'
-import {tsErrors, tsFileErrors} from './ts-output'
+import {tsErrors, tsFileErrors, tsFilesErrors} from './ts-output'
 
 test('toEqualTypeOf<...>() error message', async () => {
   expect(tsErrors(`expectTypeOf({a: 1}).toEqualTypeOf<{a: string}>()`)).toMatchInlineSnapshot(`
@@ -235,16 +237,80 @@ test('toMatchObjectType', () => {
   `)
 })
 
-test('usage.test.ts', () => {
-  const originalUsageTestFile = fs.readFileSync(__dirname + '/usage.test.ts', 'utf8')
-  // first make sure there are no bugs, to avoid creating noisy snapshot diffs when I blindly run `pnpm test -- -u`
-  expect(tsFileErrors({filepath: 'test/usage.test.ts', content: originalUsageTestFile})).toEqual('')
+const originalUsageTestFile = fs.readFileSync(__dirname + '/usage.test.ts', 'utf8')
+const usageTestSourceFile = new tsmorph.Project({useInMemoryFileSystem: true}).createSourceFile(
+  '/usage.test.ts',
+  originalUsageTestFile,
+)
 
-  // remove all `.not`s and `// @ts-expect-error`s from the main test file and snapshot the errors
-  const sabotagedUsageTestFile = originalUsageTestFile
+const usageTests = usageTestSourceFile
+  .getDescendantsOfKind(tsmorph.SyntaxKind.CallExpression)
+  .filter(callExpression => callExpression.getExpression().getText() === 'test')
+  .map(callExpression => {
+    const [titleNode, callbackNode] = callExpression.getArguments()
+    if (!tsmorph.Node.isStringLiteral(titleNode) && !tsmorph.Node.isNoSubstitutionTemplateLiteral(titleNode)) {
+      throw new Error(`Expected usage.test.ts test title to be a string literal: ${callExpression.getText()}`)
+    }
+    if (!tsmorph.Node.isArrowFunction(callbackNode) && !tsmorph.Node.isFunctionExpression(callbackNode)) {
+      throw new Error(`Expected usage.test.ts test body to be a function: ${callExpression.getText()}`)
+    }
+    const callbackBody = callbackNode.getBody()
+    if (!tsmorph.Node.isBlock(callbackBody)) {
+      throw new Error(`Expected usage.test.ts test body to be a block: ${callExpression.getText()}`)
+    }
+    const blockText = callbackBody.getText()
+    const body = blockText.slice(1, -1).replace(/^\n/, '').replace(/\n$/, '')
+    const title = titleNode.getLiteralText()
+    const slug = title
+      .toLowerCase()
+      .split(/\W/)
+      .filter(Boolean)
+      .slice(0, 4)
+      .concat(createHash('sha256').update(title).digest('hex').slice(0, 8))
+      .join('-')
+
+    return {title, body, slug, filepath: `test/usage-sabotaged-${slug}.ts`}
+  })
+
+const sabotageUsageTestBody = (body: string) =>
+  body
     .split('\n')
     .map(line => line.replace('// @ts-expect-error', '// error expected on next line:'))
     .map(line => line.replace('.not.', '.'))
     .join('\n')
-  expect(tsFileErrors({filepath: 'test/usage.test.ts', content: sabotagedUsageTestFile})).toMatchSnapshot()
+
+const splitUsageTestErrors = (errors: string) => {
+  const errorsByFilepath = new Map<string, string[]>()
+  const usageTestErrorPattern =
+    /(test\/usage-sabotaged-.*\.ts:\d+:\d+ - error TS\d+:[\S\s]*?)(?=\ntest\/usage-sabotaged-.*\.ts:\d+:\d+ - error TS\d+:|$)/g
+  for (const [errorBody] of errors.matchAll(usageTestErrorPattern)) {
+    const filepath = errorBody.split(':', 1)[0]
+    const filepathErrors = errorsByFilepath.get(filepath) || []
+    filepathErrors.push(errorBody.trim())
+    errorsByFilepath.set(filepath, filepathErrors)
+  }
+  return errorsByFilepath
+}
+
+test(`usage.test.ts`, () => {
+  const originalErrors = tsFileErrors({filepath: 'test/usage.test.ts', content: originalUsageTestFile})
+  // eslint-disable-next-line vitest/valid-expect
+  expect(originalErrors, `unmodified usage.test.ts should not have any errors`).toEqual('')
+
+  const errors = tsFilesErrors(
+    usageTests.map(usageTest => ({
+      filepath: usageTest.filepath,
+      content: `import {expectTypeOf} from '../src/index'\n${sabotageUsageTestBody(usageTest.body)}\n`,
+    })),
+  )
+
+  const errorsByFilepath = splitUsageTestErrors(errors)
+  expect(errorsByFilepath.size).toBeGreaterThan(0)
+
+  for (const usageTest of usageTests) {
+    const testErrors = errorsByFilepath.get(usageTest.filepath)
+    if (testErrors) {
+      expect(testErrors.join('\n')).toMatchSnapshot(usageTest.title)
+    }
+  }
 })

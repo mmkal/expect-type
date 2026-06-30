@@ -1,299 +1,94 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`usage.test.ts 1`] = `
-"test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: number; b: "Expected: never, Actual: number"; }'.
-  Property 'b' is missing in type '{ a: number; }' but required in type '{ a: number; b: "Expected: never, Actual: number"; }'.
-
-999   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
-                                               ~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ b: number; }' does not satisfy the constraint '{ a: "Expected: never, Actual: number"; b: "Expected: number, Actual: never"; }'.
-  Property 'a' is missing in type '{ b: number; }' but required in type '{ a: "Expected: never, Actual: number"; b: "Expected: number, Actual: never"; }'.
-
-999   expectTypeOf({a: 1}).toExtend<{b: number}>()
-                                    ~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: "Expected: number, Actual: never"; }'.
-  Types of property 'b' are incompatible.
-    Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
-
-999   expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
-                                         ~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: "Expected: number, Actual: never"; }'.
-  Types of property 'b' are incompatible.
-    Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
-
-999   expectTypeOf({a: 1}).toMatchObjectType<{a: number; b: number}>()
-                                             ~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: "Expected: number, Actual: never"; }'.
-  Types of property 'b' are incompatible.
-    Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
-
-999   expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
-                                    ~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
-  Types of property 'edible' are incompatible.
-    Type 'boolean' is not assignable to type '"Expected: boolean, Actual: never"'.
-
-999   expectTypeOf<Apple>().toMatchObjectType<Fruit>()
-                                              ~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
-  Property 'name' is missing in type 'Fruit' but required in type '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
-
-999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
-                                          ~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
+exports[`usage.test.ts > \`.not\` can be easier than relying on \`// @ts-expect-error\` 1`] = `
+"test/usage-sabotaged-not-can-be-easier-a1deef16.ts:7:34 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
   Types of property 'name' are incompatible.
     Type '"Apple"' is not assignable to type '"Expected: literal string: Apple, Actual: never"'.
 
-999   expectTypeOf<Fruit>().toExtend<Apple>()
-                                     ~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ b: 1; }' does not satisfy the constraint '{ a: "Expected: never, Actual: number"; b: "Expected: literal number: 1, Actual: never"; }'.
-  Property 'a' is missing in type '{ b: 1; }' but required in type '{ a: "Expected: never, Actual: number"; b: "Expected: literal number: 1, Actual: never"; }'.
-
-999   expectTypeOf({a: 1}).toExtend<{b: 1}>()
-                                    ~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ b: 1; }' does not satisfy the constraint '"Expected: ..., Actual: boolean"'.
-
-999   expectTypeOf({a: 1}).toMatchObjectType<{b: 1}>()
-                                             ~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
-  Types of property 'name' are incompatible.
-    Type '"Apple"' is not assignable to type '"Expected: literal string: Apple, Actual: never"'.
-
-999   expectTypeOf<Fruit>().toExtend<Apple>()
-                                     ~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
+7   expectTypeOf<Fruit>().toExtend<Apple>()
+                                   ~~~~~
+test/usage-sabotaged-not-can-be-easier-a1deef16.ts:8:39 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
   Property 'name' is missing in type 'Fruit' but required in type '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
 
-999   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
-                                          ~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNumber<never>' has no call signatures.
+8   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+                                        ~~~~~"
+`;
 
-999   expectTypeOf<never>().toBeNumber()
-                            ~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: "Expected: unknown, Actual: never"; }; }'.
+exports[`usage.test.ts > \`.toBe...\` methods protect against \`any\` 1`] = `
+"test/usage-sabotaged-tobe-methods-protect-against-94ab43ec.ts:7:38 - error TS2349: This expression is not callable.
+  Type 'ExpectNumber<any>' has no call signatures.
+
+7   expectTypeOf(badIntParser).returns.toBeNumber()
+                                       ~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > \`.toEqualTypeOf\` can be used to distinguish between functions 1`] = `
+"test/usage-sabotaged-toequaltypeof-can-be-used-945c9c93.ts:5:41 - error TS2344: Type 'HasParam' does not satisfy the constraint '"Expected: function, Actual: never"'.
+
+5   expectTypeOf<NoParam>().toEqualTypeOf<HasParam>()
+                                          ~~~~~~~~"
+`;
+
+exports[`usage.test.ts > \`.toEqualTypeOf\` distinguishes between deeply-nested \`any\` and \`unknown\` properties 1`] = `
+"test/usage-sabotaged-toequaltypeof-distinguishes-between-deeply-236eb589.ts:2:57 - error TS2344: Type '{ deeply: { nested: unknown; }; }' does not satisfy the constraint '{ deeply: { nested: "Expected: unknown, Actual: never"; }; }'.
   The types of 'deeply.nested' are incompatible between these types.
     Type 'unknown' is not assignable to type '"Expected: unknown, Actual: never"'.
 
-999   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
-                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNumber<any>' has no call signatures.
+2   expectTypeOf<{deeply: {nested: any}}>().toEqualTypeOf<{deeply: {nested: unknown}}>()
+                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+`;
 
-999   expectTypeOf(badIntParser).returns.toBeNumber()
-                                         ~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNull<undefined>' has no call signatures.
+exports[`usage.test.ts > \`.toEqualTypeOf\` fails on excess properties 1`] = `
+"test/usage-sabotaged-toequaltypeof-fails-on-excess-dc51a7bb.ts:3:44 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: number; b: "Expected: never, Actual: number"; }'.
+  Property 'b' is missing in type '{ a: number; }' but required in type '{ a: number; b: "Expected: never, Actual: number"; }'.
 
-999   expectTypeOf(undefined).toBeNull()
-                              ~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectUndefined<null>' has no call signatures.
+3   expectTypeOf({a: 1, b: 1}).toEqualTypeOf<{a: number}>()
+                                             ~~~~~~~~~~~"
+`;
 
-999   expectTypeOf(null).toBeUndefined()
-                         ~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectUnknown<number>' has no call signatures.
+exports[`usage.test.ts > \`.toEqualTypeOf\`, \`.toMatchObjectType\`, and \`.toExtend\` all fail on missing properties 1`] = `
+"test/usage-sabotaged-toequaltypeof-tomatchobjecttype-and-toextend-361d1e5a.ts:3:38 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: "Expected: number, Actual: never"; }'.
+  Types of property 'b' are incompatible.
+    Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
 
-999   expectTypeOf(1).toBeUnknown()
-                      ~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectAny<number>' has no call signatures.
+3   expectTypeOf({a: 1}).toEqualTypeOf<{a: number; b: number}>()
+                                       ~~~~~~~~~~~~~~~~~~~~~~
+test/usage-sabotaged-toequaltypeof-tomatchobjecttype-and-toextend-361d1e5a.ts:5:42 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: "Expected: number, Actual: never"; }'.
+  Types of property 'b' are incompatible.
+    Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
 
-999   expectTypeOf(1).toBeAny()
-                      ~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNever<number>' has no call signatures.
+5   expectTypeOf({a: 1}).toMatchObjectType<{a: number; b: number}>()
+                                           ~~~~~~~~~~~~~~~~~~~~~~
+test/usage-sabotaged-toequaltypeof-tomatchobjecttype-and-toextend-361d1e5a.ts:7:33 - error TS2344: Type '{ a: number; b: number; }' does not satisfy the constraint '{ a: number; b: "Expected: number, Actual: never"; }'.
+  Types of property 'b' are incompatible.
+    Type 'number' is not assignable to type '"Expected: number, Actual: never"'.
 
-999   expectTypeOf(1).toBeNever()
-                      ~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNull<number>' has no call signatures.
+7   expectTypeOf({a: 1}).toExtend<{a: number; b: number}>()
+                                  ~~~~~~~~~~~~~~~~~~~~~~"
+`;
 
-999   expectTypeOf(1).toBeNull()
-                      ~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectUndefined<number>' has no call signatures.
+exports[`usage.test.ts > Another example of the difference between \`.toExtend\`, \`.toMatchObjectType\`, and \`.toEqualTypeOf\`. \`.toExtend\` can be used for "is-a" relationships 1`] = `
+"test/usage-sabotaged-another-example-of-the-848b5c3a.ts:8:43 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
+  Types of property 'edible' are incompatible.
+    Type 'boolean' is not assignable to type '"Expected: boolean, Actual: never"'.
 
-999   expectTypeOf(1).toBeUndefined()
-                      ~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectNullable<number>' has no call signatures.
+8   expectTypeOf<Apple>().toMatchObjectType<Fruit>()
+                                            ~~~~~
+test/usage-sabotaged-another-example-of-the-848b5c3a.ts:11:39 - error TS2344: Type 'Fruit' does not satisfy the constraint '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
+  Property 'name' is missing in type 'Fruit' but required in type '{ name: "Expected: never, Actual: literal string: Apple"; type: "Fruit"; edible: "Expected: boolean, Actual: never"; }'.
 
-999   expectTypeOf(1).toBeNullable()
-                      ~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectBigInt<number>' has no call signatures.
+11   expectTypeOf<Apple>().toEqualTypeOf<Fruit>()
+                                         ~~~~~
+test/usage-sabotaged-another-example-of-the-848b5c3a.ts:14:34 - error TS2344: Type 'Apple' does not satisfy the constraint '{ name: "Expected: literal string: Apple, Actual: never"; type: "Fruit"; edible: "Expected: literal boolean: true, Actual: literal boolean: false"; }'.
+  Types of property 'name' are incompatible.
+    Type '"Apple"' is not assignable to type '"Expected: literal string: Apple, Actual: never"'.
 
-999   expectTypeOf(1).toBeBigInt()
-                      ~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'number' does not satisfy the constraint '"Expected: number, Actual: string"'.
+14   expectTypeOf<Fruit>().toExtend<Apple>()
+                                    ~~~~~"
+`;
 
-999   expectTypeOf<string | number>().toExtend<number>()
-                                               ~~~~~~
-test/usage.test.ts:999:999 - error TS2345: Argument of type '"xxl"' is not assignable to parameter of type '"xs" | "sm" | "md"'.
-
-999   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')
-                                                                                         ~~~~~
-test/usage.test.ts:999:999 - error TS2345: Argument of type '"c"' is not assignable to parameter of type '"a" | "b"'.
-
-999   expectTypeOf(obj).toHaveProperty('c')
-                                       ~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectString<number>' has no call signatures.
-
-999   expectTypeOf(obj).toHaveProperty('a').toBeString()
-                                            ~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'HasParam' does not satisfy the constraint '"Expected: function, Actual: never"'.
-
-999   expectTypeOf<NoParam>().toEqualTypeOf<HasParam>()
-                                            ~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '[number]' does not satisfy the constraint '{ 0: "Expected: number, Actual: bigint"; }'.
-  Types of property '0' are incompatible.
-    Type 'number' is not assignable to type '"Expected: number, Actual: bigint"'.
-
-999   expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number]>()
-                                                         ~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectAny<(a: number) => number[]>' has no call signatures.
-
-999   expectTypeOf(f).toBeAny()
-                      ~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectAny<number[]>' has no call signatures.
-
-999   expectTypeOf(f).returns.toBeAny()
-                              ~~~~~~~
-test/usage.test.ts:999:999 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'Mismatch'.
-
-999   expectTypeOf(f).parameter(0).toEqualTypeOf('1')
-                                                 ~~~
-test/usage.test.ts:999:999 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-
-999   expectTypeOf(f).toBeCallableWith('foo')
-                                       ~~~~~
-test/usage.test.ts:999:999 - error TS2345: Argument of type '[1, 2]' is not assignable to parameter of type '[] | [connectionString: string] | [options: { host: string; port: number; }]'.
-  Type '[1, 2]' is not assignable to type '[options: { host: string; port: number; }]'.
-    Source has 2 element(s) but target allows only 1.
-
-999   expectTypeOf(DBConnection).toBeConstructibleWith(1, 2)
-                                                       ~~~~
-test/usage.test.ts:999:999 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'Mismatch'.
-
-999   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
-                                              ~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2349: This expression is not callable.
-  Type 'ExpectString<number>' has no call signatures.
-
-999   expectTypeOf([1, 2, 3]).items.toBeString()
-                                    ~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type 'number[]' does not satisfy the constraint 'never[]'.
-  Type 'number' is not assignable to type 'never'.
-
-999   expectTypeOf<any[]>().toEqualTypeOf<number[]>()
-                                          ~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: "Expected: number, Actual: string"; }'.
-  Types of property 'a' are incompatible.
-    Type 'number' is not assignable to type '"Expected: number, Actual: string"'.
-
-999   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
-                                                ~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{}' does not satisfy the constraint '{ a: "Expected: never, Actual: number" | "Expected: never, Actual: undefined"; }'.
-  Property 'a' is missing in type '{}' but required in type '{ a: "Expected: never, Actual: number" | "Expected: never, Actual: undefined"; }'.
-
-999   expectTypeOf<{a?: number}>().toEqualTypeOf<{}>()
-                                                 ~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: "Expected: number, Actual: undefined"; }'.
-  Types of property 'a' are incompatible.
-    Type 'number' is not assignable to type '"Expected: number, Actual: undefined"'.
-
-999   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
-                                                 ~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
-
-999   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
-                                   ~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: number | null; }' does not satisfy the constraint '{ a: "Expected: number, Actual: undefined" | "Expected: null, Actual: undefined"; }'.
-  Types of property 'a' are incompatible.
-    Type 'number | null' is not assignable to type '"Expected: number, Actual: undefined" | "Expected: null, Actual: undefined"'.
-      Type 'null' is not assignable to type '"Expected: number, Actual: undefined" | "Expected: null, Actual: undefined"'.
-
-999   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
-                                                        ~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2344: Type '{ a: {}; }' does not satisfy the constraint '{ a: { b: "Expected: never, Actual: number" | "Expected: never, Actual: undefined"; }; }'.
-  Types of property 'a' are incompatible.
-    Property 'b' is missing in type '{}' but required in type '{ b: "Expected: never, Actual: number" | "Expected: never, Actual: undefined"; }'.
-
-999   expectTypeOf<{a: {b?: number}}>().toEqualTypeOf<{a: {}}>()
-                                                      ~~~~~~~
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
-
-999   expectTypeOf<A1>().toEqualTypeOf<E1>()
-                         ~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
-
-999   expectTypeOf<A2>().toEqualTypeOf<E2>()
-                         ~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
-
-999   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
-                               ~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
-
-999   expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
-                                      ~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
-
-999   expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
-                                           ~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2344: Type '() => () => () => () => 2' does not satisfy the constraint '() => () => () => () => 1'.
-  Call signature return types '() => () => () => 2' and '() => () => () => 1' are incompatible.
-    Call signature return types '() => () => 2' and '() => () => 1' are incompatible.
-      Call signature return types '() => 2' and '() => 1' are incompatible.
-        Type '2' is not assignable to type '1'.
-
-999   expectTypeOf<() => () => () => () => 1>().toEqualTypeOf<() => () => () => () => 2>()
-                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~
-test/usage.test.ts:999:999 - error TS2554: Expected 1 arguments, but got 0.
-
-999   expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<
-                                                              ~~~~~~~~~~~~~
-
-  src/index.ts:999:999
-    999       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Arguments for the rest parameter 'MISMATCH' were not provided.
-test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
+exports[`usage.test.ts > Another limitation: passing \`this\` references to \`expectTypeOf\` results in errors. 1`] = `
+"test/usage-sabotaged-another-limitation-passing-this-1bbc9c83.ts:7:40 - error TS2769: No overload matches this call.
   Overload 1 of 2, '(value: ((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this, DeepBrandOptionsDefaults>) & AValue, ...MISMATCH: MismatchArgs<...>): true', gave the following error.
     Argument of type 'this' is not assignable to parameter of type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this, DeepBrandOptionsDefaults>) & AValue'.
       Type 'B' is not assignable to type '((IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this, DeepBrandOptionsDefaults>) & AValue'.
@@ -306,6 +101,301 @@ test/usage.test.ts:999:999 - error TS2769: No overload matches this call.
                     Type 'B' is not assignable to type '(IsNever<this> extends IsNever<this> ? true : false) extends true ? unknown : MismatchInfo<this, this, DeepBrandOptionsDefaults>'.
   Argument of type '[this]' is not assignable to parameter of type 'MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<this, StrictEqualUsingTSInternalIdenticalToOperator<this, unknown> extends true ? unknown : MismatchInfo<this, unknown, DeepBrandOptionsDefaults>>, true>'.
 
-999       expectTypeOf(this).toEqualTypeOf(this)
-                                           ~~~~"
+7       expectTypeOf(this).toEqualTypeOf(this)
+                                         ~~~~"
+`;
+
+exports[`usage.test.ts > Array items can be checked with \`.items\` 1`] = `
+"test/usage-sabotaged-array-items-can-be-106876ae.ts:3:33 - error TS2349: This expression is not callable.
+  Type 'ExpectString<number>' has no call signatures.
+
+3   expectTypeOf([1, 2, 3]).items.toBeString()
+                                  ~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > Assertions can be inverted with \`.not\` 1`] = `
+"test/usage-sabotaged-assertions-can-be-inverted-8bbf7cee.ts:2:33 - error TS2344: Type '{ b: 1; }' does not satisfy the constraint '{ a: "Expected: never, Actual: number"; b: "Expected: literal number: 1, Actual: never"; }'.
+  Property 'a' is missing in type '{ b: 1; }' but required in type '{ a: "Expected: never, Actual: number"; b: "Expected: literal number: 1, Actual: never"; }'.
+
+2   expectTypeOf({a: 1}).toExtend<{b: 1}>()
+                                  ~~~~~~
+test/usage-sabotaged-assertions-can-be-inverted-8bbf7cee.ts:3:42 - error TS2344: Type '{ b: 1; }' does not satisfy the constraint '"Expected: ..., Actual: boolean"'.
+
+3   expectTypeOf({a: 1}).toMatchObjectType<{b: 1}>()
+                                           ~~~~~~"
+`;
+
+exports[`usage.test.ts > Be careful with \`.branded\` for very deep or complex types, though. If possible you should find a way to simplify your test to avoid needing to use it 1`] = `
+"test/usage-sabotaged-be-careful-with-branded-1b793476.ts:6:59 - error TS2344: Type '() => () => () => () => 2' does not satisfy the constraint '() => () => () => () => 1'.
+  Call signature return types '() => () => () => 2' and '() => () => () => 1' are incompatible.
+    Call signature return types '() => () => 2' and '() => () => 1' are incompatible.
+      Call signature return types '() => 2' and '() => 1' are incompatible.
+        Type '2' is not assignable to type '1'.
+
+6   expectTypeOf<() => () => () => () => 1>().toEqualTypeOf<() => () => () => () => 2>()
+                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > But this won't work if the nesting is deeper in the type. For these situations, you can use the \`.branded\` helper. Note that this comes at a performance cost, and can cause the compiler to 'give up' if used with excessively deep types, so use sparingly. This helper is under \`.branded\` because it deeply transforms the Actual and Expected types into a pseudo-AST 1`] = `
+"test/usage-sabotaged-but-this-won-t-bba6ab55.ts:3:40 - error TS2554: Expected 1 arguments, but got 0.
+
+3   expectTypeOf<{a: {b: 1} & {c: 1}}>().toEqualTypeOf<{a: {b: 1; c: 1}}>()
+                                         ~~~~~~~~~~~~~
+
+  src/index.ts:184:7
+    184       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided."
+`;
+
+exports[`usage.test.ts > Catch any/unknown/never types 1`] = `
+"test/usage-sabotaged-catch-any-unknown-never-a6669595.ts:7:25 - error TS2349: This expression is not callable.
+  Type 'ExpectNumber<never>' has no call signatures.
+
+7   expectTypeOf<never>().toBeNumber()
+                          ~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > Constructor overloads 1`] = `
+"test/usage-sabotaged-constructor-overloads-b89e0344.ts:13:52 - error TS2345: Argument of type '[1, 2]' is not assignable to parameter of type '[] | [connectionString: string] | [options: { host: string; port: number; }]'.
+  Type '[1, 2]' is not assignable to type '[options: { host: string; port: number; }]'.
+    Source has 2 element(s) but target allows only 1.
+
+13   expectTypeOf(DBConnection).toBeConstructibleWith(1, 2)
+                                                      ~~~~"
+`;
+
+exports[`usage.test.ts > Detect assignability of unioned types 1`] = `
+"test/usage-sabotaged-detect-assignability-of-unioned-9a5bfb92.ts:3:44 - error TS2344: Type 'number' does not satisfy the constraint '"Expected: number, Actual: string"'.
+
+3   expectTypeOf<string | number>().toExtend<number>()
+                                             ~~~~~~"
+`;
+
+exports[`usage.test.ts > Detect the difference between regular and \`readonly\` properties 1`] = `
+"test/usage-sabotaged-detect-the-difference-between-3ca7694b.ts:6:22 - error TS2554: Expected 1 arguments, but got 0.
+
+6   expectTypeOf<A1>().toEqualTypeOf<E1>()
+                       ~~~~~~~~~~~~~
+
+  src/index.ts:184:7
+    184       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided.
+test/usage-sabotaged-detect-the-difference-between-3ca7694b.ts:12:22 - error TS2554: Expected 1 arguments, but got 0.
+
+12   expectTypeOf<A2>().toEqualTypeOf<E2>()
+                        ~~~~~~~~~~~~~
+
+  src/index.ts:184:7
+    184       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided."
+`;
+
+exports[`usage.test.ts > Distinguish between classes with different constructors 1`] = `
+"test/usage-sabotaged-distinguish-between-classes-with-d1d87fa7.ts:15:28 - error TS2554: Expected 1 arguments, but got 0.
+
+15   expectTypeOf<typeof A>().toEqualTypeOf<typeof B>()
+                              ~~~~~~~~~~~~~
+
+  src/index.ts:184:7
+    184       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided."
+`;
+
+exports[`usage.test.ts > Distinguish between functions with different \`this\` parameters 1`] = `
+"test/usage-sabotaged-distinguish-between-functions-with-cc46e036.ts:10:43 - error TS2345: Argument of type '(this: { name: string; }, message: string) => string' is not assignable to parameter of type 'Mismatch'.
+
+10   expectTypeOf(greetFormal).toEqualTypeOf(greetCasual)
+                                             ~~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > Distinguish between missing/null/optional properties 1`] = `
+"test/usage-sabotaged-distinguish-between-missing-null-32fdb7b8.ts:2:46 - error TS2344: Type '{}' does not satisfy the constraint '{ a: "Expected: never, Actual: number" | "Expected: never, Actual: undefined"; }'.
+  Property 'a' is missing in type '{}' but required in type '{ a: "Expected: never, Actual: number" | "Expected: never, Actual: undefined"; }'.
+
+2   expectTypeOf<{a?: number}>().toEqualTypeOf<{}>()
+                                               ~~
+test/usage-sabotaged-distinguish-between-missing-null-32fdb7b8.ts:3:46 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: "Expected: number, Actual: undefined"; }'.
+  Types of property 'a' are incompatible.
+    Type 'number' is not assignable to type '"Expected: number, Actual: undefined"'.
+
+3   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number}>()
+                                               ~~~~~~~~~~~
+test/usage-sabotaged-distinguish-between-missing-null-32fdb7b8.ts:4:32 - error TS2554: Expected 1 arguments, but got 0.
+
+4   expectTypeOf<{a?: number}>().toEqualTypeOf<{a: number | undefined}>()
+                                 ~~~~~~~~~~~~~
+
+  src/index.ts:184:7
+    184       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided.
+test/usage-sabotaged-distinguish-between-missing-null-32fdb7b8.ts:5:53 - error TS2344: Type '{ a: number | null; }' does not satisfy the constraint '{ a: "Expected: number, Actual: undefined" | "Expected: null, Actual: undefined"; }'.
+  Types of property 'a' are incompatible.
+    Type 'number | null' is not assignable to type '"Expected: number, Actual: undefined" | "Expected: null, Actual: undefined"'.
+      Type 'null' is not assignable to type '"Expected: number, Actual: undefined" | "Expected: null, Actual: undefined"'.
+
+5   expectTypeOf<{a?: number | null}>().toEqualTypeOf<{a: number | null}>()
+                                                      ~~~~~~~~~~~~~~~~~~
+test/usage-sabotaged-distinguish-between-missing-null-32fdb7b8.ts:6:51 - error TS2344: Type '{ a: {}; }' does not satisfy the constraint '{ a: { b: "Expected: never, Actual: number" | "Expected: never, Actual: undefined"; }; }'.
+  Types of property 'a' are incompatible.
+    Property 'b' is missing in type '{}' but required in type '{ b: "Expected: never, Actual: number" | "Expected: never, Actual: undefined"; }'.
+
+6   expectTypeOf<{a: {b?: number}}>().toEqualTypeOf<{a: {}}>()
+                                                    ~~~~~~~"
+`;
+
+exports[`usage.test.ts > Generics can be used rather than references 1`] = `
+"test/usage-sabotaged-generics-can-be-used-1514908d.ts:2:45 - error TS2344: Type '{ a: number; }' does not satisfy the constraint '{ a: "Expected: number, Actual: string"; }'.
+  Types of property 'a' are incompatible.
+    Type 'number' is not assignable to type '"Expected: number, Actual: string"'.
+
+2   expectTypeOf<{a: string}>().toEqualTypeOf<{a: number}>()
+                                              ~~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > Known limitation: Intersection types can cause issues with \`toEqualTypeOf\` 1`] = `
+"test/usage-sabotaged-known-limitation-intersection-types-e6ad27b9.ts:4:35 - error TS2554: Expected 1 arguments, but got 0.
+
+4   expectTypeOf<{a: 1} & {b: 2}>().toEqualTypeOf<{a: 1; b: 2}>()
+                                    ~~~~~~~~~~~~~
+
+  src/index.ts:184:7
+    184       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided."
+`;
+
+exports[`usage.test.ts > Make assertions about object properties 1`] = `
+"test/usage-sabotaged-make-assertions-about-object-d7f810c9.ts:6:36 - error TS2345: Argument of type '"c"' is not assignable to parameter of type '"a" | "b"'.
+
+6   expectTypeOf(obj).toHaveProperty('c')
+                                     ~~~
+test/usage-sabotaged-make-assertions-about-object-d7f810c9.ts:11:41 - error TS2349: This expression is not callable.
+  Type 'ExpectString<number>' has no call signatures.
+
+11   expectTypeOf(obj).toHaveProperty('a').toBeString()
+                                           ~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > More \`.not\` examples 1`] = `
+"test/usage-sabotaged-more-not-examples-f64cffc9.ts:2:19 - error TS2349: This expression is not callable.
+  Type 'ExpectUnknown<number>' has no call signatures.
+
+2   expectTypeOf(1).toBeUnknown()
+                    ~~~~~~~~~~~
+test/usage-sabotaged-more-not-examples-f64cffc9.ts:3:19 - error TS2349: This expression is not callable.
+  Type 'ExpectAny<number>' has no call signatures.
+
+3   expectTypeOf(1).toBeAny()
+                    ~~~~~~~
+test/usage-sabotaged-more-not-examples-f64cffc9.ts:4:19 - error TS2349: This expression is not callable.
+  Type 'ExpectNever<number>' has no call signatures.
+
+4   expectTypeOf(1).toBeNever()
+                    ~~~~~~~~~
+test/usage-sabotaged-more-not-examples-f64cffc9.ts:5:19 - error TS2349: This expression is not callable.
+  Type 'ExpectNull<number>' has no call signatures.
+
+5   expectTypeOf(1).toBeNull()
+                    ~~~~~~~~
+test/usage-sabotaged-more-not-examples-f64cffc9.ts:6:19 - error TS2349: This expression is not callable.
+  Type 'ExpectUndefined<number>' has no call signatures.
+
+6   expectTypeOf(1).toBeUndefined()
+                    ~~~~~~~~~~~~~
+test/usage-sabotaged-more-not-examples-f64cffc9.ts:7:19 - error TS2349: This expression is not callable.
+  Type 'ExpectNullable<number>' has no call signatures.
+
+7   expectTypeOf(1).toBeNullable()
+                    ~~~~~~~~~~~~
+test/usage-sabotaged-more-not-examples-f64cffc9.ts:8:19 - error TS2349: This expression is not callable.
+  Type 'ExpectBigInt<number>' has no call signatures.
+
+8   expectTypeOf(1).toBeBigInt()
+                    ~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > More examples of ways to work with functions - parameters using \`.parameter(n)\` or \`.parameters\`, and return values using \`.returns\` 1`] = `
+"test/usage-sabotaged-more-examples-of-ways-18312907.ts:7:19 - error TS2349: This expression is not callable.
+  Type 'ExpectAny<(a: number) => number[]>' has no call signatures.
+
+7   expectTypeOf(f).toBeAny()
+                    ~~~~~~~
+test/usage-sabotaged-more-examples-of-ways-18312907.ts:8:27 - error TS2349: This expression is not callable.
+  Type 'ExpectAny<number[]>' has no call signatures.
+
+8   expectTypeOf(f).returns.toBeAny()
+                            ~~~~~~~
+test/usage-sabotaged-more-examples-of-ways-18312907.ts:11:46 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'Mismatch'.
+
+11   expectTypeOf(f).parameter(0).toEqualTypeOf('1')
+                                                ~~~"
+`;
+
+exports[`usage.test.ts > Nullable types 1`] = `
+"test/usage-sabotaged-nullable-types-5a607ccc.ts:4:27 - error TS2349: This expression is not callable.
+  Type 'ExpectNull<undefined>' has no call signatures.
+
+4   expectTypeOf(undefined).toBeNull()
+                            ~~~~~~~~
+test/usage-sabotaged-nullable-types-5a607ccc.ts:8:22 - error TS2349: This expression is not callable.
+  Type 'ExpectUndefined<null>' has no call signatures.
+
+8   expectTypeOf(null).toBeUndefined()
+                       ~~~~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > So, if you have an extremely deep type that ALSO has an intersection in it, you're out of luck and this library won't be able to test your type properly 1`] = `
+"test/usage-sabotaged-so-if-you-have-05d2f3cc.ts:3:59 - error TS2554: Expected 1 arguments, but got 0.
+
+3   expectTypeOf<() => () => () => () => {a: 1} & {b: 2}>().toEqualTypeOf<
+                                                            ~~~~~~~~~~~~~
+
+  src/index.ts:184:7
+    184       ...MISMATCH: MismatchArgs<StrictEqualUsingTSInternalIdenticalToOperator<Actual, Expected>, true>
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Arguments for the rest parameter 'MISMATCH' were not provided."
+`;
+
+exports[`usage.test.ts > To check that a type extends another type, use \`.toExtend\` 1`] = `
+"test/usage-sabotaged-to-check-that-a-4c9264f4.ts:4:33 - error TS2344: Type '{ b: number; }' does not satisfy the constraint '{ a: "Expected: never, Actual: number"; b: "Expected: number, Actual: never"; }'.
+  Property 'a' is missing in type '{ b: number; }' but required in type '{ a: "Expected: never, Actual: number"; b: "Expected: number, Actual: never"; }'.
+
+4   expectTypeOf({a: 1}).toExtend<{b: number}>()
+                                  ~~~~~~~~~~~"
+`;
+
+exports[`usage.test.ts > Up to ten overloads will produce union types for \`.parameters\` and \`.returns\` 1`] = `
+"test/usage-sabotaged-up-to-ten-overloads-d9143e87.ts:7:54 - error TS2344: Type '[number]' does not satisfy the constraint '{ 0: "Expected: number, Actual: bigint"; }'.
+  Types of property '0' are incompatible.
+    Type 'number' is not assignable to type '"Expected: number, Actual: bigint"'.
+
+7   expectTypeOf<Factorize>().parameters.toEqualTypeOf<[number]>()
+                                                       ~~~~~~~~"
+`;
+
+exports[`usage.test.ts > Use \`.extract\` and \`.exclude\` to narrow down complex union types 1`] = `
+"test/usage-sabotaged-use-extract-and-exclude-11b2ae4f.ts:22:86 - error TS2345: Argument of type '"xxl"' is not assignable to parameter of type '"xs" | "sm" | "md"'.
+
+22   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')
+                                                                                        ~~~~~"
+`;
+
+exports[`usage.test.ts > You can also compare arrays directly 1`] = `
+"test/usage-sabotaged-you-can-also-compare-c979b2c4.ts:2:39 - error TS2344: Type 'number[]' does not satisfy the constraint 'never[]'.
+  Type 'number' is not assignable to type 'never'.
+
+2   expectTypeOf<any[]>().toEqualTypeOf<number[]>()
+                                        ~~~~~~~~"
+`;
+
+exports[`usage.test.ts > You can't use \`.toBeCallableWith\` with \`.not\` - you need to use ts-expect-error: 1`] = `
+"test/usage-sabotaged-you-can-t-use-6c8dbd2d.ts:5:36 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+
+5   expectTypeOf(f).toBeCallableWith('foo')
+                                     ~~~~~"
 `;

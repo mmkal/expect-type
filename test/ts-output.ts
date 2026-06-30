@@ -7,18 +7,25 @@ export const tsErrors = (...lines: string[]) => {
   return tsFileErrors({filepath: './test/test.ts', content: `import {expectTypeOf} from '../src'\n\n${body}`})
 }
 
-export const tsFileErrors = (params: {filepath: string; content: string}) => {
+export const tsFileErrors = (params: {filepath: string; content: string; realLineNumbers?: boolean}) => {
+  const content = params.realLineNumbers ? params.content : '\n'.repeat(100) + params.content
+  const formatted = tsFilesErrors([{filepath: params.filepath, content}])
+  return params.realLineNumbers ? formatted : simplifyTsOutput(formatted)
+}
+
+export const tsFilesErrors = (files: Array<{filepath: string; content: string}>) => {
   const project = new tsmorph.Project({
     tsConfigFilePath: path.resolve(__dirname, '../tsconfig.json'),
     libFolderPath: path.resolve(__dirname, '../node_modules/typescript/lib'),
+    skipAddingFilesFromTsConfig: true,
   })
   project.addSourceFileAtPath('./src/index.ts')
-  // Add 100 lines to the beginning so all line numbers have three digits. Later when we call `simplifyTsOutput` we replace all line numbers with 999 so if they don't have three digits it messes up TypeScript's squiggly underlines slightly.
-  // Note: if the file being tested runs over 1000 lines this will break down.
-  project.createSourceFile(params.filepath, '\n'.repeat(100) + params.content, {overwrite: true})
+  for (const file of files) {
+    project.createSourceFile(file.filepath, file.content, {overwrite: true})
+  }
   const diagnostics = project.getPreEmitDiagnostics()
-  const formatted = project.formatDiagnosticsWithColorAndContext(diagnostics)
-  return simplifyTsOutput(formatted)
+  const formatted = stripAnsi(project.formatDiagnosticsWithColorAndContext(diagnostics))
+  return stripAnsi(formatted).trim()
 }
 
 export const simplifyTsOutput = (output: string) =>
