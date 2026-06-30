@@ -131,6 +131,28 @@ test/usage.test.ts:999:999 - error TS2344: Type 'number' does not satisfy the co
 
 999   expectTypeOf<string | number>().toExtend<number>()
                                                ~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '[Lion, Cat]' does not satisfy the constraint '{ 0: "Expected: ..., Actual: never"; 1: "Expected: ..., Actual: never"; type: "Expected: never, Actual: literal string: dog" | "Expected: never, Actual: literal string: cat"; herdsSheep: never; catchesMice: never; }'.
+
+999   expectTypeOf<Pet>().toEqualTypeOf<[Lion, Cat]>()
+                                        ~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '[Dog, Lion]' does not satisfy the constraint '[Dog, ExpectMember<[Dog, Cat], Lion>]'.
+  Type at position 1 in source is not compatible with type at position 1 in target.
+    Type 'Lion' is missing the following properties from type 'ExpectMember<[Dog, Cat], Lion>': result, [expectMember]
+
+999   expectTypeOf<Pet>().toBeUnionOf<[Dog, Lion]>()
+                                      ~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '[Lion, Dog]' does not satisfy the constraint '[ExpectMember<[Dog, Cat], Lion>, Dog]'.
+  Type at position 0 in source is not compatible with type at position 0 in target.
+    Type 'Lion' is missing the following properties from type 'ExpectMember<[Dog, Cat], Lion>': result, [expectMember]
+
+999   expectTypeOf<Pet>().toBeUnionOf<[Lion, Dog]>()
+                                      ~~~~~~~~~~~
+test/usage.test.ts:999:999 - error TS2344: Type '[Dog, Cat, Lion]' does not satisfy the constraint '[Dog, Cat, ExpectMember<[Dog, Cat], Lion>]'.
+  Type at position 2 in source is not compatible with type at position 2 in target.
+    Type 'Lion' is missing the following properties from type 'ExpectMember<[Dog, Cat], Lion>': result, [expectMember]
+
+999   expectTypeOf<Pet>().toBeUnionOf<[Dog, Cat, Lion]>()
+                                      ~~~~~~~~~~~~~~~~
 test/usage.test.ts:999:999 - error TS2345: Argument of type '"xxl"' is not assignable to parameter of type '"xs" | "sm" | "md"'.
 
 999   expectTypeOf<ResponsiveProp<number>>().exclude<number | number[]>().toHaveProperty('xxl')

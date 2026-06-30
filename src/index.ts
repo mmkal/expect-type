@@ -23,6 +23,7 @@ import type {
   ExpectUnknown,
   ExpectVoid,
   MismatchInfo,
+  MismatchInfoUnion,
   Scolder,
 } from './messages'
 import type {
@@ -40,6 +41,8 @@ import type {
   MismatchArgs,
   Not,
   StrictEqualUsingTSInternalIdenticalToOperator,
+  TuplesHaveIdenticalItems,
+  UnionToTuple,
 } from './utils'
 
 export * from './branding' // backcompat, consider removing in next major version
@@ -101,6 +104,20 @@ export interface PositiveExpectTypeOf<Actual> extends BaseExpectTypeOf<Actual, {
    */
   toExtend: <Expected extends Extends<Actual, Expected> extends true ? unknown : MismatchInfo<Actual, Expected>>(
     ...MISMATCH: MismatchArgs<Extends<Actual, Expected>, true>
+  ) => true
+
+  /**
+   * Check if your type is a union of the expected types in the tuple
+   *
+   * @param MISMATCH - The mismatch arguments.
+   * @returns `true`.
+   */
+  toBeUnionOf: <
+    Expected extends TuplesHaveIdenticalItems<UnionToTuple<Actual>, Extract<Expected, any[]>> extends true
+      ? unknown
+      : MismatchInfoUnion<UnionToTuple<Actual>, Extract<Expected, any[]>>,
+  >(
+    ...MISMATCH: MismatchArgs<TuplesHaveIdenticalItems<UnionToTuple<Actual>, Extract<Expected, any[]>>, true>
   ) => true
 
   toEqualTypeOf: {
@@ -1134,6 +1151,7 @@ export const expectTypeOf: _ExpectTypeOf = <Actual>(
     toBeNumber: fn,
     toBeBoolean: fn,
     toBeVoid: fn,
+    toBeUnionOf: fn,
     toBeSymbol: fn,
     toBeNull: fn,
     toBeUndefined: fn,

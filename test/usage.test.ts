@@ -248,6 +248,25 @@ test('Detect assignability of unioned types', () => {
   expectTypeOf<string | number>().not.toExtend<number>()
 })
 
+test('Check unions', () => {
+  type Dog = {type: 'dog'; herdsSheep: boolean}
+  type Cat = {type: 'cat'; catchesMice: boolean}
+  type Lion = {type: 'lion'; hasMane: boolean}
+
+  type Pet = Dog | Cat
+
+  expectTypeOf<Pet>().toBeUnionOf<[Dog, Cat]>()
+  expectTypeOf<Pet>().not.toEqualTypeOf<[Lion, Cat]>()
+  expectTypeOf<Pet>().toBeUnionOf<[Cat, Dog]>()
+
+  // @ts-expect-error
+  expectTypeOf<Pet>().toBeUnionOf<[Dog, Lion]>()
+  // @ts-expect-error
+  expectTypeOf<Pet>().toBeUnionOf<[Lion, Dog]>()
+  // @ts-expect-error
+  expectTypeOf<Pet>().toBeUnionOf<[Dog, Cat, Lion]>()
+})
+
 test('Use `.extract` and `.exclude` to narrow down complex union types', () => {
   type ResponsiveProp<T> = T | T[] | {xs?: T; sm?: T; md?: T}
   const getResponsiveProp = <T>(_props: T): ResponsiveProp<T> => ({})

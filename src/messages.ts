@@ -5,6 +5,7 @@ import type {
   ExtendsExcludingAnyOrNever,
   IsAny,
   IsNever,
+  IsSubset,
   IsUnknown,
   Not,
   OptionalKeys,
@@ -69,6 +70,35 @@ export type MismatchInfo<Actual, Expected, Options extends DeepBrandOptions = De
     : StrictEqualUsingBranding<Actual, Expected, Options> extends true
       ? Actual
       : `Expected: ${PrintType<Expected>}, Actual: ${PrintType<Exclude<Actual, Expected>>}`
+
+export type MismatchInfoUnion<
+  ActualTuple extends any[],
+  ExpectedTuple extends any[],
+  Options extends DeepBrandOptions = DeepBrandOptionsDefaults,
+> = {
+  [K in keyof ExpectedTuple]: IsSubset<[ExpectedTuple[K]], ActualTuple> extends true
+    ? ExpectedTuple[K]
+    : ExpectMember<ActualTuple, ExpectedTuple[K]>
+}
+// {
+//   [K in Extract<keyof ActualTuple | keyof ExpectedTuple, number>]: K extends keyof ActualTuple
+//     ? K extends keyof ExpectedTuple
+//       ? K extends string | number
+//         ? IsSubset<[ActualTuple[K]], ExpectedTuple> extends true
+//           ? IsSubset<[ExpectedTuple[K]], ActualTuple> extends true
+//             ? `Actual item ${K} is in expected tuple`
+//             : {
+//                 message: `Expected item ${K} is not in actual tuple`
+//                 mismatches: {[K2 in keyof ActualTuple]: MismatchInfo<ActualTuple[K2], ExpectedTuple[K]>}
+//               }
+//           : {
+//               message: `Actual item ${K} is not expected tuple`
+//               mismatches: {[K2 in keyof ExpectedTuple]: MismatchInfo<ActualTuple[K], ExpectedTuple[K2]>}
+//             }
+//         : {k: K; extendsStringOrNumber: K extends string | number ? true : false}
+//       : never
+//     : never
+// }
 
 /**
  * Helper for making some keys of a type optional. Only useful so far for `MismatchInfo` - it makes sure we
@@ -218,6 +248,15 @@ const expectBigInt = Symbol('expectBigInt')
 export type ExpectBigInt<T> = {
   [expectBigInt]: T
   result: ExtendsExcludingAnyOrNever<T, bigint>
+}
+
+/**
+ * @internal
+ */
+const expectMember = Symbol('expectMember')
+export type ExpectMember<T extends any[], Member> = {
+  [expectMember]: T
+  result: IsSubset<[Member], T>
 }
 
 /**

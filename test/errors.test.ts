@@ -235,6 +235,21 @@ test('toMatchObjectType', () => {
   `)
 })
 
+test('toBeUnionOf', () => {
+  expect(
+    tsErrors(
+      `expectTypeOf<{type: 'a'; a: number} | {type: 'b'; b: string}>().toBeUnionOf<[{type: 'a'; a: number}, {type: 'b'; b: boolean}]>()`,
+    ),
+  ).toMatchInlineSnapshot(`
+    "test/test.ts:999:999 - error TS2344: Type '[{ type: "a"; a: number; }, { type: "b"; b: boolean; }]' does not satisfy the constraint '[{ type: "a"; a: number; }, ExpectMember<[{ type: "a"; a: number; }, { type: "b"; b: string; }], { type: "b"; b: boolean; }>]'.
+      Type at position 1 in source is not compatible with type at position 1 in target.
+        Type '{ type: "b"; b: boolean; }' is missing the following properties from type 'ExpectMember<[{ type: "a"; a: number; }, { type: "b"; b: string; }], { type: "b"; b: boolean; }>': result, [expectMember]
+
+    999 expectTypeOf<{type: 'a'; a: number} | {type: 'b'; b: string}>().toBeUnionOf<[{type: 'a'; a: number}, {type: 'b'; b: boolean}]>()
+                                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  `)
+})
+
 test('usage.test.ts', () => {
   const originalUsageTestFile = fs.readFileSync(__dirname + '/usage.test.ts', 'utf8')
   // first make sure there are no bugs, to avoid creating noisy snapshot diffs when I blindly run `pnpm test -- -u`
