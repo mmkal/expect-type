@@ -266,3 +266,13 @@ export type DeepPickMatchingProps<Left, Right> =
         Extract<keyof Left, keyof Right>
       >
     : Left
+
+export type IsSubset<Small extends any[], Big extends any[]> = And<{
+  [SmallKey in keyof Small]: Or<{
+    [BigKey in keyof Big]: StrictEqualUsingTSInternalIdenticalToOperator<Small[SmallKey], Big[BigKey]>
+  }>
+}>
+
+export type TuplesHaveIdenticalItems<A extends any[], B extends any[]> = And<
+  [Extends<A['length'], B['length']>, IsSubset<A, B>, IsSubset<B, A>]
+>
