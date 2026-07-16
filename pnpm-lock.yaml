@@ -27,8 +27,8 @@ importers:
         specifier: 0.9.0
         version: 0.9.0(eslint@8.57.1)(typescript@5.9.3)(vitest@4.1.10)
       np:
-        specifier: ^11.0.0
-        version: 11.2.2(@types/node@24.13.3)(typescript@5.9.3)
+        specifier: ^12.0.0
+        version: 12.0.0(@types/node@24.13.3)(typescript@5.9.3)
       pkg-pr-new:
         specifier: 0.0.78
         version: 0.0.78
@@ -1232,9 +1232,6 @@ packages:
   brace-expansion@1.1.15:
     resolution: {integrity: sha512-EwOCDEex4quD37XhqM3omwtMoJjr//isUZz1JopUNWms+4Z2ViyM/k1YIRePpoVNnQhENnxtFjLaxNHrT7xIUg==}
 
-  brace-expansion@2.0.1:
-    resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
-
   brace-expansion@2.1.1:
     resolution: {integrity: sha512-WR1cURNjuvBLMZBMbqM0UoE+WAfdUcEV1ccD8PVBVOI+Z3ND4+SZbN8RsfT2bMuG1qwz5RFvPukSZm5fF2D5eA==}
 
@@ -2194,9 +2191,9 @@ packages:
   inquirer-autosubmit-prompt@0.2.0:
     resolution: {integrity: sha512-mzNrusCk5L6kSzlN0Ioddn8yzrhYNLli+Sn2ZxMuLechMYAzakiFCIULxsxlQb5YKzthLGfrFACcWoAvM7p04Q==}
 
-  inquirer@13.4.3:
-    resolution: {integrity: sha512-EPd3IqieHSavSOXh+LZhrIkdQcOELWeRblLT6kslQr+cF9XTh/HxZdSt1YkHH1iq4dvqBnV42uwg2YlorgOy6g==}
-    engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
+  inquirer@14.0.2:
+    resolution: {integrity: sha512-VsSx1JneSNp3ld1veMTLe+UDcUD8Tw2/jjOthhkX3/IX2q+xHhVELifeb/hsb1fBw31pabEPNUf/xUOyb+KZjA==}
+    engines: {node: '>=23.5.0 || ^22.13.0 || ^20.17.0'}
     peerDependencies:
       '@types/node': '>=18'
     peerDependenciesMeta:
@@ -2773,9 +2770,9 @@ packages:
     resolution: {integrity: sha512-RWk+PI433eESQ7ounYxIp67CYuVsS1uYSonX3kA6ps/3LWfjVQa/ptEg6Y3T6uAMq1mWpX9PQ+qx+QaHpsc7gQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  np@11.2.2:
-    resolution: {integrity: sha512-xUenmoodkCbegO6QL0bApryA2AWb4I6CSq6dyEDDQ5MeSdRTE/qY2DWsoQrD3xJdbK+r54wmDJuWPDpE7iKGSQ==}
-    engines: {bun: '>=1', git: '>=2.11.0', node: '>=20', npm: '>=9', pnpm: '>=8', yarn: '>=1.7.0'}
+  np@12.0.0:
+    resolution: {integrity: sha512-1PzxJkmDHBe0rLTo6selMguD6WPCdYHrxK3PZKdn45dkuhQXXCwaOLTtWOo0PSzSotqr+518r7nzD5eSStg7Dg==}
+    engines: {bun: '>=1', git: '>=2.11.0', node: '>=22', npm: '>=10', pnpm: '>=11', yarn: '>=1.7.0'}
     hasBin: true
 
   npm-name@8.1.0:
@@ -2841,9 +2838,9 @@ packages:
     resolution: {integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==}
     engines: {node: '>=6'}
 
-  onetime@7.0.0:
-    resolution: {integrity: sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==}
-    engines: {node: '>=18'}
+  onetime@8.0.0:
+    resolution: {integrity: sha512-ODz2CnF+9043eG3exS38Efor4ekggmKvIydHaXWr1n9mXA5Afn8BdSsvVpa5AhBWricxhdBMfyeG3Yo3SB+VWA==}
+    engines: {node: '>=22'}
 
   open@11.0.0:
     resolution: {integrity: sha512-smsWv2LzFjP03xmvFoJ331ss6h+jixfA4UUV/Bsiyuu4YJPfN+FIQGOIiv4w9/+MoHkfkJ22UIaQWRVFRfH6Vw==}
@@ -5004,10 +5001,6 @@ snapshots:
       balanced-match: 1.0.2
       concat-map: 0.0.1
 
-  brace-expansion@2.0.1:
-    dependencies:
-      balanced-match: 1.0.2
-
   brace-expansion@2.1.1:
     dependencies:
       balanced-match: 1.0.2
@@ -5524,7 +5517,7 @@ snapshots:
       io-ts: 2.2.22(fp-ts@2.16.9)
       io-ts-extra: 0.11.6
       js-yaml: 3.15.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       read-pkg-up: 7.0.1
     transitivePeerDependencies:
       - babel-plugin-macros
@@ -6035,7 +6028,7 @@ snapshots:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.1.2
+      minimatch: 3.1.5
       once: 1.4.0
       path-is-absolute: 1.0.1
 
@@ -6175,7 +6168,7 @@ snapshots:
       inquirer: 6.5.2
       rxjs: 6.6.7
 
-  inquirer@13.4.3(@types/node@24.13.3):
+  inquirer@14.0.2(@types/node@24.13.3):
     dependencies:
       '@inquirer/ansi': 2.0.7
       '@inquirer/core': 11.2.1(@types/node@24.13.3)
@@ -6183,7 +6176,6 @@ snapshots:
       '@inquirer/type': 4.0.7(@types/node@24.13.3)
       mute-stream: 3.0.0
       run-async: 4.0.6
-      rxjs: 7.8.2
     optionalDependencies:
       '@types/node': 24.13.3
 
@@ -6709,7 +6701,7 @@ snapshots:
 
   minimatch@10.0.1:
     dependencies:
-      brace-expansion: 2.0.1
+      brace-expansion: 2.1.1
 
   minimatch@10.2.5:
     dependencies:
@@ -6781,7 +6773,7 @@ snapshots:
       semver: 7.8.5
       validate-npm-package-license: 3.0.4
 
-  np@11.2.2(@types/node@24.13.3)(typescript@5.9.3):
+  np@12.0.0(@types/node@24.13.3)(typescript@5.9.3):
     dependencies:
       chalk: 5.6.2
       chalk-template: 1.1.2
@@ -6796,7 +6788,7 @@ snapshots:
       hosted-git-info: 9.0.3
       ignore-walk: 8.0.0
       import-local: 3.2.0
-      inquirer: 13.4.3(@types/node@24.13.3)
+      inquirer: 14.0.2(@types/node@24.13.3)
       is-installed-globally: 1.0.0
       is-interactive: 2.0.0
       is-scoped: 3.0.0
@@ -6807,7 +6799,7 @@ snapshots:
       meow: 14.1.0
       new-github-release-url: 2.0.0
       npm-name: 8.1.0
-      onetime: 7.0.0
+      onetime: 8.0.0
       open: 11.0.0
       p-memoize: 8.0.0
       package-directory: 8.2.0
@@ -6903,7 +6895,7 @@ snapshots:
     dependencies:
       mimic-fn: 2.1.0
 
-  onetime@7.0.0:
+  onetime@8.0.0:
     dependencies:
       mimic-function: 5.0.1
 
