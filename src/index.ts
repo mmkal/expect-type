@@ -744,7 +744,7 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    */
   toBeCallableWith: Options['positive'] extends true
     ? <Args extends OverloadParameters<Actual>>(
-        ...args: Args
+        ...args: Args & ([Actual] extends [(...parameters: Args) => any] ? unknown : never)
       ) => ExpectTypeOf<OverloadsNarrowedByParameters<Actual, Args>, Options>
     : never
 
@@ -766,7 +766,9 @@ export interface BaseExpectTypeOf<Actual, Options extends {positive: boolean}> {
    * @returns `true`.
    */
   toBeConstructibleWith: Options['positive'] extends true
-    ? <Args extends ConstructorOverloadParameters<Actual>>(...args: Args) => true
+    ? <Args extends ConstructorOverloadParameters<Actual>>(
+        ...args: Args & ([Actual] extends [new (...parameters: Args) => any] ? unknown : never)
+      ) => true
     : never
 
   /**
