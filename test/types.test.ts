@@ -80,6 +80,52 @@ test(`never types don't sneak by`, () => {
   expectTypeOf<never>().toMatchTypeOf<{foo: string}>()
 })
 
+test('toBeCallableWith requires arguments accepted by every union member', () => {
+  type Disjoint = ((input: string) => void) | ((input: number) => void)
+  // @ts-expect-error - the string argument is not accepted by the numeric member
+  expectTypeOf<Disjoint>().toBeCallableWith('text')
+  // @ts-expect-error - the numeric argument is not accepted by the string member
+  expectTypeOf<Disjoint>().toBeCallableWith(123)
+
+  type Shared = ((input: string | number) => number) | ((input: number | boolean) => number)
+  expectTypeOf<Shared>().toBeCallableWith(123).returns.toBeNumber()
+  // @ts-expect-error - the string argument is only accepted by one member
+  expectTypeOf<Shared>().toBeCallableWith('text')
+  // @ts-expect-error - the boolean argument is only accepted by one member
+  expectTypeOf<Shared>().toBeCallableWith(true)
+
+  type Overloaded = {
+    (input: string): string
+    (input: number): number
+  }
+  expectTypeOf<Overloaded | ((input: number) => number)>().toBeCallableWith(123)
+  // @ts-expect-error - accepting an overload of one member is not enough
+  expectTypeOf<Overloaded | ((input: number) => number)>().toBeCallableWith('text')
+})
+
+test('toBeConstructibleWith requires arguments accepted by every union member', () => {
+  type Disjoint = (new (input: string) => object) | (new (input: number) => object)
+  // @ts-expect-error - the string argument is not accepted by the numeric member
+  expectTypeOf<Disjoint>().toBeConstructibleWith('text')
+  // @ts-expect-error - the numeric argument is not accepted by the string member
+  expectTypeOf<Disjoint>().toBeConstructibleWith(123)
+
+  type Shared = (new (input: string | number) => object) | (new (input: number | boolean) => object)
+  expectTypeOf<Shared>().toBeConstructibleWith(123)
+  // @ts-expect-error - the string argument is only accepted by one member
+  expectTypeOf<Shared>().toBeConstructibleWith('text')
+  // @ts-expect-error - the boolean argument is only accepted by one member
+  expectTypeOf<Shared>().toBeConstructibleWith(true)
+
+  type Overloaded = {
+    new (input: string): object
+    new (input: number): object
+  }
+  expectTypeOf<Overloaded | (new (input: number) => object)>().toBeConstructibleWith(123)
+  // @ts-expect-error - accepting an overload of one member is not enough
+  expectTypeOf<Overloaded | (new (input: number) => object)>().toBeConstructibleWith('text')
+})
+
 test('thisParameter returns unknown for non-callable types', () => {
   expectTypeOf<ThisParameterType<number>>().toBeUnknown()
   expectTypeOf<number>().thisParameter.toBeUnknown()
