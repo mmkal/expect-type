@@ -30,8 +30,8 @@ importers:
         specifier: ^12.0.0
         version: 12.1.1(@types/node@24.19.2)(typescript@5.9.3)
       pkg-pr-new:
-        specifier: 0.0.92
-        version: 0.0.92
+        specifier: 0.0.93
+        version: 0.0.93
       strip-ansi:
         specifier: 7.2.0
         version: 7.2.0
@@ -2992,8 +2992,8 @@ packages:
     resolution: {integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==}
     engines: {node: '>=8'}
 
-  pkg-pr-new@0.0.92:
-    resolution: {integrity: sha512-l9HE4y0LmS5n3pw9vKby7m9O+SBzjWF5HXGH6Z8jdPWW7OW7hFMKsFOrgubc0JuPz8gYEuIw1mLaU3GEmPuukQ==}
+  pkg-pr-new@0.0.93:
+    resolution: {integrity: sha512-JH3HEO+m8sNFpalNAeGrNKjdwxNcXT3yuEuGMU/65dvLojPo+Ofnmc8la2v2ceisjXTOKQw/738Pj4KNFY7F+w==}
     hasBin: true
 
   pluralize@8.0.0:
@@ -7026,7 +7026,7 @@ snapshots:
     dependencies:
       find-up: 4.1.0
 
-  pkg-pr-new@0.0.92: {}
+  pkg-pr-new@0.0.93: {}
 
   pluralize@8.0.0: {}
 
